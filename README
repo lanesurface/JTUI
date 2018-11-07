@@ -1,0 +1,22 @@
+ABOUT THIS PROJECT
+
+In my search for a pure Java library for creating appealing TUIs (text-based
+user interface), I came up short of anything that resembled a suitable 
+solution. Available libraries either attempt to wrap native ncurses code or are
+inadequate for the types of projects that I wish to build. This library 
+therefore aims to fill that need for a reliable, modern, and pure-Java library
+for creating appealing terminal user interfaces.
+
+In order to avoid using formatting characters to create the UI (as ncurses 
+does), I have opted to wrap everything in a terminal emulator written on
+top of Swing. This also has the convenient trade-off of making the buffer
+dynamic; we don't have to clear the terminal before redrawing a region of
+the interface. I also hope to make font-rendering consistent across all
+platforms on which an application is run, in a truly portable fashion.
+
+On operating systems like Windows, the terminal does not allow for per-
+character color information, nor does it allow for an easy way to control low-
+level formatting of the text. This API should provide a consistent interface
+across all Java-compatible machines, and present an application in the same
+fashion to all of its clients.
+

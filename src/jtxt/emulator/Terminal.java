@@ -15,6 +15,7 @@
  */
 package jtxt.emulator;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -55,7 +56,7 @@ public final class Terminal {
      * Holds general information regarding the settings of this instance of the
      * terminal.
      */
-    private Configuration config;
+    private Context config;
     
     /**
      * Keeps track of the next position to insert text into the terminal when
@@ -94,7 +95,7 @@ public final class Terminal {
      * 
      * @param config The setting information for the terminal.
      */
-    public Terminal(Configuration config) {
+    public Terminal(Context config) {
         this.config = config;
         
         cursor = new Cursor();
@@ -122,6 +123,12 @@ public final class Terminal {
         window.pack();
         window.setVisible(true);
         
+        /*
+         * Make sure there are no null characters in the buffer (some fonts
+         * don't handle these very well).
+         */
+        clear();
+        
         // Warning message sent to the system console when an application is
         // created from the command line.
         System.out.println("Terminal created...\nWARNING: Do not close this " +
@@ -134,8 +141,8 @@ public final class Terminal {
      * @return The {@code Configuration} representing the properties of this
      *         {@code Terminal}.
      */
-    public Configuration getConfiguration() {
-        return new Configuration(config);
+    public Context getConfiguration() {
+        return new Context(config);
     }
     
     /**
@@ -155,7 +162,7 @@ public final class Terminal {
             l.line >= config.numLines || l.position >= config.lineSize)
             throw new LocationOutOfBoundsException(l);
         
-        pane.update(c, l.line, l.position);
+        pane.update(new Glyph(c, Color.WHITE), l.line, l.position);
         window.repaint();
     }
     
@@ -212,7 +219,7 @@ public final class Terminal {
     private String[] wrapLine(String line, int position, int edge) {
         if (edge >= config.lineSize)
             throw new IllegalArgumentException("The character limit [edge=" +
-                                               edge + " is too large for " +
+                                               edge + "] is too large for " +
                                                "the buffer");
         
         if (position >= edge) 
@@ -259,12 +266,21 @@ public final class Terminal {
             }
             lines.add(line.substring(index));
             
-            String[] lineArray = new String[lines.size()];
-            lines.toArray(lineArray);
-            return lineArray;
+            return lines.toArray(new String[lines.size()]);
         }
         
         return new String[] { line };
+    }
+    
+    public void putLines(String[] lines, Location l) {
+        AtomicInteger loc = new AtomicInteger(l.line);
+        Arrays.stream(lines)
+            .forEach(line -> pane.update(line,
+                                         loc.getAndIncrement(),
+                                         l.position));
+        cursor.goDown(lines.length);
+        
+        window.repaint();
     }
     
     /**
@@ -294,14 +310,7 @@ public final class Terminal {
             throw new LocationOutOfBoundsException("The line was too big to " +
                                                    "wrap at line " + l.line);
         
-        AtomicInteger loc = new AtomicInteger(l.line);
-        Arrays.stream(lines)
-              .forEach(line -> pane.update(line, 
-                                           loc.getAndIncrement(), 
-                                           l.position));
-        cursor.goDown(lines.length);
-        
-        window.repaint();
+        putLines(lines, l);
     }
     
     /**
@@ -327,6 +336,14 @@ public final class Terminal {
         cursor.goForward(text.length());
     }
     
+    public void putLine(Glyph[] glyphs) {
+        for (int i = 0; i < glyphs.length; i++) {
+            pane.update(glyphs[i], cursor.getLine(), cursor.getPosition());
+            cursor.goForward(1);
+        }
+        cursor.setLocation(cursor.getLine()+1, 0);
+    }
+    
     /**
      * Writes a string to the console at the current cursor position and
      * advances the cursor position down by one line.
@@ -339,9 +356,11 @@ public final class Terminal {
     }
     
     public void clear() {
-        // TODO: Clear the entire screen buffer.
+        for (int row = 0; row < config.numLines; row++)
+            for (int col = 0; col < config.lineSize; col++)
+                pane.update(new Glyph(' ', Color.WHITE), row, col);
         
-        throw new UnsupportedOperationException("Could not clear the screen.");
+        cursor.setLocation(0, 0);
     }
     
     /**

@@ -54,7 +54,17 @@ public interface Component {
      */
     // TODO: Location class is not needed, as Java API already specifies the
     // Point class for screen locations.
-    boolean intersects(java.awt.Point point);
+    boolean intersects(jtxt.emulator.Location location);
+    
+    /**
+     * Determines whether the region is within the region of this component.
+     * 
+     * @param region The region to check against this shape's.
+     * 
+     * @return Whether or not all bounds of the given region lie within the
+     *         region of this component.
+     */
+    boolean inside(jtxt.emulator.Region region);
     
     /**
      * Gets the region which this component controls. This region is the bounds

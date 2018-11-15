@@ -43,21 +43,21 @@ class BufferedTextPane extends JComponent {
      * to insert and wrap text, as text-based applications should have no way
      * to scroll (though technically we could do so).
      */
-    private char[][] buffer;
+    private Glyph[][] buffer;
     
     /**
      * Holds information about the way to render the text on the screen.
      */
-    private Configuration config;
+    private Context config;
     
     /**
      * Creates a new text area with an editable text buffer.
      * 
      * @param config The properties used for rendering the text.
      */
-    public BufferedTextPane(Configuration config) {
+    public BufferedTextPane(Context config) {
         this.config = config;
-        buffer = new char[config.numLines][config.lineSize];
+        buffer = new Glyph[config.numLines][config.lineSize];
     }
     
     /**
@@ -67,8 +67,8 @@ class BufferedTextPane extends JComponent {
      * @param line The line in the buffer to place the character.
      * @param position The position in the buffer to place the character.
      */
-    public void update(char c, int line, int position) {
-        buffer[line][position] = c;
+    public void update(Glyph g, int line, int position) {
+        buffer[line][position] = g;
     }
     
     /**
@@ -80,9 +80,11 @@ class BufferedTextPane extends JComponent {
      *                 the string.
      */
     public void update(String s, int line, int position) {
+        Glyph[] glyphs = Glyph.of(s);
+        
         // TODO: Account for out-of-bounds exception here?
-        for (int i = 0; i < s.length(); i++)
-            buffer[line][position+i] = s.charAt(i);
+        for (int i = 0; i < glyphs.length; i++)
+            buffer[line][position+i] = glyphs[i];
     }
     
     @Override
@@ -93,15 +95,18 @@ class BufferedTextPane extends JComponent {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                              RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         
-        g2d.setColor(new Color(0, 0, 172));
+//        g2d.setColor(new Color(0, 0, 172));
+        
+        g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, config.windowSize.width, config.windowSize.height);
         
-        // TODO: Allow characters to carry color information.
-        g2d.setColor(Color.WHITE);
-        for (int i = 0; i < buffer.length; i++)
-            for (int j = 0; j < buffer[i].length; j++)
-                g2d.drawString(buffer[i][j]+"", 
+        for (int i = 0; i < buffer.length; i++) {
+            for (int j = 0; j < buffer[i].length; j++) {
+                g2d.setColor(buffer[i][j].color);
+                g2d.drawString(buffer[i][j].character+"", 
                                (j+1)*config.charSize.width, 
                                (i+1)*config.charSize.height);
+            }
+        }
     }
 }

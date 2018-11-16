@@ -19,6 +19,17 @@ public class Glyph {
         this.color = color;
     }
     
+    public Glyph(char c) {
+        this(c, Color.WHITE);
+    }
+    
+    @Override
+    public String toString() {
+        return String.format("Glyph: [char='%c',color=%s]", 
+                             character,
+                             color);
+    }
+    
     /**
      * Constructs an array of Glyphs for the given string of text. The presence
      * of escape sequences in the string (delimited by <code>\e[...m</code>) is

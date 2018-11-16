@@ -3,12 +3,15 @@ package jtxt.emulator.util.image;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.HashMap;
 
 import jtxt.emulator.Glyph;
 
 public class Images {
+    /**
+     * The characters that can be used for rasterizing the image in an ASCII
+     * format. These characters are stored in descending order of intensity.
+     */
     private static final char[] ASCII_CHARS = { '$', '@', 'B', '%', '8', '&',
                                                 'W', 'M', '#', '*', 'o', 'a',
                                                 'h', 'k', 'b', 'd', 'p', 'q',
@@ -24,19 +27,31 @@ public class Images {
     
     private Images() { /* Do not allow for this class to be instantiated. */ }
     
+    /**
+     * Given an Image, this method converts that image into an array of
+     * Strings, where each string represents a single row of pixels in the
+     * output image. Color information is not preserved.
+     * 
+     * @param source The source image to translate.
+     * @param outputWidth The number of characters per line in the output 
+     *                    image.
+     * 
+     * @return An array of Strings representing the ASCII image. 
+     */
     public static String[] convertToASCII(Image source, int outputWidth) {
-        long start = System.nanoTime();
         Glyph[][] output = mapToCharacters(toBufferedImage(source),
-                                          outputWidth);
-        long end = System.nanoTime();
-        System.out.printf("ASCII image conversion took %.0f ms.%n",
-            (double)(end - start) / 1_000_000);
+                                           outputWidth);
         
         String[] lines = new String[output.length];
-//        AtomicInteger i = new AtomicInteger(0);
-//        Arrays.stream(output)
-//            .forEach(line -> lines[i.get()] = 
-//                new String(output[i.getAndIncrement()]));
+        for (int i = 0; i < lines.length; i++) {
+            StringBuilder builder = new StringBuilder();
+            
+            Glyph[] glyphs = output[i];
+            for (Glyph g : glyphs)
+                builder.append(g.character);
+            
+            lines[i] = builder.toString();
+        }
         
         return lines;
     }
@@ -55,6 +70,10 @@ public class Images {
         int xChars = (int)(width / scale),
             yChars = (int)(height / scale);
         
+        /*
+         * Pixels at the edge of the image need to be discarded if they cannot
+         * be averaged.
+         */
         width -= width % scale;
         height -= height % scale;
         System.out.printf("width=%d,height=%d%nxChars=%d,yChars=%d%n", 
@@ -74,11 +93,15 @@ public class Images {
                 int avg = -1,
                     lum = -1;
                 
+                int[][] colors = new int[(int)scale][(int)scale];
+                int row = 0, 
+                    col = 0;
                 /*
                  * Iterate over every pixel in this chunk and add it's RGB
                  * value to the average. 
                  */
                 for (int cy = y; cy < y + scale; cy++) {
+                    col = 0;
                     for (int cx = x; cx < x + scale; cx++) {
                         /*
                          * Do grayscale image conversion in here (despite the
@@ -92,12 +115,17 @@ public class Images {
                                          (argb >> 8 & 0xFF) +
                                          (argb & 0xFF)) / 3;
                         
-                        avg += argb;
+//                        avg += argb;
                         lum += grayscale;
+                        
+                        colors[row][col++] = argb;
                     }
+                    row++;
                 }
                 
-                avg /= scale * scale;
+                int color = findMean(colors);
+                
+//                avg /= scale * scale;
                 lum /= scale * scale;
                 
                 /*
@@ -107,9 +135,14 @@ public class Images {
                 int index = (int)(lum / steps);
                 char out = ASCII_CHARS[index];
                 
-                int red = (avg >> 16) & 0xFF,
-                    green = (avg >> 8) & 0xFF,
-                    blue = avg & 0xFF;
+                int red = (color >> 16) & 0xFF,
+                    green = (color >> 8) & 0xFF,
+                    blue = color & 0xFF;
+//                System.out.printf("red=%d,green=%d,blue=%d%n",
+//                                  red,
+//                                  green,
+//                                  blue);
+                
                 Glyph g = new Glyph(out, new Color(red, green, blue));
                 characters[charY][charX++] = g;
             }
@@ -117,6 +150,32 @@ public class Images {
         }
         
         return characters;
+    }
+    
+    private static int findMean(int[][] colors) {
+        HashMap<Integer, Integer> occurences = new HashMap<>();
+        int mean = 0,
+            maxOcc = -1;
+        
+        for (int row = 0; row < colors.length; row++) {
+            for (int col = 0; col < colors[row].length; col++) {
+                int color = colors[row][col];
+                
+                Integer occurence = occurences.get(color);
+                
+                if (occurence == null) {
+                    occurence = 1;
+                }
+                
+                if (occurence > maxOcc) {
+                    mean = color;
+                    maxOcc = occurence;
+                }
+                occurences.put(color, occurence+1);
+            }
+        }
+        
+        return mean;
     }
     
     /**

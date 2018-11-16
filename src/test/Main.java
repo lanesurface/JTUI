@@ -1,5 +1,6 @@
 package test;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 
@@ -27,11 +28,7 @@ public class Main {
         term.putLine("Hello, world!");
         
         try {
-            long start = System.nanoTime();
             Image img = ImageIO.read(ClassLoader.getSystemResource("coke.jpg"));
-            long end = System.nanoTime();
-            System.out.printf("Resource loading took %d ms.%n", 
-                (int)(end - start) / 1_000_000);
             
 //            String[] lines = Images.convertToASCII(img, 110);
 //            
@@ -47,15 +44,16 @@ public class Main {
 //            term.putLines(lines, new Location(0, 0));
 //            end = System.nanoTime();
             
+            String[] lines = Images.convertToASCII(img, 150);
+            for (String s : lines)
+                System.out.println(s);
+            
             BufferedImage bi = Images.toBufferedImage(img);
             Glyph[][] chars = Images.mapToCharacters(bi, 100);
             
             term.cursor.setLocation(0, 0);
             for (Glyph[] glyphs : chars)
                 term.putLine(glyphs);
-            
-            System.out.printf("TOTAL FETCH AND RENDER TIME: %d ms.%n",
-                (int)(end - start) / 1_000_000);
         } catch (java.io.IOException ie) { }
         
         term.cursor.setLocation(0, 80);

@@ -1,12 +1,12 @@
 
 bin/
 consolas-bold.bmp
-res/
-!res/coke.jpg
+res/*
 
 *.html
-filelen.py
+.py
 output.txt
+*.png
 
 # Eclipse stuff
 .project

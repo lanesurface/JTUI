@@ -25,6 +25,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 
+import jtxt.emulator.tui.Component;
+
 /**
  * <p>
  * Allows for applications that rely on console IO facilities to control the
@@ -56,7 +58,7 @@ public final class Terminal {
      * Holds general information regarding the settings of this instance of the
      * terminal.
      */
-    private Context config;
+    private Context context;
     
     /**
      * Keeps track of the next position to insert text into the terminal when
@@ -90,34 +92,43 @@ public final class Terminal {
     private Prompt prompt;
     
     /**
+     * All text interfaces are a type of component and define the way they
+     * should be represented on the screen. This holds all of the components
+     * that appear within the terminal. Ideally, this should probably be a 
+     * list of containers which hold the components, as the components them-
+     * selves will not hold any positional information.
+     */
+    private java.util.List<Component> components;
+    
+    /**
      * Creates a new instance of {@code Terminal} based on the given 
      * {@code Configuration}'s properties. 
      * 
-     * @param config The setting information for the terminal.
+     * @param context The setting information for the terminal.
      */
-    public Terminal(Context config) {
-        this.config = config;
+    public Terminal(Context context) {
+        this.context = context;
         
         cursor = new Cursor();
         
-        window = new JFrame(config.title);
+        window = new JFrame(context.title);
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        FontMetrics fm = window.getFontMetrics(config.font);
-        config.setCharDimensions(fm.charWidth('X'),
+        FontMetrics fm = window.getFontMetrics(context.font);
+        context.setCharDimensions(fm.charWidth('X'),
                                  fm.getHeight());
         
-        pane = new BufferedTextPane(config);
-        pane.setPreferredSize(config.windowSize);
-        pane.setFont(config.font);
+        pane = new BufferedTextPane(context);
+        pane.setPreferredSize(context.windowSize);
+        pane.setFont(context.font);
         window.add(pane);
         
         prompt = new Prompt();
         // The prompt spans a single line at the bottom of the window.
-        prompt.setPreferredSize(new Dimension(config.windowSize.width,
-                                              config.charSize.height));
-        prompt.setFont(config.font.deriveFont(Font.BOLD));
+        prompt.setPreferredSize(new Dimension(context.windowSize.width,
+                                              context.charSize.height));
+        prompt.setFont(context.font.deriveFont(Font.BOLD));
         window.add(prompt, java.awt.BorderLayout.SOUTH);
         
         window.pack();
@@ -141,8 +152,8 @@ public final class Terminal {
      * @return The {@code Configuration} representing the properties of this
      *         {@code Terminal}.
      */
-    public Context getConfiguration() {
-        return new Context(config);
+    public Context getContext() {
+        return new Context(context);
     }
     
     /**
@@ -158,8 +169,7 @@ public final class Terminal {
      *                                      the line size of the terminal.
      */
     public void putChar(char c, Location l) {
-        if (l.line < 0 || l.position < 0 ||
-            l.line >= config.numLines || l.position >= config.lineSize)
+        if (l.outside(context))
             throw new LocationOutOfBoundsException(l);
         
         pane.update(new Glyph(c, Color.WHITE), l.line, l.position);
@@ -217,15 +227,15 @@ public final class Terminal {
      *         of a line are discarded.
      */
     private String[] wrapLine(String line, int position, int edge) {
-        if (edge >= config.lineSize)
+        if (edge >= context.lineSize)
             throw new IllegalArgumentException("The character limit [edge=" +
                                                edge + "] is too large for " +
-                                               "the buffer");
+                                               "the buffer.");
         
         if (position >= edge) 
             throw new IllegalArgumentException("The position cannot be " +
-                                               "greater than the edge of the" +
-                                               "line");
+                                               "greater than the edge of " +
+                                               "the line.");
         
         int len = line.length();
         
@@ -251,7 +261,7 @@ public final class Terminal {
              */
             int delta = len;
             
-            java.util.List<String> lines = new ArrayList<>();
+            ArrayList<String> lines = new ArrayList<>();
             
             while (delta > room) {
                 for (int i = index + room; i > index; i--) {
@@ -297,7 +307,7 @@ public final class Terminal {
      *                                      terminal.
      */
     public void putLine(String text, Location l, int edge) {
-        if (l.line < 0 || l.position < 0 || l.line >= config.numLines)
+        if (l.line < 0 || l.position < 0 || l.line >= context.numLines)
             throw new LocationOutOfBoundsException(l);
         
         /* 
@@ -306,7 +316,7 @@ public final class Terminal {
          */
         String[] lines = wrapLine(text, l.position, edge);
         
-        if (l.line + lines.length >= config.numLines)
+        if (l.line + lines.length >= context.numLines)
             throw new LocationOutOfBoundsException("The line was too big to " +
                                                    "wrap at line " + l.line);
         
@@ -323,7 +333,7 @@ public final class Terminal {
      * @param l The location at which to place the first character of the text.
      */
     public void putLine(String text, Location l) {
-        putLine(text, l, config.lineSize-1);
+        putLine(text, l, context.lineSize-1);
     }
     
     /**
@@ -356,8 +366,8 @@ public final class Terminal {
     }
     
     public void clear() {
-        for (int row = 0; row < config.numLines; row++)
-            for (int col = 0; col < config.lineSize; col++)
+        for (int row = 0; row < context.numLines; row++)
+            for (int col = 0; col < context.lineSize; col++)
                 pane.update(new Glyph(' ', Color.WHITE), row, col);
         
         cursor.setLocation(0, 0);

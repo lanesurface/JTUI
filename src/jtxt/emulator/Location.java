@@ -19,8 +19,16 @@ package jtxt.emulator;
  * A place where text can be inserted within the buffer.
  */
 public class Location {
-    public int line,
-               position;
+    /**
+     * The line that this location represents in the terminal.
+     */
+    public int line;
+    
+    /**
+     * The position within the line that this location represents within the
+     * terminal.
+     */
+    public int position;
     
     public Location(int line, int position) {
         this.line = line;
@@ -34,6 +42,31 @@ public class Location {
     public void setLocation(int line, int position) {
         this.line = line;
         this.position = position;
+    }
+    
+    /**
+     * Adds the line and position of this location to the specified location.
+     * 
+     * @param other The location to add to this one.
+     * 
+     * @return A new location that is the sum of these two locations.
+     */
+    public Location add(Location other) {
+        return new Location(line + other.line, position + other.position);
+    }
+    
+    /**
+     * Determines whether the specified location is within valid bounds in the
+     * terminal.
+     * 
+     * @param context The context for the terminal.
+     * @param location The location to check.
+     * 
+     * @return Whether this location is within valid bounds in the terminal.
+     */
+    public boolean outside(Context context) {
+        return line < 0 || line >= context.numLines ||
+               position < 0 || position >= context.lineSize;
     }
     
     @Override

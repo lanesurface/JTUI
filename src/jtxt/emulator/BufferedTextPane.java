@@ -21,6 +21,8 @@ import java.awt.RenderingHints;
 
 import javax.swing.JComponent;
 
+import jtxt.emulator.util.Glyphs;
+
 /**
  * Handles the display of text on the screen. Characters added to the buffer
  * will be rendered appropriately when this component is drawn.
@@ -80,7 +82,7 @@ class BufferedTextPane extends JComponent {
      *                 the string.
      */
     public void update(String s, int line, int position) {
-        Glyph[] glyphs = Glyph.of(s);
+        Glyph[] glyphs = Glyphs.of(s);
         
         // TODO: Account for out-of-bounds exception here?
         for (int i = 0; i < glyphs.length; i++)
@@ -100,12 +102,13 @@ class BufferedTextPane extends JComponent {
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, config.windowSize.width, config.windowSize.height);
         
+        int baseline = g2d.getFontMetrics(g2d.getFont()).getHeight();
         for (int i = 0; i < buffer.length; i++) {
             for (int j = 0; j < buffer[i].length; j++) {
                 g2d.setColor(buffer[i][j].color);
                 g2d.drawString(buffer[i][j].character+"", 
-                               (j+1)*config.charSize.width, 
-                               (i+1)*config.charSize.height);
+                               (j)*config.charSize.width, 
+                               (i)*config.charSize.height+baseline);
             }
         }
     }

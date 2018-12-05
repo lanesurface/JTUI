@@ -15,6 +15,9 @@
  */
 package jtxt.emulator.tui;
 
+import jtxt.emulator.Location;
+import jtxt.emulator.Region;
+
 /**
  * <p>
  * The root of all elements that appear or are used for rendering information
@@ -35,14 +38,7 @@ package jtxt.emulator.tui;
  * </p>
  */
 public interface Component {
-    /**
-     * Renders the component and any children within the bounds that this
-     * component has set forth. This method will be called by the terminal
-     * each time the window needs to update. 
-     * 
-     * @param graphics The graphics context to use for rendering to the screen.
-     */
-    void draw(java.awt.Graphics2D graphics);
+    void draw();
     
     /**
      * Checks whether a point is within the region defined by this component.
@@ -52,9 +48,7 @@ public interface Component {
      * 
      * @return Whether or not the point is this components region.
      */
-    // TODO: Location class is not needed, as Java API already specifies the
-    // Point class for screen locations.
-    boolean intersects(jtxt.emulator.Location location);
+    boolean intersects(Location location);
     
     /**
      * Determines whether the region is within the region of this component.
@@ -64,7 +58,14 @@ public interface Component {
      * @return Whether or not all bounds of the given region lie within the
      *         region of this component.
      */
-    boolean inside(jtxt.emulator.Region region);
+    boolean inside(Region region);
+    
+    /**
+     * Sets the dimensions of this component.
+     * 
+     * @param bounds
+     */
+    void setBounds(Region bounds);
     
     /**
      * Gets the region which this component controls. This region is the bounds
@@ -73,28 +74,5 @@ public interface Component {
      * 
      * @return The region that this component controls.
      */
-    jtxt.emulator.Region getBounds();
-    
-    /**
-     * Gets all children that this component contains.
-     * 
-     * @return The children of this component.
-     * 
-     * @throws UnsupportedOperationException if this component does not have
-     *                                       the ability to contain children.
-     */
-    Component[] getChildren() throws UnsupportedOperationException;
-    
-    /**
-     * Gets the child component at the specified index. The index determines
-     * the place in the layout in which the child has been designated to 
-     * render.
-     * 
-     * @param index ...
-     * 
-     * @return ...
-     * 
-     * @throws UnsupportedOperationException ...
-     */
-    Component getChild(int index) throws UnsupportedOperationException;
+    Region getBounds();
 }

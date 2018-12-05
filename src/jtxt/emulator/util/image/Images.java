@@ -1,9 +1,11 @@
 package jtxt.emulator.util.image;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import jtxt.emulator.Glyph;
 
@@ -38,9 +40,16 @@ public class Images {
      * 
      * @return An array of Strings representing the ASCII image. 
      */
-    public static String[] convertToASCII(Image source, int outputWidth) {
+    public static String[] convertToASCII(jtxt.emulator.Context context,
+                                          Image source, 
+                                          int outputWidth) {
+        Dimension cdim = context.getCharacterDimensions();
+        
         Glyph[][] output = mapToCharacters(toBufferedImage(source),
-                                           outputWidth);
+                                           ColorSamplingStrategy.MODAL,
+                                           outputWidth,
+                                           cdim.width,
+                                           cdim.height);
         
         String[] lines = new String[output.length];
         for (int i = 0; i < lines.length; i++) {
@@ -56,53 +65,58 @@ public class Images {
         return lines;
     }
     
-    public static Glyph[][] mapToCharacters(BufferedImage img, 
-                                            int outputWidth) {
-        int width = img.getWidth(),
-            height = img.getHeight();
+    public static Glyph[][] mapToCharacters(BufferedImage img,
+                                            ColorSamplingStrategy cs,
+                                            int outputWidth,
+                                            int charWidth,
+                                            int charHeight) {
+        int imageWidth = img.getWidth(),
+            imageHeight = img.getHeight();
         
-        // FIXME: Need to cast to double; however, the decimal on scale
-        // accumulates and causes an IndexOutOfBoundsException to be thrown.
-        double scale = width / outputWidth;
+        /*
+         * FIXME: This should be floating-point, but that would accumulate in
+         * the loop and cause us to access invalid indices. Converted images
+         * therefore have slightly different aspect ratios (to avoid fixing the
+         * real problem).
+         */
+        int xScale = imageWidth / outputWidth,
+            yScale = xScale * (charHeight / charWidth);
         
-        System.out.println("scale=" + scale);
-        
-        int xChars = (int)(width / scale),
-            yChars = (int)(height / scale);
+        int xChars = imageWidth / xScale,
+            yChars = imageHeight / yScale;
         
         /*
          * Pixels at the edge of the image need to be discarded if they cannot
          * be averaged.
          */
-        width -= width % scale;
-        height -= height % scale;
+        imageWidth -= imageWidth % xScale;
+        imageHeight -= imageHeight % yScale;
         System.out.printf("width=%d,height=%d%nxChars=%d,yChars=%d%n", 
-                          width,
-                          height,
+                          imageWidth,
+                          imageHeight,
                           xChars, 
                           yChars);
         
-        double steps = (double)255 / ASCII_CHARS.length;
+        double steps = 255.0 / ASCII_CHARS.length;
         
         Glyph[][] characters = new Glyph[yChars][xChars];
-        int charY = 0,
-            charX;
-        for (int y = 0; y < height; y += scale) {
-            charX = 0;
-            for (int x = 0; x < width; x += scale) {
-                int avg = -1,
-                    lum = -1;
+        int yIndex = 0,
+            xIndex;
+        for (int y = 0; y < imageHeight; y += yScale) {
+            xIndex = 0;
+            for (int x = 0; x < imageWidth; x += xScale) {
+                int lum = -1;
                 
-                int[][] colors = new int[(int)scale][(int)scale];
-                int row = 0, 
+                int[][] colors = new int[yScale][xScale];
+                int row = 0,
                     col = 0;
                 /*
                  * Iterate over every pixel in this chunk and add it's RGB
                  * value to the average. 
                  */
-                for (int cy = y; cy < y + scale; cy++) {
+                for (int cy = y; cy < y + yScale; cy++) {
                     col = 0;
-                    for (int cx = x; cx < x + scale; cx++) {
+                    for (int cx = x; cx < x + xScale; cx++) {
                         /*
                          * Do grayscale image conversion in here (despite the
                          * #toGrayscale(BufferedImage) method in this class
@@ -115,67 +129,74 @@ public class Images {
                                          (argb >> 8 & 0xFF) +
                                          (argb & 0xFF)) / 3;
                         
-//                        avg += argb;
-                        lum += grayscale;
-                        
                         colors[row][col++] = argb;
+                        lum += grayscale;
                     }
                     row++;
                 }
                 
-                int color = findMean(colors);
-                
-//                avg /= scale * scale;
-                lum /= scale * scale;
+                int color = cs.sample(colors);
+                lum /= xScale * yScale;
                 
                 /*
                  * Find the appropriate character in the array for the relative
                  * brightness of the pixels in this chunk.
                  */
                 int index = (int)(lum / steps);
-                char out = ASCII_CHARS[index];
-                
-                int red = (color >> 16) & 0xFF,
-                    green = (color >> 8) & 0xFF,
-                    blue = color & 0xFF;
-//                System.out.printf("red=%d,green=%d,blue=%d%n",
-//                                  red,
-//                                  green,
-//                                  blue);
-                
-                Glyph g = new Glyph(out, new Color(red, green, blue));
-                characters[charY][charX++] = g;
+                char out = ASCII_CHARS[ASCII_CHARS.length-1-index];
+                characters[yIndex][xIndex++] = new Glyph(out, 
+                                                         new Color(color));
             }
-            charY++;
+            yIndex++;
         }
         
         return characters;
     }
     
-    private static int findMean(int[][] colors) {
-        HashMap<Integer, Integer> occurences = new HashMap<>();
-        int mean = 0,
-            maxOcc = -1;
+    /**
+     * For a line of text, this method will constrain that text to the bounds
+     * of the source image, assuming that the bounds of the text are calculated
+     * from the alpha components of each pixel. The image will be resized to
+     * accommodate the maxWidth of the line, so that largest bound is the same.
+     * 
+     * @param source
+     * @param text
+     * @param maxWidth
+     * @return
+     */
+    public String[] constrainText(BufferedImage source,
+                                  String text,
+                                  int maxWidth) {
+        int width = source.getWidth(),
+            height = source.getHeight(),
+            scaledHeight = height;
         
-        for (int row = 0; row < colors.length; row++) {
-            for (int col = 0; col < colors[row].length; col++) {
-                int color = colors[row][col];
-                
-                Integer occurence = occurences.get(color);
-                
-                if (occurence == null) {
-                    occurence = 1;
-                }
-                
-                if (occurence > maxOcc) {
-                    mean = color;
-                    maxOcc = occurence;
-                }
-                occurences.put(color, occurence+1);
+        BufferedImage scaled = resize(source, maxWidth, scaledHeight);
+        
+        /*
+         * The rightmost bounds for the characters in the output, calculated
+         * from the visible characters in the source image. Text will be
+         * constrained to these values unless the text overflows the image,
+         * in which case, it will be wrapped to maxWidth before breaking.
+         */
+        int[] bounds = new int[height];
+        ArrayList<String> output = new ArrayList<>();
+        
+        for (int y = 0; y < height; y++) {
+            int line = 0;
+            for (int x = 0; x < width; x++) {
+                int alpha = scaled.getRGB(x, y) >> 24 & 0xFF;
+                if (alpha > 0) line++;
             }
+            bounds[y] = line;
         }
         
-        return mean;
+        /* 
+         * TODO: Constrain text to the number of characters per line (given in 
+         * bounds). Text that overflows should be wrapped to maxWidth.
+         */
+        
+        return output.toArray(new String[0]);
     }
     
     /**
@@ -200,6 +221,22 @@ public class Images {
         return image;
     }
     
+    public static BufferedImage resize(BufferedImage original, 
+                                       int width, 
+                                       int height) {
+        Image img = original.getScaledInstance(width, 
+                                               height, 
+                                               Image.SCALE_SMOOTH);
+        BufferedImage scaled = new BufferedImage(width, 
+                                                 height,
+                                                 BufferedImage.TYPE_INT_ARGB);
+        Graphics g = scaled.getGraphics();
+        g.drawImage(img, 0, 0, null);
+        g.dispose();
+        
+        return scaled;
+    }
+    
     public static BufferedImage convertToGrayscale(BufferedImage image) {
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
@@ -209,11 +246,6 @@ public class Images {
                     red = (argb >> 16) & 0xFF,
                     green = (argb >> 8) & 0xFF,
                     blue = argb & 0xFF;
-                
-                // Adaptive luminance
-//                red *= 0.2126;
-//                blue *= 0.7152;
-//                green *= 0.0722;
                 
                 /*
                  * Compute the averages of the RGB channels and sum them

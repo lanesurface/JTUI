@@ -4,7 +4,7 @@ consolas-bold.bmp
 res/*
 
 *.html
-*.py
+filelen.py
 output.txt
 *.png
 

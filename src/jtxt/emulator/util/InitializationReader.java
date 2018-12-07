@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -27,6 +28,8 @@ public class InitializationReader {
     private Map<String, String> properties;
     
     public InitializationReader(File iniFile) {
+        properties = new HashMap<>();
+        
         try {
             Files.readAllLines(Paths.get(iniFile.toURI()))
                 .forEach(this::parse);
@@ -40,13 +43,18 @@ public class InitializationReader {
     private void parse(String line) {
         System.out.println(line);
         
-        // Discard lines starting with ";" as it denotes a comment.
-        if (line.startsWith(";")) return;
-        
-        int assignmentIndex = line.indexOf("=");
-        String key = line.substring(0, assignmentIndex),
-               value = line.substring(assignmentIndex+1);
-        properties.put(key, value);
+        switch (line.charAt(0)) {
+        case ';':
+            // Discard lines starting with ";" as it denotes a comment.
+            return;
+        case '[':
+            break;
+        default:
+            int assignmentIndex = line.indexOf("=");
+            String key = line.substring(0, assignmentIndex),
+                   value = line.substring(assignmentIndex+1);
+            properties.put(key, value);
+        }
     }
     
     public String getValue(String key) {
@@ -68,6 +76,7 @@ public class InitializationReader {
      *         this initialization file.
      */
     public Map<String, String> getSectionProperties(String section) {
+        
         
         return null;
     }

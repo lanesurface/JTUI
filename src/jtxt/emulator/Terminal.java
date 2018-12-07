@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 
-import jtxt.emulator.tui.Component;
+import jtxt.emulator.tui.Container;
 
 /**
  * <p>
@@ -92,13 +92,10 @@ public final class Terminal {
     private Prompt prompt;
     
     /**
-     * All text interfaces are a type of component and define the way they
-     * should be represented on the screen. This holds all of the components
-     * that appear within the terminal. Ideally, this should probably be a 
-     * list of containers which hold the components, as the components them-
-     * selves will not hold any positional information.
+     * The root of all components in the terminal. This container will occupy
+     * the entire 
      */
-    private java.util.List<Component> components;
+    private Container rootContainer;
     
     /**
      * Creates a new instance of {@code Terminal} based on the given 

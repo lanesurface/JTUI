@@ -1,11 +1,7 @@
 package test;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.Arrays;
-
-import javax.imageio.ImageIO;
+import java.io.File;
 
 import jtxt.emulator.Context;
 import jtxt.emulator.Glyph;
@@ -14,13 +10,13 @@ import jtxt.emulator.Terminal;
 import jtxt.emulator.util.Glyphs;
 import jtxt.emulator.util.image.ASCIImage;
 import jtxt.emulator.util.image.ColorSamplingStrategy;
-import jtxt.emulator.util.image.Images;
 
 public class Main {
     public static void main(String[] args) {
-        Context context = new Context("Terminal",
-                                      80, 20,
-                                      "Consolas", 12);
+//        Context context = new Context("Terminal",
+//                                      80, 20,
+//                                      "Consolas", 12);
+        Context context = new Context(new File("emulator.ini"));
         Terminal term = new Terminal(context);
         
         term.putLine("This text demonstrates the wrapping features of the " +

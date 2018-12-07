@@ -18,6 +18,8 @@ package jtxt.emulator;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import jtxt.emulator.util.InitializationReader;
+
 /**
  * Encapsulates the properties of an instance of {@code Terminal}. Simple 
  * rendering hints, like the font size and family, as well as the number of
@@ -100,6 +102,25 @@ public class Context {
         this.numLines = numLines;
         
         font = new Font(fontName, Font.PLAIN, fontSize);
+    }
+    
+    /**
+     * Constructs a configuration for the given initialization file. See the
+     * documentation for details about property values and their respective
+     * format in the initialization file.
+     * 
+     * @param initialzation An initialization file for this context, given
+     *                      appropriate key=value pairs for the emulator.
+     */
+    public Context(java.io.File initialzation) {
+        InitializationReader reader = new InitializationReader(initialzation);
+        title = reader.getValue("title");
+        lineSize = Integer.parseInt(reader.getValue("num_chars_x"));
+        numLines = Integer.parseInt(reader.getValue("num_chars_y"));
+        
+        int height = Integer.parseInt(reader.getValue("text_size"));
+        String fontName = reader.getValue("font");
+        font = new Font(fontName, Font.PLAIN, height);
     }
     
     /**

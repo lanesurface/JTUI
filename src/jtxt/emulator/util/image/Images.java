@@ -26,45 +26,45 @@ public class Images {
                                                 '~', '<', '>', 'i', '!', 'l',
                                                 'I', ';', ':', ',', '\"', '^',
                                                 '`', '\'', '.', ' ' };
-    
+
     private Images() { /* Do not allow for this class to be instantiated. */ }
-    
+
     /**
      * Given an Image, this method converts that image into an array of
      * Strings, where each string represents a single row of pixels in the
      * output image. Color information is not preserved.
-     * 
+     *
      * @param source The source image to translate.
-     * @param outputWidth The number of characters per line in the output 
+     * @param outputWidth The number of characters per line in the output
      *                    image.
-     * 
-     * @return An array of Strings representing the ASCII image. 
+     *
+     * @return An array of Strings representing the ASCII image.
      */
     public static String[] convertToASCII(jtxt.emulator.Context context,
-                                          Image source, 
+                                          Image source,
                                           int outputWidth) {
         Dimension cdim = context.getCharacterDimensions();
-        
+
         Glyph[][] output = mapToCharacters(toBufferedImage(source),
                                            ColorSamplingStrategy.MODAL,
                                            outputWidth,
                                            cdim.width,
                                            cdim.height);
-        
+
         String[] lines = new String[output.length];
         for (int i = 0; i < lines.length; i++) {
             StringBuilder builder = new StringBuilder();
-            
+
             Glyph[] glyphs = output[i];
             for (Glyph g : glyphs)
                 builder.append(g.character);
-            
+
             lines[i] = builder.toString();
         }
-        
+
         return lines;
     }
-    
+
     public static Glyph[][] mapToCharacters(BufferedImage img,
                                             ColorSamplingStrategy cs,
                                             int outputWidth,
@@ -72,7 +72,7 @@ public class Images {
                                             int charHeight) {
         int imageWidth = img.getWidth(),
             imageHeight = img.getHeight();
-        
+
         /*
          * FIXME: This should be floating-point, but that would accumulate in
          * the loop and cause us to access invalid indices. Converted images
@@ -81,24 +81,24 @@ public class Images {
          */
         int xScale = imageWidth / outputWidth,
             yScale = xScale * (charHeight / charWidth);
-        
+
         int xChars = imageWidth / xScale,
             yChars = imageHeight / yScale;
-        
+
         /*
          * Pixels at the edge of the image need to be discarded if they cannot
          * be averaged.
          */
         imageWidth -= imageWidth % xScale;
         imageHeight -= imageHeight % yScale;
-        System.out.printf("width=%d,height=%d%nxChars=%d,yChars=%d%n", 
+        System.out.printf("width=%d,height=%d%nxChars=%d,yChars=%d%n",
                           imageWidth,
                           imageHeight,
-                          xChars, 
+                          xChars,
                           yChars);
-        
+
         double steps = 255.0 / ASCII_CHARS.length;
-        
+
         Glyph[][] characters = new Glyph[yChars][xChars];
         int yIndex = 0,
             xIndex;
@@ -106,13 +106,13 @@ public class Images {
             xIndex = 0;
             for (int x = 0; x < imageWidth; x += xScale) {
                 int lum = -1;
-                
+
                 int[][] colors = new int[yScale][xScale];
                 int row = 0,
                     col = 0;
                 /*
                  * Iterate over every pixel in this chunk and add it's RGB
-                 * value to the average. 
+                 * value to the average.
                  */
                 for (int cy = y; cy < y + yScale; cy++) {
                     col = 0;
@@ -128,37 +128,37 @@ public class Images {
                             grayscale = ((argb >> 16 & 0xFF) +
                                          (argb >> 8 & 0xFF) +
                                          (argb & 0xFF)) / 3;
-                        
+
                         colors[row][col++] = argb;
                         lum += grayscale;
                     }
                     row++;
                 }
-                
+
                 int color = cs.sample(colors);
                 lum /= xScale * yScale;
-                
+
                 /*
                  * Find the appropriate character in the array for the relative
                  * brightness of the pixels in this chunk.
                  */
                 int index = (int)(lum / steps);
                 char out = ASCII_CHARS[ASCII_CHARS.length-1-index];
-                characters[yIndex][xIndex++] = new Glyph(out, 
+                characters[yIndex][xIndex++] = new Glyph(out,
                                                          new Color(color));
             }
             yIndex++;
         }
-        
+
         return characters;
     }
-    
+
     /**
      * For a line of text, this method will constrain that text to the bounds
      * of the source image, assuming that the bounds of the text are calculated
      * from the alpha components of each pixel. The image will be resized to
      * accommodate the maxWidth of the line, so that largest bound is the same.
-     * 
+     *
      * @param source
      * @param text
      * @param maxWidth
@@ -170,9 +170,9 @@ public class Images {
         int width = source.getWidth(),
             height = source.getHeight(),
             scaledHeight = height;
-        
+
         BufferedImage scaled = resize(source, maxWidth, scaledHeight);
-        
+
         /*
          * The rightmost bounds for the characters in the output, calculated
          * from the visible characters in the source image. Text will be
@@ -181,7 +181,7 @@ public class Images {
          */
         int[] bounds = new int[height];
         ArrayList<String> output = new ArrayList<>();
-        
+
         for (int y = 0; y < height; y++) {
             int line = 0;
             for (int x = 0; x < width; x++) {
@@ -190,53 +190,53 @@ public class Images {
             }
             bounds[y] = line;
         }
-        
-        /* 
-         * TODO: Constrain text to the number of characters per line (given in 
+
+        /*
+         * TODO: Constrain text to the number of characters per line (given in
          * bounds). Text that overflows should be wrapped to maxWidth.
          */
-        
+
         return output.toArray(new String[0]);
     }
-    
+
     /**
      * Converts an {@code Image} into a {@code BufferedImage}.
-     * 
+     *
      * @param source The input image.
-     * 
+     *
      * @return A writable image identical to the source.
      */
     public static BufferedImage toBufferedImage(Image source) {
         if (source instanceof BufferedImage)
             return (BufferedImage)source;
-        
+
         BufferedImage image = new BufferedImage(source.getWidth(null),
                                                 source.getHeight(null),
                                                 BufferedImage.TYPE_INT_ARGB);
-        
+
         java.awt.Graphics graphics = image.getGraphics();
         graphics.drawImage(source, 0, 0, null);
         graphics.dispose();
-        
+
         return image;
     }
-    
-    public static BufferedImage resize(BufferedImage original, 
-                                       int width, 
+
+    public static BufferedImage resize(BufferedImage original,
+                                       int width,
                                        int height) {
-        Image img = original.getScaledInstance(width, 
-                                               height, 
+        Image img = original.getScaledInstance(width,
+                                               height,
                                                Image.SCALE_SMOOTH);
-        BufferedImage scaled = new BufferedImage(width, 
+        BufferedImage scaled = new BufferedImage(width,
                                                  height,
                                                  BufferedImage.TYPE_INT_ARGB);
         Graphics g = scaled.getGraphics();
         g.drawImage(img, 0, 0, null);
         g.dispose();
-        
+
         return scaled;
     }
-    
+
     public static BufferedImage convertToGrayscale(BufferedImage image) {
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
@@ -246,7 +246,7 @@ public class Images {
                     red = (argb >> 16) & 0xFF,
                     green = (argb >> 8) & 0xFF,
                     blue = argb & 0xFF;
-                
+
                 /*
                  * Compute the averages of the RGB channels and sum them
                  * together in grayscale.
@@ -256,7 +256,7 @@ public class Images {
                                 | avg << 16
                                 | avg << 8
                                 | avg;
-                
+
                 image.setRGB(x, y, grayscale);
             }
         }

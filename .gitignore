@@ -8,6 +8,9 @@ filelen.py
 output.txt
 *.png
 
+# Emacs buffer
+^#.*#$
+
 # Eclipse stuff
 .project
 .classpath

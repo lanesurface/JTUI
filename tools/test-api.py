@@ -29,7 +29,7 @@ package_name = re.sub('[/\\\\]', '.', package)
 classpath = ['.', root_dir]
 classpath.extend(include_dirs)
 
-print(classpath)
+print('Using classpath %s' % classpath)
 
 # Verify all tests pass before creating a project. If the library is
 # configured incorrectly, this will catch it before it causes confusion when

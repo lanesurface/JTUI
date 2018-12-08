@@ -41,8 +41,6 @@ public class InitializationReader {
     }
     
     private void parse(String line) {
-        System.out.println(line);
-        
         switch (line.charAt(0)) {
         case ';':
             // Discard lines starting with ";" as it denotes a comment.

@@ -20,3 +20,18 @@ level formatting of the text. This API should provide a consistent interface
 across all Java-compatible machines, and present an application in the same
 fashion to all of its clients.
 
+BUILDING THIS PROJECT
+
+As a part of this project, I have included some scripts to make compiling the
+classes easier. These tools can be found in the tools directory, and will help
+with creating new projects based on the library. At this moment, the build will
+automatically be tested against the library, but in the future, I will divide
+up some of the parts of this test script into their own files. To build and run
+the tests, follow these steps at a command prompt or terminal:
+
+    */Java-Terminal-Emulator$ cd tools
+    */Java-Terminal-Emulator/tools$ python test-api.py
+
+The project will be built and run automatically. Building requires Python 3.X
+or greater. Some classpath errors may occur on Linux. (I have only successfully
+tested this script against Windows 10, Python 3.6.0.)

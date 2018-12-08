@@ -1,15 +1,26 @@
 
 bin/
+build/
 consolas-bold.bmp
 res/*
 
-*.html
-filelen.py
-output.txt
-*.png
+# Include the demo picture.
+!res/app.jpg
 
-# Emacs buffer
+# Junk that has been used to verify various tools.
+# Resources are needed to create these files.
+*.html
+output.txt
+/out/*.png
+
+# Emacs buffers
 \#*\#
+
+filelen.py
+
+# Tools that aren't ready for release.
+tools/*.py
+!tools/test-api.py
 
 # Eclipse stuff
 .project

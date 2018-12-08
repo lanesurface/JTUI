@@ -16,7 +16,7 @@ public class Main {
 //        Context context = new Context("Terminal",
 //                                      80, 20,
 //                                      "Consolas", 12);
-        Context context = new Context(new File("emulator.ini"));
+        Context context = new Context(new File("../emulator.ini"));
         Terminal term = new Terminal(context);
         
         term.putLine("This text demonstrates the wrapping features of the " +
@@ -27,12 +27,12 @@ public class Main {
         
         term.putLine("Hello, world!");
         
-        String filename = "mt-st-helens.";
+        String filename = "app.";
         ASCIImage image = new ASCIImage(context, 
                                         filename + "jpg", 
                                         ColorSamplingStrategy.MODAL,
-                                        400);
-        image.writeToFile(filename + "png");
+                                        150);
+        image.writeToFile("../out/" +  filename + "png");
         
         term.putNewLine("Does \\e[255;000;000mthis \\e[255;255;255mwork?");
         

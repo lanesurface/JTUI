@@ -142,7 +142,8 @@ public class Images {
                  * Find the appropriate character in the array for the relative
                  * brightness of the pixels in this chunk.
                  */
-                int index = (int)(lum / steps);
+                int index = (int)Math.min(Math.round(lum / steps),
+                                          ASCII_CHARS.length - 1);
                 char out = ASCII_CHARS[ASCII_CHARS.length-1-index];
                 characters[yIndex][xIndex++] = new Glyph(out,
                                                          new Color(color));

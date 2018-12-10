@@ -29,6 +29,12 @@ include_dirs = [os.path.join(root_dir, include) for include in
 include_dirs.append('.')
 classpath = os.pathsep.join(include_dirs)
 
+# The location to place generated class files.
+output_dir = 'build'
+output_path = os.path.join(root_dir, output_dir)
+if not os.path.exists(output_path):
+  os.mkdir(output_path)
+
 argument_parser = argparse.ArgumentParser(description='''\
 Compile the library and run tests in "%s" against this API.''' % package)
 argument_parser.add_argument('-jdk',
@@ -42,9 +48,6 @@ run_javac, run_java = [os.path.join(jdk_path, cmd) for cmd in ['javac', 'java']]
 
 for test in tests:
   try:
-    if not os.path.exists('../build'):
-      os.mkdir('../build')
-
     os.chdir('../src')
     subprocess.call([run_javac,
                      '-d',
@@ -53,7 +56,7 @@ for test in tests:
                      classpath,
                      os.sep.join([package, test])])
 
-    os.chdir('../build')
+    os.chdir(output_path)
     exit_code = subprocess.call([run_java,
                                  '-cp',
                                  classpath,

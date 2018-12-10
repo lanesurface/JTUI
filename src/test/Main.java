@@ -42,11 +42,6 @@ public class Main {
         Glyph[] gs = Glyphs.of("\\e[016;229;165mTeal text is awesome!");
         term.putLine(gs);
         
-        // Is there a printf like function?
-        // Use String.format(...) and pass as the argument to putLine(...)
-        int age = Integer.parseInt(term.requestInput("Age:"));
-        String msg = String.format("Your look %d.", age + 10);
-        term.clear();
-        term.putLine(msg);
+        System.exit(0);
     }
 }

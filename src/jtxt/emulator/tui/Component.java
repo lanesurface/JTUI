@@ -17,6 +17,7 @@ package jtxt.emulator.tui;
 
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
+import jtxt.emulator.TextRenderer;
 
 /**
  * <p>
@@ -38,7 +39,13 @@ import jtxt.emulator.Region;
  * </p>
  */
 public interface Component {
-    void draw();
+    /**
+     * Renders the component and any children within the bounds of that this
+     * component has been inflated to. 
+     * 
+     * @param renderer The renderer to use when this component draws itself.
+     */
+    void draw(TextRenderer renderer);
     
     /**
      * Checks whether a point is within the region defined by this component.
@@ -53,7 +60,7 @@ public interface Component {
     /**
      * Determines whether the region is within the region of this component.
      * 
-     * @param region The region to check against this shape's.
+     * @param region The region to check against this component.
      * 
      * @return Whether or not all bounds of the given region lie within the
      *         region of this component.
@@ -61,11 +68,12 @@ public interface Component {
     boolean inside(Region region);
     
     /**
-     * Sets the dimensions of this component.
+     * Expands this component to fill the given region. Components should
+     * redraw themselves to fill this bounding-box after this method is called.
      * 
-     * @param bounds
+     * @param bounds The new bounds for this component.
      */
-    void setBounds(Region bounds);
+    void inflate(Region bounds);
     
     /**
      * Gets the region which this component controls. This region is the bounds

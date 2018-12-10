@@ -25,7 +25,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 
+import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
+import jtxt.emulator.tui.KeyboardTarget;
 
 /**
  * <p>
@@ -96,6 +98,21 @@ public final class Terminal {
      * the entire 
      */
     private Container rootContainer;
+    
+    /**
+     * All of the components in this terminal that can be the target of a
+     * keyboard event. This list is to aid in the traversal of these
+     * components when a traversal key is pressed (usually tab).
+     */
+    private java.util.List<KeyboardTarget> targets;
+    
+    /**
+     * The target for key events within the terminal.
+     * 
+     * @see #focus(Component)
+     * @see #focusAt(Location)
+     */
+    private Component focusedComponent;
     
     /**
      * Creates a new instance of {@code Terminal} based on the given 

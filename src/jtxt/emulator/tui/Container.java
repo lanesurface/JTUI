@@ -30,8 +30,8 @@ import jtxt.emulator.Location;
  * the same layout as its parent, thus making it easy to create complex
  * layouts.
  */
-public abstract class Container implements Component, 
-                                           Iterable<Component> {
+public abstract class Container extends Component 
+                                implements Iterable<Component> {
     /**
      * A collection of all the children this container owns. Components owned
      * by this container inherit certain properties of it. This container may

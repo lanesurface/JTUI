@@ -51,7 +51,7 @@ for test in tests:
     os.chdir('../src')
     subprocess.call([run_javac,
                      '-d',
-                     '../build',
+                     output_path,
                      '-cp',
                      classpath,
                      os.sep.join([package, test])])

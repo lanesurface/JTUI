@@ -131,7 +131,7 @@ public final class Terminal {
         
         FontMetrics fm = window.getFontMetrics(context.font);
         context.setCharDimensions(fm.charWidth('X'),
-                                 fm.getHeight());
+                                  fm.getHeight());
         
         pane = new BufferedTextPane(context);
         pane.setPreferredSize(context.windowSize);

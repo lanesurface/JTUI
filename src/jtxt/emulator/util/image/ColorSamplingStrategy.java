@@ -36,7 +36,7 @@ public interface ColorSamplingStrategy {
         @Override
         public int sample(int[][] colors) {
             HashMap<Integer, Integer> occurences = new HashMap<>();
-            int mean = 0,
+            int mode = 0,
                 maxOcc = -1;
             
             for (int row = 0; row < colors.length; row++) {
@@ -50,14 +50,14 @@ public interface ColorSamplingStrategy {
                     }
                     
                     if (occurence > maxOcc) {
-                        mean = color;
+                        mode = color;
                         maxOcc = occurence;
                     }
                     occurences.put(color, occurence+1);
                 }
             }
             
-            return mean;
+            return mode;
         }
     };
     

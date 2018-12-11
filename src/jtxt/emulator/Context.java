@@ -96,7 +96,7 @@ public class Context {
      * @param fontSize The size of the terminal's font.
      */
     public Context(String title, int lineSize, int numLines,
-                         String fontName, int fontSize) {
+                   String fontName, int fontSize) {
         this.title = title;
         this.lineSize = lineSize;
         this.numLines = numLines;

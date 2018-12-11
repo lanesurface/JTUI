@@ -5,6 +5,13 @@ package jtxt.emulator;
  * rendering their glyphs?
  */
 public interface TextRenderer {
+    /**
+     * Update the character at the given location. This method may overwrite
+     * the character that occupied this location beforehand.
+     * 
+     * @param glyph The glyph to update.
+     * @param location The location in which this glyph is placed.
+     */
     void update(Glyph glyph, Location location);
     
     /**
@@ -21,6 +28,13 @@ public interface TextRenderer {
      */
     void update(Glyph[] glyphs, Region region);
     
+    /**
+     * Returns the glyph which occupies the given location.
+     * 
+     * @param location The location in this buffer where the glyph is stored.
+     * 
+     * @return The glyph in the given location.
+     */
     Glyph getGlyph(Location location);
     
     /*

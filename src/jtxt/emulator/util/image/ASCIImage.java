@@ -53,7 +53,7 @@ public class ASCIImage {
     private void drawToImage(Glyph[][] chars, Dimension cdim) {
         image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = (Graphics2D)image.getGraphics();
-        graphics.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 8));
+        graphics.setFont(new Font("DejaVu Sans Mono", Font.PLAIN, 12));
         
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, width, height);
@@ -61,8 +61,8 @@ public class ASCIImage {
         int baseline = graphics.getFontMetrics(graphics.getFont()).getHeight();
         for (int row = 0; row < chars.length; row++) {
             for (int col = 0; col < chars[row].length; col++) {
-                graphics.setColor(chars[row][col].color);
-                graphics.drawString(chars[row][col].character+"",
+                graphics.setColor(chars[row][col].getColor());
+                graphics.drawString(chars[row][col].getCharacter()+"",
                                     (col)*cdim.width,
                                     (row)*cdim.height+baseline);
             }

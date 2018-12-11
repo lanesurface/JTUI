@@ -38,14 +38,21 @@ import jtxt.emulator.TextRenderer;
  * context.
  * </p>
  */
-public interface Component {
+public abstract class Component {
+    /**
+     * The region within the terminal that this component has control over.
+     * (This is used when determining which component should receive input
+     * events, as well as the bounds in which this component can draw itself.)
+     */
+    protected Region bounds;
+    
     /**
      * Renders the component and any children within the bounds of that this
      * component has been inflated to. 
      * 
      * @param renderer The renderer to use when this component draws itself.
      */
-    void draw(TextRenderer renderer);
+    public abstract void draw(TextRenderer renderer);
     
     /**
      * Checks whether a point is within the region defined by this component.
@@ -55,7 +62,12 @@ public interface Component {
      * 
      * @return Whether or not the point is this components region.
      */
-    boolean intersects(Location location);
+    public boolean intersects(Location location) {
+        return location.line >= bounds.start.line
+               && location.line <= bounds.end.line
+               && location.position >= bounds.start.position
+               && location.position <= bounds.end.position;
+    }
     
     /**
      * Determines whether the region is within the region of this component.
@@ -65,7 +77,12 @@ public interface Component {
      * @return Whether or not all bounds of the given region lie within the
      *         region of this component.
      */
-    boolean inside(Region region);
+    public boolean inside(Region region) {
+        return region.start.line >= bounds.start.line
+               && region.end.line <= bounds.end.line
+               && region.start.position >= bounds.start.position
+               && region.end.position <= bounds.end.position;
+    }
     
     /**
      * Expands this component to fill the given region. Components should
@@ -73,7 +90,7 @@ public interface Component {
      * 
      * @param bounds The new bounds for this component.
      */
-    void inflate(Region bounds);
+    public abstract void inflate(Region bounds);
     
     /**
      * Gets the region which this component controls. This region is the bounds
@@ -82,5 +99,7 @@ public interface Component {
      * 
      * @return The region that this component controls.
      */
-    Region getBounds();
+    public Region getBounds() {
+        return bounds;
+    }
 }

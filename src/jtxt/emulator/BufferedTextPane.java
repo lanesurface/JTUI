@@ -105,8 +105,8 @@ class BufferedTextPane extends JComponent {
         int baseline = g2d.getFontMetrics(g2d.getFont()).getHeight();
         for (int i = 0; i < buffer.length; i++) {
             for (int j = 0; j < buffer[i].length; j++) {
-                g2d.setColor(buffer[i][j].color);
-                g2d.drawString(buffer[i][j].character+"", 
+                g2d.setColor(buffer[i][j].getColor());
+                g2d.drawString(buffer[i][j].getCharacter()+"", 
                                (j)*config.charSize.width, 
                                (i)*config.charSize.height+baseline);
             }

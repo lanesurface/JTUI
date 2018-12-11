@@ -27,11 +27,11 @@ public class Main {
         
         term.putLine("Hello, world!");
         
-        String filename = "app.";
+        String filename = "me2.";
         ASCIImage image = new ASCIImage(context, 
-                                        filename + "jpg", 
+                                        filename + "png", 
                                         ColorSamplingStrategy.MODAL,
-                                        150);
+                                        50);
         image.writeToFile("../out/" +  filename + "png");
         
         term.putNewLine("Does \\e[255;000;000mthis \\e[255;255;255mwork?");

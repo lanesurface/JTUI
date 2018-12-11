@@ -1,18 +1,17 @@
 package jtxt.emulator;
 
 import java.awt.Color;
-import java.util.ArrayList;
 
 public class Glyph {
     /**
      * The character that this {@code Glyph} represents.
      */
-    public final char character;
+    private final char character;
     
     /**
      * The color of this Glyph (white by default).
      */
-    public final Color color;
+    private final Color color;
     
     public Glyph(char character, Color color) {
         this.character = character;
@@ -21,6 +20,14 @@ public class Glyph {
     
     public Glyph(char c) {
         this(c, Color.WHITE);
+    }
+    
+    public char getCharacter() {
+        return character;
+    }
+    
+    public Color getColor() {
+        return color;
     }
     
     @Override

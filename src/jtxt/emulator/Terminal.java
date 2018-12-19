@@ -15,19 +15,15 @@
  */
 package jtxt.emulator;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.swing.JFrame;
 
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
-import jtxt.emulator.tui.KeyboardTarget;
+import jtxt.emulator.tui.Layout;
 
 /**
  * <p>
@@ -94,25 +90,21 @@ public final class Terminal {
     private Prompt prompt;
     
     /**
-     * The root of all components in the terminal. This container will occupy
-     * the entire 
+     * The root container that all components that appear in the terminal
+     * belong to. Components that are not added to another container will be
+     * direct ancestors of this container.
+     * 
+     * @see #add(Component, Layout)
      */
-    private Container rootContainer;
+    private Container root;
     
     /**
-     * All of the components in this terminal that can be the target of a
-     * keyboard event. This list is to aid in the traversal of these
-     * components when a traversal key is pressed (usually tab).
-     */
-    private java.util.List<KeyboardTarget> targets;
-    
-    /**
-     * The target for key events within the terminal.
+     * The target for key events within the terminal. 
      * 
      * @see #focus(Component)
      * @see #focusAt(Location)
      */
-    private Component focusedComponent;
+    private Component focused;
     
     /**
      * Creates a new instance of {@code Terminal} based on the given 
@@ -152,7 +144,7 @@ public final class Terminal {
          * Make sure there are no null characters in the buffer (some fonts
          * don't handle these very well).
          */
-        clear();
+//        clear();
         
         // Warning message sent to the system console when an application is
         // created from the command line.
@@ -171,220 +163,96 @@ public final class Terminal {
     }
     
     /**
-     * Updates the character at the given position.
+     * Adds the given component to the terminal with the specified layout. The
+     * layout will determine the positioning of this component within the root
+     * container.
      * 
-     * @param c The new character.
-     * @param l The {@code Location} for the character.
-     *            
-     * @throws LocationOutOfBoundsException if the line or position is less 
-     *                                      than zero, or if the line is 
-     *                                      greater than the number of lines,
-     *                                      or if the position is greater than
-     *                                      the line size of the terminal.
+     * @param component The component to add to the terminal.
+     * @param layout The layout to use for positioning this component within the
+     *               terminal.
      */
-    public void putChar(char c, Location l) {
-        if (l.outside(context))
-            throw new LocationOutOfBoundsException(l);
-        
-        pane.update(new Glyph(c, Color.WHITE), l.line, l.position);
-        window.repaint();
+    public void add(Component component, Layout layout) {
+        root.add(component, layout);
     }
     
     /**
-     * Writes a character to the terminal at the current cursor position.
+     * Sets the given component as the target for key events.
      * 
-     * @param c The character to write.
+     * @param component The component to focus at.
      */
-    public void putChar(char c) {
-        putChar(c, cursor.getLocation());
-        cursor.goForward(1);
+    public void focus(Component component) {
+        focused = component;
     }
     
     /**
-     * Finds the length of the largest word in a string of text.
+     * Focuses the component at the given location, and makes it the target for
+     * key events.
      * 
-     * @param text The text to search.
-     * 
-     * @return The maximum size of a word in the string of text.
+     * @param location The location to focus at.
      */
-    private int findMaxWordLength(String text) {
-        int max = 0;
-        
-        String[] words = text.split("\\s+");
-        
-        for (String word : words)
-            if (word.length() > max) max = word.length();
-        
-        return max;
-    }
-    
-    /**
-     * <p>
-     * Given a string of characters, this method will wrap the characters onto
-     * separate lines, based on their position in the line and the specified
-     * edge.
-     * </p>
-     * 
-     * <p>
-     * <i>Implementation Note</i>: This algorithm is greedy and makes no
-     * attempt to balance the distribution of characters between lines.
-     * </p>
-     * 
-     * @param line The line of text to wrap.
-     * @param position The position for the first character in the line within
-     *                 the terminal's buffer.
-     * @param edge The right bounding position for the line.
-     * 
-     * @return An array of Strings, where each String's length is guaranteed to
-     *         be no greater than the amount of characters between the position
-     *         of the text and the edge, and spaces between words at the bounds
-     *         of a line are discarded.
-     */
-    private String[] wrapLine(String line, int position, int edge) {
-        if (edge >= context.lineSize)
-            throw new IllegalArgumentException("The character limit [edge=" +
-                                               edge + "] is too large for " +
-                                               "the buffer.");
-        
-        if (position >= edge) 
-            throw new IllegalArgumentException("The position cannot be " +
-                                               "greater than the edge of " +
-                                               "the line.");
-        
-        int len = line.length();
-        
-        // The amount of characters that can fit onto each line.
-        int room = edge - position;
-        
-        int maxWordSize = findMaxWordLength(line);
-        if (maxWordSize > room)
-            throw new IllegalArgumentException("Cannot break the line, as " +
-                                               "the word size is too large.");
-        
-        if (len > room) {
-            /* 
-             * Keeps track of the index of the first character in the line that
-             * still needs to be wrapped. 
-             */
-            int index = 0;
-            
-            /*
-             * The difference between the number of characters that have been
-             * wrapped into lines and the number of characters that still need 
-             * to be processed.
-             */
-            int delta = len;
-            
-            ArrayList<String> lines = new ArrayList<>();
-            
-            while (delta > room) {
-                for (int i = index + room; i > index; i--) {
-                    if (line.charAt(i) == ' ') {
-                        lines.add(line.substring(index, i));
-                        delta -= ++i - index;
-                        index = i;
-                        
-                        break;
-                    }
-                }
+    public void focusAt(Location location) {
+        for (Component c : root) {
+            if (c.intersects(location)) {
+                focused = c;
+                break;
             }
-            lines.add(line.substring(index));
+        }
+    }
+    
+    /**
+     * Aids in the construction of terminal instances. The terminal constructor
+     * takes a context object as an argument to configure the properties that
+     * are subject to be changed; the constructor for the context is quite 
+     * complex, with many different signatures that are available. This builder
+     * is to assist in creating instances of a terminal without worrying about
+     * the underlying context's construction.
+     */
+    public static class Builder {
+        private String title,
+                       fontName;
+        private int lineSize,
+                    numLines,
+                    textSize;
+        
+        public Builder(String title) {
+            this.title = title;
             
-            return lines.toArray(new String[lines.size()]);
+            /* 
+             * Some default settings for the terminal, if they happen to not be
+             * provided before it's built.
+             */
+            fontName = "monospace";
+            textSize = 12;
+            lineSize = 80;
+            numLines = 20;
         }
         
-        return new String[] { line };
-    }
-    
-    public void putLines(String[] lines, Location l) {
-        AtomicInteger loc = new AtomicInteger(l.line);
-        Arrays.stream(lines)
-            .forEach(line -> pane.update(line,
-                                         loc.getAndIncrement(),
-                                         l.position));
-        cursor.goDown(lines.length);
-        
-        window.repaint();
-    }
-    
-    /**
-     * Writes a {@code String} to the console.
-     * 
-     * @param text The string to write.
-     * @param l The {@code Location} for the first character in the
-     *          {@code String}.
-     * @param edge The right-most limit for the text inserted into the buffer.
-     * 
-     * @throws LocationOutOfBoundsException if the line or position is less
-     *                                      than zero, or if the location is
-     *                                      greater than the height of the
-     *                                      terminal.
-     */
-    public void putLine(String text, Location l, int edge) {
-        if (l.line < 0 || l.position < 0 || l.line >= context.numLines)
-            throw new LocationOutOfBoundsException(l);
-        
-        /* 
-         * If the line overflows the edge, wrap the text onto the next line at
-         * the specified Location's position.
-         */
-        String[] lines = wrapLine(text, l.position, edge);
-        
-        if (l.line + lines.length >= context.numLines)
-            throw new LocationOutOfBoundsException("The line was too big to " +
-                                                   "wrap at line " + l.line);
-        
-        putLines(lines, l);
-    }
-    
-    /**
-     * Inserts text into the terminal at the specified Location. Text that
-     * overflows the end of the line will be wrapped onto the next line at
-     * the same position as the first line. (Therefore, all text in the String
-     * will be left-aligned.)
-     * 
-     * @param text The text to insert into the terminal.
-     * @param l The location at which to place the first character of the text.
-     */
-    public void putLine(String text, Location l) {
-        putLine(text, l, context.lineSize-1);
-    }
-    
-    /**
-     * Writes a string to the console at the current cursor position.
-     * 
-     * @param line The string to write.
-     */
-    public void putLine(String text) {
-        putLine(text, cursor.getLocation());
-        cursor.goForward(text.length());
-    }
-    
-    public void putLine(Glyph[] glyphs) {
-        for (int i = 0; i < glyphs.length; i++) {
-            pane.update(glyphs[i], cursor.getLine(), cursor.getPosition());
-            cursor.goForward(1);
+        public Builder font(String fontName) {
+            this.fontName = fontName;
+            
+            return this;
         }
-        cursor.setLocation(cursor.getLine()+1, 0);
-    }
-    
-    /**
-     * Writes a string to the console at the current cursor position and
-     * advances the cursor position down by one line.
-     * 
-     * @param text The string to write.
-     */
-    public void putNewLine(String text) {
-        putLine(text, cursor.getLocation());
-        cursor.goDown(1);
-    }
-    
-    public void clear() {
-        for (int row = 0; row < context.numLines; row++)
-            for (int col = 0; col < context.lineSize; col++)
-                pane.update(new Glyph(' ', Color.WHITE), row, col);
         
-        cursor.setLocation(0, 0);
+        public Builder textSize(int textSize) {
+            this.textSize = textSize;
+            
+            return this;
+        }
+        
+        public Builder dimensions(int lineSize, int numLines) {
+            this.lineSize = lineSize;
+            this.numLines = numLines;
+            
+            return this;
+        }
+        
+        public Terminal build() {
+            return new Terminal(new Context(title,
+                                            lineSize,
+                                            numLines,
+                                            fontName,
+                                            textSize));
+        }
     }
     
     /**

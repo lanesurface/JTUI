@@ -1,10 +1,25 @@
+/* 
+ * Copyright 2018 Lane W. Surface 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jtxt.emulator;
 
 /*
  * Maybe individual TextRenderers should define which font they use for
  * rendering their glyphs?
  */
-public interface TextRenderer {
+public interface GlyphRenderer {
     /**
      * Update the character at the given location. This method may overwrite
      * the character that occupied this location beforehand.
@@ -26,7 +41,17 @@ public interface TextRenderer {
      *               are guaranteed to be within it. Glyphs may not take up the
      *               full region, but should never overflow it.
      */
-    void update(Glyph[] glyphs, Region region);
+    void update(GString glyphs, Region region);
+    
+    /**
+     * Updates the region in the renderer bounded in the upper-right corner by
+     * start, assuming that the renderer has allocated enough space to store
+     * this array in it's internal buffer.
+     * 
+     * @param glyphs
+     * @param start
+     */
+    void update(GString[] glyphs, Location start);
     
     /**
      * Returns the glyph which occupies the given location.
@@ -37,11 +62,13 @@ public interface TextRenderer {
      */
     Glyph getGlyph(Location location);
     
-    /*
-     *  Odd because this method returns the glyphs within a region as a 2-D
-     *  array; however, updating the glyphs in a region requires a 1-D array.
-     *  
-     *  Returns an array of glyphs with the same bounds as the given region.
+    /**
+     * Given a region, this method will return all glyphs within that region as
+     * a two-dimensional array.
+     * 
+     * @param region The region in which the requested glyphs are contained in.
+     * 
+     * @return The glyphs in the given region.
      */
-    Glyph[][] getGlyphs(Region region);
+    GString[] getGlyphs(Region region);
 }

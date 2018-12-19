@@ -1,4 +1,21 @@
+/* 
+ * Copyright 2018 Lane W. Surface 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jtxt.emulator.tui;
+
+import jtxt.emulator.Location;
 
 /**
  * Indicates that a component wishes to be the target for receiving information
@@ -20,9 +37,51 @@ public interface KeyboardTarget {
     void keyPressed(Event event);
     
     /**
-     * Carries information about an event, such as the cursor location when
-     * that key press was generated, the key that was pressed, and other
-     * contextual information related to the key press.
+     * Carries contextual information when a key is pressed. This information is
+     * propagated to components listening for key presses, as well as the target
+     * component itself.
      */
-    public static class Event { /* TODO */ }
+    public static class Event {
+        /**
+         * The location the cursor was at whenever the key was pressed. This
+         * position is guaranteed to be within the target comonent's bounds.
+         */
+        public final Location position;
+        
+        /**
+         * The key that was pressed when this event was generated.
+         */
+        public final Key key;
+        
+        /**
+         * Whether the key that generated this event is a printable character.
+         * For modifier characters (control, shift, alter, etc.) this will be
+         * false.
+         */
+        private boolean printable;
+        
+        /**
+         * Creates a new key event with the given position and key.
+         * 
+         * @param position The position the cursor was at when the event 
+         *                 occured.
+         * @param key The key that was pressed to generate this event.
+         */
+        public Event(Location position, Key key) {
+            this.position = position;
+            this.key = key;
+        }
+    }
+    
+    public static enum Key {
+        SHIFT,
+        CONTROL,
+        ALTER,
+        BACKSPACE,
+        ESCAPE,
+        ARROW_RIGHT,
+        ARROW_LEFT,
+        ARROW_UP,
+        ARROW_DOWN;
+    }
 }

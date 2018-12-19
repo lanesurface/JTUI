@@ -67,24 +67,18 @@ public class Context {
      * Constructs a new {@code Configuration} object with properties identical
      * to config.
      * 
-     * @param config The {@code Configuration} to replicate.
+     * @param context The {@code Configuration} to replicate.
      */
-    public Context(Context config) {
-        this(config.title, config.lineSize, config.numLines, 
-             config.font.getName(), config.font.getSize());
-    }
-    
-    /**
-     * Creates a new {@code Configuration} object with the given title, line
-     * size, and the number of lines specified. The font defaults to monospaced 
-     * 12&nbsp;px.
-     * 
-     * @param title The title of the window.
-     * @param lineSize The number of characters per line.
-     * @param numLines The number of lines.
-     */
-    public Context(String title, int lineSize, int numLines) {
-        this(title, lineSize, numLines, "monospaced", 12);
+    public Context(Context context) {
+        this(context.title, context.lineSize, context.numLines, 
+             context.font.getName(), context.font.getSize());
+        /*
+         *  Make sure the dimensions are copied into the new context; this
+         *  is used for returning context instance from the terminal, and
+         *  rendering is based on how these may be defined.
+         */
+        charSize = context.charSize;
+        windowSize = context.windowSize;
     }
 
     /**

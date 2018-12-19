@@ -25,12 +25,12 @@ public class Region {
     /**
      * The upper-left bound for the region this text is contained in.
      */
-    public Location start;
+    private Location start;
     
     /**
-     * The lower-left bound for the region this text is contained in.
+     * The lower-right bound for the region this text is contained in.
      */
-    public Location end;
+    private Location end;
     
     /**
      * Constructs a {@code Region} with the given start and end 
@@ -44,6 +44,11 @@ public class Region {
      *                                  is greater than the end line.
      */
     public Region(Location start, Location end) {
+        /*
+         * Verify that the lines and positions haven't been flipped. This is
+         * important, as some other classes use these lines and positions as
+         * array indices.
+         */
         if (start.position > end.position)
             throw new IllegalArgumentException("The start position [pos=" + 
                                                start.position + "] must be " + 
@@ -61,11 +66,12 @@ public class Region {
     }
     
     /**
+     * Constructs a new region for the given lines and positions.
      * 
-     * @param startLine
-     * @param startPosition
-     * @param endLine
-     * @param endPosition
+     * @param startLine The upper-left line of the region.
+     * @param startPosition The upper-left position of the region.
+     * @param endLine The lower-right line of the region.
+     * @param endPosition The lower-right position of the region.
      */
     public Region(int startLine, 
                   int startPosition, 
@@ -75,18 +81,40 @@ public class Region {
              new Location(endLine, endPosition));
     }
     
-    public Location getStartLocation() {
+    /**
+     * Gets the location that represents the upper-left corner of this region.
+     * 
+     * @return The start location of this region.
+     */
+    public Location getStart() {
         return new Location(start);
     }
     
-    public Location getEndLocation() {
+    /**
+     * Gets the location that represents the lower-right corner of this region.
+     * 
+     * @return The end location of this region.
+     */
+    public Location getEnd() {
         return new Location(end);
     }
     
+    /**
+     * Calculates the width of this region, where the width is the difference
+     * between the start position and end position.
+     * 
+     * @return The width of this region.
+     */
     public int getWidth() {
         return end.position - start.position;
     }
     
+    /**
+     * Calculates the height of this region, where the height is the difference
+     * between the start line and end line.
+     * 
+     * @return The height of this region.
+     */
     public int getHeight() {
         return end.line - start.line;
     }

@@ -50,23 +50,15 @@ public abstract class Container extends Component
      * placed relative to in the terminal. This needs to be added to a child's
      * location to determine its position in screen-space.
      */
-    protected Location localOrigin;
+    protected Location origin;
     
     /**
      * Each container can define its own background color for painting onto
      * the screen.
      */
-    protected Color backgroundColor;
+    protected Color background;
     
-    /**
-     * If the color of text is undefined, the component's nearest ancestor's
-     * color is used for rendering the text. The font color of a container is
-     * inherited from its parent (and if there is not a parent, it's white by
-     * default).
-     */
-    protected Color fontColor;
-    
-    public abstract void add(Component child);
+    public abstract void add(Component child, Layout layout);
     
     /**
      * Returns the components in this container in the order defined by the
@@ -81,5 +73,42 @@ public abstract class Container extends Component
      * Gets an iterator for the components within this container, and returns
      * them according to the order they will appear in the terminal.
      */
-    public abstract Iterator<Component> iterator();
+    public Iterator<Component> iterator() {
+        return new ContainerIterator(this);
+    }
+    
+    private static class ContainerIterator implements Iterator<Component> {
+        /**
+         * All of the children that are owned by the root container, including
+         * any sub-containers that root may contain.
+         */
+        private final Component[] children;
+        
+        /**
+         * The index of the component in the array that is to be returned next.
+         */
+        private int index;
+        
+        /**
+         * Construct an iterator for the container, where that container is
+         * the parent of all components returned by this iterator.
+         * 
+         * @param root The container to iterate over.
+         */
+        public ContainerIterator(Container root) {
+            this.children = root.getChildren();
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return index < children.length;
+        }
+
+        @Override
+        public Component next() {
+            return children[index] instanceof Container
+                   ? /* ... */ null
+                   : children[index++];
+        }
+    }
 }

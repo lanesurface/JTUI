@@ -1,47 +1,37 @@
 package test;
 
 import java.awt.Color;
-import java.io.File;
 
-import jtxt.emulator.Context;
-import jtxt.emulator.Glyph;
-import jtxt.emulator.Location;
-import jtxt.emulator.Terminal;
-import jtxt.emulator.util.Glyphs;
+import jtxt.emulator.*;
+import jtxt.emulator.tui.TextBox;
 import jtxt.emulator.util.image.ASCIImage;
 import jtxt.emulator.util.image.ColorSamplingStrategy;
 
 public class Main {
     public static void main(String[] args) {
-//        Context context = new Context("Terminal",
-//                                      80, 20,
-//                                      "Consolas", 12);
-        Context context = new Context(new File("../emulator.ini"));
-        Terminal term = new Terminal(context);
+        Terminal term = new Terminal.Builder("Terminal")
+                                    .font("Consolas")
+                                    .build();
+        Context context = term.getContext();
         
-        term.putLine("This text demonstrates the wrapping features of the " +
-                     "terminal. Text can be easily wrapped based on " +
-                     "location and a boundary.",
-                     new Location(0, 20),
-                     35);
+        TextBox box = new TextBox("Hello, O Beautiful world!");
+        box.inflate(20, 10);
+        // term.add(box, ...);
         
-        term.putLine("Hello, world!");
+        // TODO: Make GString the default way to pass around a collection of
+        // Glyphs. (Make GlyphRenderer compatible and Glyphs.of(...) return 
+        // GString, as well as moving Glyphs methods to GString itself.)
+        GString string = GString.of("\\e[255;000;000mHallo!");
+        string = string.concat(GString.of("Toodles!"));
+        
+        GString sub = string.insert(2, new Glyph('R', Color.BLUE));
+        sub.forEach(System.out::println);
         
         String filename = "me2.";
-        ASCIImage image = new ASCIImage(context, 
-                                        filename + "png", 
+        ASCIImage image = new ASCIImage(context,
+                                        filename + "png",
                                         ColorSamplingStrategy.MODAL,
                                         50);
-        image.writeToFile("../out/" +  filename + "png");
-        
-        term.putNewLine("Does \\e[255;000;000mthis \\e[255;255;255mwork?");
-        
-        String text = Glyphs.colorize("How's this?", Color.BLUE);
-        System.out.println(text);
-        
-        Glyph[] gs = Glyphs.of("\\e[016;229;165mTeal text is awesome!");
-        term.putLine(gs);
-        
-        System.exit(0);
+//        image.writeToFile("../out/" +  filename + "png");
     }
 }

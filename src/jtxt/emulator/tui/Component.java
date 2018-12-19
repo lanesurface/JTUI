@@ -17,7 +17,7 @@ package jtxt.emulator.tui;
 
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
-import jtxt.emulator.TextRenderer;
+import jtxt.emulator.GlyphRenderer;
 
 /**
  * <p>
@@ -52,7 +52,7 @@ public abstract class Component {
      * 
      * @param renderer The renderer to use when this component draws itself.
      */
-    public abstract void draw(TextRenderer renderer);
+    public abstract void draw(GlyphRenderer renderer);
     
     /**
      * Checks whether a point is within the region defined by this component.
@@ -63,10 +63,12 @@ public abstract class Component {
      * @return Whether or not the point is this components region.
      */
     public boolean intersects(Location location) {
-        return location.line >= bounds.start.line
-               && location.line <= bounds.end.line
-               && location.position >= bounds.start.position
-               && location.position <= bounds.end.position;
+        Location start = bounds.getStart(),
+                 end = bounds.getEnd();
+        return location.line >= start.line
+               && location.line <= end.line
+               && location.position >= start.position
+               && location.position <= end.position;
     }
     
     /**
@@ -78,19 +80,24 @@ public abstract class Component {
      *         region of this component.
      */
     public boolean inside(Region region) {
-        return region.start.line >= bounds.start.line
-               && region.end.line <= bounds.end.line
-               && region.start.position >= bounds.start.position
-               && region.end.position <= bounds.end.position;
+        Location regionStart = region.getStart(),
+                 regionEnd = region.getEnd(),
+                 boundsStart = bounds.getStart(),
+                 boundsEnd = bounds.getEnd();
+        
+        return regionStart.line >= boundsStart.line
+               && regionEnd.line <= boundsEnd.line
+               && regionStart.position >= boundsStart.position
+               && regionEnd.position <= boundsEnd.position;
     }
     
     /**
-     * Expands this component to fill the given region. Components should
-     * redraw themselves to fill this bounding-box after this method is called.
+     * Resizes this component to the given width and height.
      * 
-     * @param bounds The new bounds for this component.
+     * @param width The new width for this component.
+     * @param height The new height for this component.
      */
-    public abstract void inflate(Region bounds);
+    public abstract void inflate(int width, int height);
     
     /**
      * Gets the region which this component controls. This region is the bounds

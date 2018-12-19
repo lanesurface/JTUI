@@ -1,22 +1,25 @@
+/* 
+ * Copyright 2018 Lane W. Surface 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jtxt.emulator.tui;
 
 import jtxt.emulator.Location;
 
 /**
- * The relative location that a component occupies within a container.
- * Components that occupy the same location within the layout will be rendered
- * in the order that they were added to that container. (If two components are
- * added to the NORTH in the layout, the first that was added will appear above
- * the second.)
+ * 
  */
 public interface Layout {
-    public static enum BorderPosition {
-        NORTH,
-        EAST,
-        SOUTH,
-        WEST,
-        CENTER;
-    }
-    
-    Location getLocation(BorderPosition position);
+    Location getLocation(Container parent, Component component);
 }

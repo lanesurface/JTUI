@@ -1,27 +1,23 @@
 package jtxt.emulator.tui;
 
-import jtxt.emulator.Region;
-import jtxt.emulator.TextRenderer;
-import jtxt.emulator.util.Glyphs;
+import jtxt.emulator.GString;
+import jtxt.emulator.GlyphRenderer;
 
 public class TextBox extends Component {
     /**
      * The text to draw onto the screen.
      */
-    private String text;
+    private GString text;
     
     public TextBox(String text) {
-        this.text = text;
+        this.text = GString.of(text);
     }
     
-    @Override
-    public void draw(TextRenderer renderer) {
-        renderer.update(Glyphs.of(text), bounds);
+    public void draw(GlyphRenderer renderer) {
+        renderer.update(text, bounds);
     }
 
-    @Override
-    public void inflate(Region bounds) {
-        this.bounds = bounds;
-        // TODO: Tell terminal to update us.
+    public void inflate(int width, int height) {
+        // TODO
     }
 }

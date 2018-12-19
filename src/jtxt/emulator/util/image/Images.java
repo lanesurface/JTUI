@@ -86,8 +86,9 @@ public class Images {
             yChars = imageHeight / yScale;
 
         /*
-         * Pixels at the edge of the image need to be discarded if they cannot
-         * be averaged.
+         * There is a certain amount of error in the scale factor if the scales
+         * are not perfect divisors of the source width and height. A few
+         * pixels at the left and bottom may be discarded in the conversion.
          */
         imageWidth -= imageWidth % xScale;
         imageHeight -= imageHeight % yScale;
@@ -144,7 +145,7 @@ public class Images {
                  */
                 int index = (int)Math.min(Math.round(lum / steps),
                                           ASCII_CHARS.length - 1);
-                char out = ASCII_CHARS[ASCII_CHARS.length-1-index];
+                char out = ASCII_CHARS[ASCII_CHARS.length - index - 1];
                 characters[yIndex][xIndex++] = new Glyph(out,
                                                          new Color(color));
             }

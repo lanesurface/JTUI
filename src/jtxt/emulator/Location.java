@@ -56,17 +56,28 @@ public class Location {
     }
     
     /**
-     * Determines whether the specified location is within valid bounds in the
-     * terminal.
+     * Determines whether this location is within the bounds of the context.
      * 
-     * @param context The context for the terminal.
-     * @param location The location to check.
+     * @param context The context to verify this location against.
      * 
-     * @return Whether this location is within valid bounds in the terminal.
+     * @return False if this location is outside valid bounds within the
+     *         context.
      */
     public boolean outside(Context context) {
-        return line < 0 || line >= context.numLines ||
-               position < 0 || position >= context.lineSize;
+        return line < 0 
+               || position < 0 
+               || line >= context.numLines 
+               || position >= context.lineSize;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof Location) {
+            Location location = (Location)other;
+            return line == location.line && position == location.position;
+        }
+        
+        return false;
     }
     
     @Override

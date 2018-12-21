@@ -59,15 +59,6 @@ public final class Terminal {
     private Context context;
     
     /**
-     * Keeps track of the next position to insert text into the terminal when
-     * a {@code Location} is not specified.
-     * 
-     * @see putChar(char)
-     * @see putLine(String)
-     */
-    public Cursor cursor;
-    
-    /**
      * The window for displaying the console to the screen. Used for Java2D
      * abstraction over the text-based application.
      * 
@@ -76,9 +67,16 @@ public final class Terminal {
     private JFrame window;
     
     /**
-     * The {@code BufferedTextPane} is the area that the text is rendered to.
+     * Used for rendering the glyphs of components onto the screen. The
+     * rendering engine only needs to be able to convert glyphs to pixels,
+     * so this process may happen anywhere that's appropriate (and is not
+     * necessarily limited to software-based rendering methods).
+     * 
+     * TODO: Separate storage and rendering of glyphs. The renderer should only
+     * be concerned with rasterizing the glyphs, and BufferedTextPane should
+     * store them and call the renderer when it needs to update.
      */
-    private BufferedTextPane pane;
+    private GlyphRenderer renderingEngine;
     
     /**
      * The prompt handles all user-input in the terminal. Separate from the
@@ -115,8 +113,6 @@ public final class Terminal {
     public Terminal(Context context) {
         this.context = context;
         
-        cursor = new Cursor();
-        
         window = new JFrame(context.title);
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -125,7 +121,8 @@ public final class Terminal {
         context.setCharDimensions(fm.charWidth('X'),
                                   fm.getHeight());
         
-        pane = new BufferedTextPane(context);
+        BufferedTextPane pane = new BufferedTextPane(context);
+        renderingEngine = pane;
         pane.setPreferredSize(context.windowSize);
         pane.setFont(context.font);
         window.add(pane);

@@ -30,15 +30,33 @@ public class Location {
      */
     public int position;
     
+    /**
+     * Creates a new location with the given line and position.
+     * 
+     * @param line The line of this location.
+     * @param position The position within the line of this location.
+     */
     public Location(int line, int position) {
         this.line = line;
         this.position = position;
     }
     
+    /**
+     * Creates a new location with the same line and position as the given
+     * location.
+     * 
+     * @param loc The location to use for constructing this location.
+     */
     public Location(Location loc) {
         this(loc.line, loc.position);
     }
     
+    /**
+     * Sets a new line and position for this location.
+     * 
+     * @param line The new line of this location.
+     * @param position The new position of this location.
+     */
     public void setLocation(int line, int position) {
         this.line = line;
         this.position = position;
@@ -82,6 +100,8 @@ public class Location {
     
     @Override
     public String toString() {
-        return "Location: [line=" + line + "," + " position=" + position + "]";
+        return String.format("Location: [line=%d, position=%d]",
+                             line,
+                             position);
     }
 }

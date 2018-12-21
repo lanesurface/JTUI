@@ -82,6 +82,20 @@ public class Region {
     }
     
     /**
+     * Determines whether this region is within the given region.
+     * 
+     * @param other The region that possibly encompasses this one.
+     * 
+     * @return Whether or not this region is within the other.
+     */
+    public boolean inside(Region other) {
+        return start.line >= other.start.line
+               && start.position >= other.start.position
+               && end.line <= other.end.line
+               && end.position <= other.end.position;
+    }
+    
+    /**
      * Gets the location that represents the upper-left corner of this region.
      * 
      * @return The start location of this region.

@@ -97,10 +97,11 @@ class BufferedTextPane extends JComponent
         }
     }
 
-    public void update(GString[] glyphs, Location start) {
-        for (int l = 0; l < lines; l++)
-            for (int p = 0; p < lineSize; p++)
-                buffer[l].insert(p, glyphs[l].get(p));
+    public void update(GString[] glyphs, Location start) {        
+        for (int l = 0; l < glyphs.length; l++)
+            for (int p = 0; p < glyphs[l].length(); p++)
+                buffer[start.line + l].insert(start.position + p,
+                                              glyphs[l].get(p));
     }
 
     public Glyph getGlyph(Location location) {
@@ -111,12 +112,20 @@ class BufferedTextPane extends JComponent
     }
 
     public GString[] getGlyphs(Region region) {
+        if (!region.inside(new Region(0,
+                                      0,
+                                      lines,
+                                      lineSize)))
+            throw new LocationOutOfBoundsException("The given region is " +
+                                                   "outside the bounds of " +
+                                                   "the text pane.");
+        
         Location start = region.getStart(),
                  end = region.getEnd();
         
         GString[] glyphs = new GString[region.getHeight()];
         for (int line = start.line; line < end.line; line++)
-            glyphs[line] = buffer[line].substring(start.position, 
+            glyphs[line] = buffer[line].substring(start.position,
                                                   end.position);
         
         return glyphs;
@@ -124,7 +133,7 @@ class BufferedTextPane extends JComponent
     
     public void clear() {
         for (int i = 0; i < lines; i++)
-            buffer[i] = new GString();
+            buffer[i] = new GString(lineSize);
     }
     
     public void paintComponent(java.awt.Graphics g) {
@@ -140,14 +149,14 @@ class BufferedTextPane extends JComponent
                      context.windowSize.width, 
                      context.windowSize.height);
         
-        int baseline = g2d.getFontMetrics(g2d.getFont()).getHeight();
-        for (int i = 0; i < buffer.length; i++) {
-            for (int j = 0; j < buffer[i].length(); j++) {
+        int baseline = g2d.getFontMetrics().getHeight();
+        for (int i = 0; i < lines; i++) {
+            for (int j = 0; j < lineSize; j++) {
                 Glyph glyph = buffer[i].get(j);
                 g2d.setColor(glyph.getColor());
-                g2d.drawString(glyph.getCharacter()+"", 
-                               (j)*context.charSize.width, 
-                               (i)*context.charSize.height + baseline);
+                g2d.drawString(glyph.getCharacter()+"",
+                               j * context.charSize.width,
+                               i * context.charSize.height + baseline);
             }
         }
     }

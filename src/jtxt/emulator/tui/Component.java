@@ -80,15 +80,7 @@ public abstract class Component {
      *         region of this component.
      */
     public boolean inside(Region region) {
-        Location regionStart = region.getStart(),
-                 regionEnd = region.getEnd(),
-                 boundsStart = bounds.getStart(),
-                 boundsEnd = bounds.getEnd();
-        
-        return regionStart.line >= boundsStart.line
-               && regionEnd.line <= boundsEnd.line
-               && regionStart.position >= boundsStart.position
-               && regionEnd.position <= boundsEnd.position;
+        return region.inside(bounds);
     }
     
     /**

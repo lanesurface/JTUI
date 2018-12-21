@@ -85,6 +85,13 @@ public abstract class Container extends Component
         private final Component[] children;
         
         /**
+         * The current container that this iterator is traversing; since some
+         * children of the root may be containers themselves, a reference to
+         * the container that we are traversing needs to be kept.
+         */
+        private Container current;
+        
+        /**
          * The index of the component in the array that is to be returned next.
          */
         private int index;
@@ -97,6 +104,7 @@ public abstract class Container extends Component
          */
         public ContainerIterator(Container root) {
             this.children = root.getChildren();
+            current = root;
         }
         
         @Override

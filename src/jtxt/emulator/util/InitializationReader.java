@@ -32,7 +32,7 @@ public class InitializationReader {
         
         try {
             Files.readAllLines(Paths.get(iniFile.toURI()))
-                .forEach(this::parse);
+                 .forEach(this::parse);
         }
         catch (IOException ie) {
             System.err.println("Could not find the ini file " + iniFile);

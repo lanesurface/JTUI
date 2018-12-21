@@ -62,21 +62,23 @@ public final class Terminal {
      * The window for displaying the console to the screen. Used for Java2D
      * abstraction over the text-based application.
      * 
-     * @see BufferedTextPane
+     * @see BufferedFrame
      */
     private JFrame window;
     
     /**
-     * Used for rendering the glyphs of components onto the screen. The
-     * rendering engine only needs to be able to convert glyphs to pixels,
-     * so this process may happen anywhere that's appropriate (and is not
-     * necessarily limited to software-based rendering methods).
-     * 
-     * TODO: Separate storage and rendering of glyphs. The renderer should only
-     * be concerned with rasterizing the glyphs, and BufferedTextPane should
-     * store them and call the renderer when it needs to update.
+     * The current frame buffer, where all glyphs that are currently available
+     * to be rendered are stored.
      */
-    private GlyphRenderer renderingEngine;
+    private BufferedFrame frame;
+    
+    /**
+     * Used for converting glyphs (character and color values) into a series
+     * of pixels that can be individually drawn to the screen. Java provides
+     * facilities to perform this process for us, but we may want to render
+     * using hardware acceleration.
+     */
+    private GlyphRasterizer rasterizer;
     
     /**
      * The prompt handles all user-input in the terminal. Separate from the
@@ -121,11 +123,10 @@ public final class Terminal {
         context.setCharDimensions(fm.charWidth('X'),
                                   fm.getHeight());
         
-        BufferedTextPane pane = new BufferedTextPane(context);
-        renderingEngine = pane;
-        pane.setPreferredSize(context.windowSize);
-        pane.setFont(context.font);
-        window.add(pane);
+        frame = new BufferedFrame(context);
+        frame.setPreferredSize(context.windowSize);
+        frame.setFont(context.font);
+        window.add(frame);
         
         prompt = new Prompt();
         // The prompt spans a single line at the bottom of the window.
@@ -136,13 +137,7 @@ public final class Terminal {
         
         window.pack();
         window.setVisible(true);
-        
-        /*
-         * Make sure there are no null characters in the buffer (some fonts
-         * don't handle these very well).
-         */
-//        clear();
-        
+
         // Warning message sent to the system console when an application is
         // created from the command line.
         System.out.println("Terminal created...\nWARNING: Do not close this " +

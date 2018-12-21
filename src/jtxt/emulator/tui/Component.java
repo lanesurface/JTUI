@@ -15,9 +15,9 @@
  */
 package jtxt.emulator.tui;
 
+import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
-import jtxt.emulator.GlyphRenderer;
 
 /**
  * <p>
@@ -52,7 +52,7 @@ public abstract class Component {
      * 
      * @param renderer The renderer to use when this component draws itself.
      */
-    public abstract void draw(GlyphRenderer renderer);
+    public abstract void draw(BufferedFrame frame);
     
     /**
      * Checks whether a point is within the region defined by this component.
@@ -63,12 +63,7 @@ public abstract class Component {
      * @return Whether or not the point is this components region.
      */
     public boolean intersects(Location location) {
-        Location start = bounds.getStart(),
-                 end = bounds.getEnd();
-        return location.line >= start.line
-               && location.line <= end.line
-               && location.position >= start.position
-               && location.position <= end.position;
+        return location.inside(bounds);
     }
     
     /**

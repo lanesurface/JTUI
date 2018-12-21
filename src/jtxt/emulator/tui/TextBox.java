@@ -1,7 +1,7 @@
 package jtxt.emulator.tui;
 
+import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.GString;
-import jtxt.emulator.GlyphRenderer;
 
 public class TextBox extends Component {
     /**
@@ -13,8 +13,8 @@ public class TextBox extends Component {
         this.text = GString.of(text);
     }
     
-    public void draw(GlyphRenderer renderer) {
-        renderer.update(text, bounds);
+    public void draw(BufferedFrame frame) {
+        frame.update(text, bounds);
     }
 
     public void inflate(int width, int height) {

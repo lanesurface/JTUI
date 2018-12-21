@@ -26,3 +26,5 @@ tools/*.py
 .project
 .classpath
 .settings/
+
+roadmap.txt

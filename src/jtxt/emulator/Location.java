@@ -74,18 +74,21 @@ public class Location {
     }
     
     /**
-     * Determines whether this location is within the bounds of the context.
+     * Determines whether this location is within the given region.
      * 
-     * @param context The context to verify this location against.
+     * @param bounds The region that this location should be within.
      * 
-     * @return False if this location is outside valid bounds within the
-     *         context.
+     * @return True if this location is within the bounds, and false if it
+     *         lies outside of it.
      */
-    public boolean outside(Context context) {
-        return line < 0 
-               || position < 0 
-               || line >= context.numLines 
-               || position >= context.lineSize;
+    public boolean inside(Region bounds) {
+        Location start = bounds.getStart(),
+                 end = bounds.getEnd();
+        
+        return line >= start.line
+               && position >= start.position
+               && line < end.line
+               && position < end.position;
     }
     
     @Override

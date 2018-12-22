@@ -11,6 +11,7 @@ public class Main {
     public static void main(String[] args) {
         Terminal term = new Terminal.Builder("Terminal")
                                     .font("Consolas")
+                                    .textSize(16)
                                     .build();
         Context context = term.getContext();
         
@@ -25,7 +26,7 @@ public class Main {
         string = string.concat(GString.of("Toodles!"));
         
         GString sub = string.insert(2, new Glyph('R', Color.BLUE));
-        sub.forEach(System.out::println);
+//        sub.forEach(System.out::println);
         
         String filename = "me2.";
         ASCIImage image = new ASCIImage(context,

@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JComponent;
 
@@ -76,6 +77,7 @@ public class BufferedFrame extends JComponent {
         this.context = config;
         numLines = config.numLines;
         lineSize = config.lineSize;
+        bounds = new Region(0, 0, numLines, lineSize);
         buffer = new ArrayList<>();
         
         // Make sure there are no null characters in the buffer.
@@ -95,7 +97,7 @@ public class BufferedFrame extends JComponent {
         
         buffer.set(location.line,
                    buffer.get(location.line)
-                         .insert(location.position, glyph));
+                         .set(location.position, glyph));
     }
 
     /**
@@ -114,8 +116,8 @@ public class BufferedFrame extends JComponent {
         Location start = region.getStart();
         
         GString[] lines = glyphs.wrap(width);
-        for (int l = 0; l < height && l < numLines; l++) {
-            for (int p = 0; p < width && p < lineSize; p++) {
+        for (int l = 0; l < height && l < lines.length; l++) {
+            for (int p = 0; p < width && p < lines[l].length(); p++) {
                 Location local = start.add(new Location(l, p));
                 update(lines[l].get(p), local);
             }
@@ -130,7 +132,7 @@ public class BufferedFrame extends JComponent {
      * @param glyphs
      * @param start
      */
-    public void update(GString[] glyphs, Location start) {        
+    public void update(GString[] glyphs, Location start) {
         for (int l = 0; l < glyphs.length; l++)
             for (int p = 0; p < glyphs[l].length(); p++)
                 update(glyphs[l].get(p), start.add(new Location(l, p)));

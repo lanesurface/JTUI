@@ -130,6 +130,20 @@ public class GString implements Iterable<Glyph> {
         return new GString(glyphs);
     }
     
+    /**
+     * TODO
+     * 
+     * @param index
+     * @param glyph
+     * @return
+     */
+    public GString set(int index, Glyph glyph) {
+        Glyph[] glyphs = Arrays.copyOf(this.glyphs, this.glyphs.length);
+        glyphs[index] = glyph;
+        
+        return new GString(glyphs);
+    }
+    
     public GString substring(int start, int end) {
         return new GString(Arrays.copyOfRange(glyphs, start, end));
     }
@@ -232,7 +246,7 @@ public class GString implements Iterable<Glyph> {
                     }
                 }
             }
-            lines.add(substring(index, delta));
+            lines.add(substring(index, glyphs.length));
             
             return lines.toArray(new GString[0]);
         }

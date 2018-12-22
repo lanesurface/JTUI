@@ -22,7 +22,7 @@ package jtxt.emulator;
 @SuppressWarnings("serial")
 public class LocationOutOfBoundsException extends IndexOutOfBoundsException {
     public LocationOutOfBoundsException(Location location) {
-        super("The Location " + location + " is out of bounds.");
+        super(location + " is out of bounds.");
     }
     
     public LocationOutOfBoundsException(String msg) {

@@ -20,7 +20,7 @@ public class Glyph {
      * Unicode null character <tt>\0</tt>.
      */
     public static final Glyph BLANK = new Glyph(new Character('\0'),
-                                                new Color(1, 1, 1, 0));
+                                                new Color(0, 0, 0, 0));
     
     /**
      * Constructs a new glyph with the given character; the character will be

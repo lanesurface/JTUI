@@ -10,8 +10,8 @@ import jtxt.emulator.util.image.ColorSamplingStrategy;
 public class Main {
     public static void main(String[] args) {
         Terminal term = new Terminal.Builder("Terminal")
-                                    .font("Consolas")
-                                    .textSize(16)
+                                    .font("DejaVu Sans Mono")
+                                    .textSize(11)
                                     .build();
         Context context = term.getContext();
         

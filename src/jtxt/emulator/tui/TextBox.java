@@ -16,8 +16,4 @@ public class TextBox extends Component {
     public void draw(BufferedFrame frame) {
         frame.update(text, bounds);
     }
-
-    public void inflate(int width, int height) {
-        // TODO
-    }
 }

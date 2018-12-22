@@ -15,8 +15,8 @@
  */
 package jtxt.emulator.tui;
 
+import javafx.scene.Parent;
 import jtxt.emulator.BufferedFrame;
-import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 /**
@@ -47,44 +47,39 @@ public abstract class Component {
     protected Region bounds;
     
     /**
+     * The container that this component belongs to. Although only containers
+     * will make requests of their respective components, we may use this
+     * reference to ask that the container perform some action with us, such
+     * as modifying our positioning within it.
+     */
+    protected Container parent;
+    
+    /**
      * Renders the component and any children within the bounds of that this
      * component has been inflated to. 
      * 
-     * @param renderer The renderer to use when this component draws itself.
+     * @param frame The frame that is up to be rendered to the terminal next;
+     *              adding characters within the region owned by this component
+     *              guarantees that the characters will be rendered at the
+     *              appropriate time.
      */
     public abstract void draw(BufferedFrame frame);
     
     /**
-     * Checks whether a point is within the region defined by this component.
-     * 
-     * @param point The point that may possibly be within the bounds of the
-     *              component.
-     * 
-     * @return Whether or not the point is this components region.
-     */
-    public boolean intersects(Location location) {
-        return location.inside(bounds);
-    }
-    
-    /**
-     * Determines whether the region is within the region of this component.
-     * 
-     * @param region The region to check against this component.
-     * 
-     * @return Whether or not all bounds of the given region lie within the
-     *         region of this component.
-     */
-    public boolean inside(Region region) {
-        return region.inside(bounds);
-    }
-    
-    /**
-     * Resizes this component to the given width and height.
+     * Resizes this component to the given width and height, provided that the
+     * parent container has enough room within its bounds to accommodate this
+     * change; if not, the component will be inflated to the maximum size
+     * available within the container's layout.
      * 
      * @param width The new width for this component.
      * @param height The new height for this component.
      */
-    public abstract void inflate(int width, int height);
+    public void inflate(int width, int height) {
+        bounds = parent.layout.getBounds(parent,
+                                         this,
+                                         width,
+                                         height);
+    }
     
     /**
      * Gets the region which this component controls. This region is the bounds

@@ -50,8 +50,5 @@ public interface Layout {
      * 
      * @return The bounds within the frame that the given component can occupy.
      */
-    Region getBounds(Container parent,
-                     Component component,
-                     int width,
-                     int height);
+    Region getBounds(int width, int height);
 }

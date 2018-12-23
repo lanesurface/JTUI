@@ -16,10 +16,12 @@
 package jtxt.emulator.tui;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import jtxt.emulator.Location;
+import jtxt.emulator.BufferedFrame;
+import jtxt.emulator.Region;
 
 /**
  * A container is a {@link Component} that owns other components. All
@@ -30,8 +32,8 @@ import jtxt.emulator.Location;
  * the same layout as its parent, thus making it easy to create complex
  * layouts.
  */
-public abstract class Container extends Component 
-                                implements Iterable<Component> {
+public class Container extends Component 
+                       implements Iterable<Component> {
     /**
      * A collection of all the children this container owns. Components owned
      * by this container inherit certain properties of it. This container may
@@ -46,19 +48,38 @@ public abstract class Container extends Component
     protected Layout layout;
     
     /**
-     * Each container defines a location that all sub-components are
-     * placed relative to in the terminal. This needs to be added to a child's
-     * location to determine its position in screen-space.
-     */
-    protected Location origin;
-    
-    /**
      * Each container can define its own background color for painting onto
      * the screen.
      */
     protected Color background;
     
-    public abstract void add(Component child, Layout layout);
+    /**
+     * Creates a new container which occupies the given region.
+     * 
+     * @param bounds The region that this container occupy.
+     */
+    public Container(Region bounds) {
+        this.bounds = bounds;
+        children = new ArrayList<>();
+    }
+    
+    /**
+     * Adds the component to this container, using the inflated properties
+     * of that component to determine the bounds it may occupy within this
+     * container.
+     * 
+     * @param child The component to add to this container.
+     */
+    public void add(Component child) {
+        children.add(child);
+        child.setParent(this);
+    }
+    
+    @Override
+    public void draw(BufferedFrame frame) {
+        for (Component child : children)
+            child.draw(frame);
+    }
     
     /**
      * Returns the components in this container in the order defined by the
@@ -67,7 +88,21 @@ public abstract class Container extends Component
      * @return The components that this container owns in the order defined by
      *         this container's layout.
      */
-    public abstract Component[] getChildren();
+    public Component[] getChildren() {
+        return children.toArray(new Component[0]);
+    }
+    
+    /**
+     * Sets the layout for this container. The layout is used to determine
+     * how components placed within this container will be oriented within
+     * the terminal. 
+     * 
+     * @param layout The layout to use for orienting components within this
+     *               container.
+     */
+    public void setLayout(Layout layout) {
+        this.layout = layout;
+    }
     
     /**
      * Gets an iterator for the components within this container, and returns
@@ -85,13 +120,6 @@ public abstract class Container extends Component
         private final Component[] children;
         
         /**
-         * The current container that this iterator is traversing; since some
-         * children of the root may be containers themselves, a reference to
-         * the container that we are traversing needs to be kept.
-         */
-        private Container current;
-        
-        /**
          * The index of the component in the array that is to be returned next.
          */
         private int index;
@@ -104,7 +132,6 @@ public abstract class Container extends Component
          */
         public ContainerIterator(Container root) {
             this.children = root.getChildren();
-            current = root;
         }
         
         @Override
@@ -114,9 +141,15 @@ public abstract class Container extends Component
 
         @Override
         public Component next() {
-            return children[index] instanceof Container
-                   ? /* ... */ null
-                   : children[index++];
+            Component current = children[index++];
+            if (current instanceof Container) {
+                Container container = (Container)current;
+                
+                for (Component component : container)
+                    return component;
+            }
+            
+            return current;
         }
     }
 }

@@ -15,7 +15,6 @@
  */
 package jtxt.emulator;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -126,6 +125,7 @@ public final class Terminal {
         
         frame = new BufferedFrame(context);
         frame.setPreferredSize(context.windowSize);
+//        frame.setFont(context.font.deriveFont(Font.BOLD));
         frame.setFont(context.font);
         window.add(frame);
         
@@ -143,6 +143,11 @@ public final class Terminal {
         // created from the command line.
         System.out.println("Terminal created...\nWARNING: Do not close this " +
                            "window until the application has terminated.");
+        
+        root = new Container(new Region(0,
+                                        0,
+                                        context.windowSize.width,
+                                        context.windowSize.height));
     }
     
     /**
@@ -155,6 +160,15 @@ public final class Terminal {
         return new Context(context);
     }
     
+    public Container getRootContainer() {
+        return root;
+    }
+    
+    public void update() {
+        root.draw(frame);
+        frame.repaint();
+    }
+    
     /**
      * Adds the given component to the terminal with the specified layout. The
      * layout will determine the positioning of this component within the root
@@ -164,8 +178,8 @@ public final class Terminal {
      * @param layout The layout to use for positioning this component within the
      *               terminal.
      */
-    public void add(Component component, Layout layout) {
-        root.add(component, layout);
+    public void add(Component component) {
+        root.add(component);
     }
     
     /**
@@ -185,7 +199,8 @@ public final class Terminal {
      */
     public void focusAt(Location location) {
         for (Component c : root) {
-            if (c.intersects(location)) {
+            Region bounds = c.getBounds();
+            if (location.inside(bounds)) {
                 focused = c;
                 break;
             }

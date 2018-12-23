@@ -132,4 +132,9 @@ public class Region {
     public int getHeight() {
         return end.line - start.line;
     }
+    
+    @Override
+    public String toString() {
+        return String.format("Region: [%s,%s]", start, end);
+    }
 }

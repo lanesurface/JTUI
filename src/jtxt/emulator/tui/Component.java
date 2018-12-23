@@ -15,7 +15,6 @@
  */
 package jtxt.emulator.tui;
 
-import javafx.scene.Parent;
 import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.Region;
 
@@ -75,10 +74,17 @@ public abstract class Component {
      * @param height The new height for this component.
      */
     public void inflate(int width, int height) {
-        bounds = parent.layout.getBounds(parent,
-                                         this,
-                                         width,
+        bounds = parent.layout.getBounds(width,
                                          height);
+    }
+    
+    /**
+     * Sets the parent container of this component.
+     * 
+     * @param parent The parent container of this component.
+     */
+    void setParent(Container parent) {
+        this.parent = parent;
     }
     
     /**

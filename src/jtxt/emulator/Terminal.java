@@ -125,7 +125,6 @@ public final class Terminal {
         
         frame = new BufferedFrame(context);
         frame.setPreferredSize(context.windowSize);
-//        frame.setFont(context.font.deriveFont(Font.BOLD));
         frame.setFont(context.font);
         window.add(frame);
         

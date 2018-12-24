@@ -3,6 +3,7 @@ bin/
 build/
 consolas-bold.bmp
 res/*
+doc/
 
 # Include the demo picture.
 !res/app.jpg

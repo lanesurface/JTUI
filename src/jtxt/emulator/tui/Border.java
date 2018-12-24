@@ -1,3 +1,18 @@
+/* 
+ * Copyright 2018 Lane W. Surface 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jtxt.emulator.tui;
 
 import java.awt.Color;
@@ -50,6 +65,11 @@ public class Border extends Component {
                  end = bounds.getEnd();
         
         for (int line = start.line; line < end.line; line++) {
+            /* 
+             * Only fill the line when this is the top or bottom edge; 
+             * otherwise, only add the border at the left and rightmost
+             * positions.
+             */
             if (line == start.line || line == end.line - 1) {
                 for (int position = start.position;
                      position < end.position;
@@ -64,11 +84,12 @@ public class Border extends Component {
                                                     line + 1,
                                                     end.position));
                 }
+                
+                continue;
             }
-            else {
-                frame.update(border, new Location(line, start.position));
-                frame.update(border, new Location(line, end.position - 1));
-            }
+            
+            frame.update(border, new Location(line, start.position));
+            frame.update(border, new Location(line, end.position - 1));
         }
         
         component.draw(frame);

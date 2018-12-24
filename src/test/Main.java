@@ -25,31 +25,23 @@ public class Main {
         root.setLayout(new SequentialLayout(root,
                                             SequentialLayout.Axis.X));
         
-        TextBox hello = new TextBox("Hello, O Beautiful world!");
+        TextBox hello = new TextBox("Hello, O Beautiful world!",
+                                    TextBox.Justification.RIGHT);
         Border border = new Border(hello,
-                                   Border.Type.CROSS, 
+                                   Border.Type.CROSS,
                                    Color.RED);
         term.add(border);
-        border.inflate(22, 4);
+        border.inflate(15, 5);
         
         TextBox nother = new TextBox("\\e[000;255;255mDoes this box also " +
-                                     "paint itself correctly?");
-        term.add(nother);
-        nother.inflate(15, 4);
+                                     "paint itself correctly?",
+                                     TextBox.Justification.LEFT);
+        Border bnother = new Border(nother,
+                                    Border.Type.DOTTED,
+                                    Color.GREEN);
+        term.add(bnother);
+        bnother.inflate(15, 6);
         
         term.update();
-        
-        GString string = GString.of("\\e[255;000;000mHallo!");
-        string = string.concat(GString.of("Toodles!"));
-        
-        GString sub = string.insert(2, new Glyph('R', Color.BLUE));
-        sub.forEach(System.out::println);
-        
-        String filename = "me2.";
-        ASCIImage image = new ASCIImage(context,
-                                        filename + "png",
-                                        ColorSamplingStrategy.MODAL,
-                                        50);
-//        image.writeToFile("../out/" +  filename + "png");
     }
 }

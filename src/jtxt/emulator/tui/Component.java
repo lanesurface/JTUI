@@ -78,8 +78,7 @@ public abstract class Component {
             throw new IllegalStateException("Component must be the child of " +
                                             "a container before inflating.");
         
-        bounds = parent.layout.getBounds(width,
-                                         height);
+        bounds = parent.layout.getBounds(width, height);
     }
     
     /**

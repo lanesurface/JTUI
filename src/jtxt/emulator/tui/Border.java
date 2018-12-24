@@ -15,7 +15,8 @@ public class Border extends Component {
     public static enum Type { 
         SOLID('\u2501'),
         DASHED('-'),
-        DOTTED('.');
+        DOTTED('.'),
+        CROSS('+');
         
         private final char character;
         
@@ -29,15 +30,18 @@ public class Border extends Component {
     public Border(Component component, Type type, Color color) {
         this.component = component;
         border = new Glyph(type.character, color);
+    }
+    
+    @Override
+    public void inflate(int width, int height) {
+        super.inflate(width, height);
         
-        Region region = component.getBounds();
-        Location start = region.getStart(),
-                 end = region.getEnd();
-        
-        bounds = new Region(start.line - 1,
-                            start.position - 1,
-                            end.line + 1,
-                            end.position + 1);
+        Location start = bounds.getStart(),
+                 end = bounds.getEnd();
+        component.bounds = new Region(start.line + 1,
+                                      start.position + 1,
+                                      end.line - 1,
+                                      end.position - 1);
     }
     
     @Override
@@ -66,5 +70,7 @@ public class Border extends Component {
                 frame.update(border, new Location(line, end.position - 1));
             }
         }
+        
+        component.draw(frame);
     }
 }

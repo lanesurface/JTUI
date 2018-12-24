@@ -26,13 +26,11 @@ public class Main {
                                             SequentialLayout.Axis.X));
         
         TextBox hello = new TextBox("Hello, O Beautiful world!");
-        term.add(hello);
-        hello.inflate(20, 2);
-        
-        Border border = new Border(hello, 
-                                   Border.Type.DOTTED, 
+        Border border = new Border(hello,
+                                   Border.Type.CROSS, 
                                    Color.RED);
         term.add(border);
+        border.inflate(22, 4);
         
         TextBox nother = new TextBox("\\e[000;255;255mDoes this box also " +
                                      "paint itself correctly?");

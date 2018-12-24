@@ -82,13 +82,10 @@ public class Location {
      *         lies outside of it.
      */
     public boolean inside(Region bounds) {
-        Location start = bounds.getStart(),
-                 end = bounds.getEnd();
-        
-        return line >= start.line
-               && position >= start.position
-               && line < end.line
-               && position < end.position;
+        return line >= bounds.start.line
+               && position >= bounds.start.position
+               && line < bounds.end.line
+               && position < bounds.end.position;
     }
     
     @Override

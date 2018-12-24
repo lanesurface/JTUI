@@ -25,12 +25,12 @@ public class Region {
     /**
      * The upper-left bound for the region this text is contained in.
      */
-    private Location start;
+    public Location start;
     
     /**
      * The lower-right bound for the region this text is contained in.
      */
-    private Location end;
+    public Location end;
     
     /**
      * Constructs a {@code Region} with the given start and end 

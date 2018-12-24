@@ -169,14 +169,12 @@ public class BufferedFrame extends JComponent {
                                                    "outside the bounds of " +
                                                    "the frame.");
         
-        Location start = region.getStart(),
-                 end = region.getEnd();
         int height = region.getHeight();
-        
         GString[] glyphs = new GString[height];
         for (int line = 0; line < height; line++)
-            glyphs[line] = buffer.get(start.line + line)
-                                 .substring(start.position, end.position);
+            glyphs[line] = buffer.get(region.start.line + line)
+                                 .substring(region.start.position,
+                                            region.end.position);
         
         return glyphs;
     }

@@ -51,28 +51,23 @@ public class Border extends Component {
     public void inflate(int width, int height) {
         super.inflate(width, height);
         
-        Location start = bounds.getStart(),
-                 end = bounds.getEnd();
-        component.bounds = new Region(start.line + 1,
-                                      start.position + 1,
-                                      end.line - 1,
-                                      end.position - 1);
+        component.bounds = new Region(bounds.start.line + 1,
+                                      bounds.start.position + 1,
+                                      bounds.end.line - 1,
+                                      bounds.end.position - 1);
     }
     
     @Override
     public void draw(BufferedFrame frame) {
-        Location start = bounds.getStart(),
-                 end = bounds.getEnd();
-        
-        for (int line = start.line; line < end.line; line++) {
+        for (int line = bounds.start.line; line < bounds.end.line; line++) {
             /* 
              * Only fill the line when this is the top or bottom edge; 
              * otherwise, only add the border at the left and rightmost
              * positions.
              */
-            if (line == start.line || line == end.line - 1) {
-                for (int position = start.position;
-                     position < end.position;
+            if (line == bounds.start.line || line == bounds.end.line - 1) {
+                for (int position = bounds.start.position;
+                     position < bounds.end.position;
                      position++)
                 {
                     Glyph[] glyphs = new Glyph[bounds.getWidth()];
@@ -80,16 +75,16 @@ public class Border extends Component {
                     GString border = new GString(glyphs);
                     
                     frame.update(border, new Region(line,
-                                                    start.position,
+                                                    bounds.start.position,
                                                     line + 1,
-                                                    end.position));
+                                                    bounds.end.position));
                 }
                 
                 continue;
             }
             
-            frame.update(border, new Location(line, start.position));
-            frame.update(border, new Location(line, end.position - 1));
+            frame.update(border, new Location(line, bounds.start.position));
+            frame.update(border, new Location(line, bounds.end.position - 1));
         }
         
         component.draw(frame);

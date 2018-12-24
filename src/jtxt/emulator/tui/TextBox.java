@@ -22,12 +22,9 @@ public class TextBox extends Component {
     
     @Override
     public void draw(BufferedFrame frame) {
-        Location start = bounds.getStart(),
-                 end = bounds.getEnd();
-        
         GString[] lines = text.wrap(bounds.getWidth());
         for (int line = 0; line < lines.length; line++) {
-            int spos = start.position;
+            int spos = bounds.start.position;
             
             switch (justification) {
             case RIGHT:
@@ -37,10 +34,10 @@ public class TextBox extends Component {
             default: break;
             }
             
-            frame.update(lines[line], new Region(start.line + line,
+            frame.update(lines[line], new Region(bounds.start.line + line,
                                                  spos,
-                                                 start.line + line + 1,
-                                                 end.position));
+                                                 bounds.start.line + line + 1,
+                                                 bounds.end.position));
         }
     }
 }

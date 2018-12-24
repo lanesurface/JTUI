@@ -144,8 +144,8 @@ public final class Terminal {
         System.out.println("Terminal created...\nWARNING: Do not close this " +
                            "window until the application has terminated.");
         
-        root = new Container(new Region(0,
-                                        0,
+        root = new Container(new Region(1,
+                                        1,
                                         context.windowSize.width,
                                         context.windowSize.height));
     }

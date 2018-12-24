@@ -6,6 +6,7 @@ import jtxt.emulator.Context;
 import jtxt.emulator.GString;
 import jtxt.emulator.Glyph;
 import jtxt.emulator.Terminal;
+import jtxt.emulator.tui.Border;
 import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.SequentialLayout;
 import jtxt.emulator.tui.TextBox;
@@ -26,7 +27,12 @@ public class Main {
         
         TextBox hello = new TextBox("Hello, O Beautiful world!");
         term.add(hello);
-        hello.inflate(20, 10);
+        hello.inflate(20, 2);
+        
+        Border border = new Border(hello, 
+                                   Border.Type.DOTTED, 
+                                   Color.RED);
+        term.add(border);
         
         TextBox nother = new TextBox("\\e[000;255;255mDoes this box also " +
                                      "paint itself correctly?");

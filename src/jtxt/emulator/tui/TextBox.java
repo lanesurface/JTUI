@@ -15,5 +15,6 @@ public class TextBox extends Component {
     
     public void draw(BufferedFrame frame) {
         frame.update(text, bounds);
+        System.out.println(text + " " + bounds);
     }
 }

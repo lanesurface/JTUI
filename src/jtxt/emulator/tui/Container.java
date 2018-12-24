@@ -75,12 +75,6 @@ public class Container extends Component
         child.setParent(this);
     }
     
-    @Override
-    public void draw(BufferedFrame frame) {
-        for (Component child : children)
-            child.draw(frame);
-    }
-    
     /**
      * Returns the components in this container in the order defined by the
      * layout that has been set. 
@@ -102,6 +96,12 @@ public class Container extends Component
      */
     public void setLayout(Layout layout) {
         this.layout = layout;
+    }
+    
+    @Override
+    public void draw(BufferedFrame frame) {
+        for (Component child : children)
+            child.draw(frame);
     }
     
     /**

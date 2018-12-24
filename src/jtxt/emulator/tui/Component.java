@@ -74,6 +74,10 @@ public abstract class Component {
      * @param height The new height for this component.
      */
     public void inflate(int width, int height) {
+        if (parent == null)
+            throw new IllegalStateException("Component must be the child of " +
+                                            "a container before inflating.");
+        
         bounds = parent.layout.getBounds(width,
                                          height);
     }

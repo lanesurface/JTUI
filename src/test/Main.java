@@ -35,7 +35,7 @@ public class Main {
         
         TextBox nother = new TextBox("\\e[000;255;255mDoes this box also " +
                                      "paint itself correctly?",
-                                     TextBox.Justification.LEFT);
+                                     TextBox.Justification.CENTER);
         Border bnother = new Border(nother,
                                     Border.Type.DOTTED,
                                     Color.GREEN);

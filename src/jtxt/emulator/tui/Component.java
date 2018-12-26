@@ -16,6 +16,7 @@
 package jtxt.emulator.tui;
 
 import jtxt.emulator.BufferedFrame;
+import jtxt.emulator.Context;
 import jtxt.emulator.Region;
 
 /**
@@ -54,6 +55,12 @@ public abstract class Component {
     protected Container parent;
     
     /**
+     * A reference to the context which holds rendering properties related
+     * to this instance of the terminal.
+     */
+    protected Context context;
+    
+    /**
      * Renders the component and any children within the bounds of that this
      * component has been inflated to. 
      * 
@@ -88,6 +95,13 @@ public abstract class Component {
      */
     void setParent(Container parent) {
         this.parent = parent;
+        /*
+         * Preserve contextual information so that this variable only needs to
+         * be passed into the root container when an instance of the terminal
+         * is created; this allows us to be more silent about passing these
+         * properties around (and not have to pass them into constructors).
+         */
+        this.context = parent.context;
     }
     
     /**

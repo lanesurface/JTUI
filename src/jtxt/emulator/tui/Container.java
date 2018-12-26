@@ -16,12 +16,10 @@
 package jtxt.emulator.tui;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import jtxt.emulator.BufferedFrame;
-import jtxt.emulator.Region;
 
 /**
  * A container is a {@link Component} that owns other components. All
@@ -32,8 +30,8 @@ import jtxt.emulator.Region;
  * the same layout as its parent, thus making it easy to create complex
  * layouts.
  */
-public class Container extends Component 
-                       implements Iterable<Component> {
+public abstract class Container extends Component 
+                                implements Iterable<Component> {
     /**
      * A collection of all the children this container owns. Components owned
      * by this container inherit certain properties of it. This container may
@@ -52,16 +50,6 @@ public class Container extends Component
      * the screen.
      */
     protected Color background;
-    
-    /**
-     * Creates a new container which occupies the given region.
-     * 
-     * @param bounds The region that this container occupy.
-     */
-    public Container(Region bounds) {
-        this.bounds = bounds;
-        children = new ArrayList<>();
-    }
     
     /**
      * Adds the component to this container, using the inflated properties

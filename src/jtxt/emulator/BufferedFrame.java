@@ -100,6 +100,15 @@ public class BufferedFrame extends JComponent {
                          .set(location.position, glyph));
     }
 
+    public void update(GString glyphs, Location start) {
+        GString line = buffer.get(start.line);
+        
+        for (int c = 0; c < glyphs.length(); c++)
+            line = line.set(c + start.position, glyphs.get(c));
+        
+        buffer.set(start.line, line.substring(0, context.lineSize));
+    }
+    
     /**
      * Update the glyphs in the given region, such that the region is defined 
      * as the bounding box for these glyphs. Glyphs that overflow the region

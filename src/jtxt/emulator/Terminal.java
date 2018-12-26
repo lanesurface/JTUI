@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.Layout;
+import jtxt.emulator.tui.RootContainer;
 
 /**
  * <p>
@@ -143,10 +144,11 @@ public final class Terminal {
         System.out.println("Terminal created...\nWARNING: Do not close this " +
                            "window until the application has terminated.");
         
-        root = new Container(new Region(0,
-                                        0,
-                                        context.windowSize.width,
-                                        context.windowSize.height));
+        root = new RootContainer(context,
+                                 new Region(0,
+                                            0,
+                                            context.windowSize.width,
+                                            context.windowSize.height));
     }
     
     /**

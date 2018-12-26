@@ -25,26 +25,67 @@ import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 public class Border extends Component {
+    /**
+     * The component that this border will draw itself around. This component
+     * is inflated with the border, so that the border may be displayed on its
+     * outer edge.
+     */
     private Component component;
     
-    public static enum Type { 
-        SOLID('\u2501'),
-        DASHED('-'),
+    /**
+     * The type of border to draw. Each type defines the characters that it 
+     * will use when being rendered.
+     */
+    public static enum Type {
+        SOLID('\u2501', '\u2503'),
+        DASHED('-', '|'),
         DOTTED('.'),
         CROSS('+');
         
-        private final char character;
+        private final char spanCharacter,
+                           edgeCharacter;
         
         Type(char character) {
-            this.character = character;
+            /*
+             * If only one character is specified for this border, use it for
+             * drawing the span and edges.
+             */
+            this(character, character);
+        }
+        
+        Type(char spanCharacter, char edgeCharacter) {
+            this.spanCharacter = spanCharacter;
+            this.edgeCharacter = edgeCharacter;
         }
     }
     
-    private Glyph border;
+    private Glyph span,
+                  edge;
     
+    /**
+     * Initializes a border for the given component using the specified glyph.
+     * 
+     * @param component The component to draw this border around.
+     * @param border The glyph to use when drawing the border.
+     */
+    public Border(Component component, Glyph border) {
+        this.component = component;
+        this.span = border;
+        this.edge = border;
+    }
+    
+    /**
+     * Initializes a border for the given component, using the character
+     * defined by the type and the color for drawing the border.
+     * 
+     * @param component The component to draw this border around.
+     * @param type The type of character to use for drawing the border.
+     * @param color The color of the border.
+     */
     public Border(Component component, Type type, Color color) {
         this.component = component;
-        border = new Glyph(type.character, color);
+        span = new Glyph(type.spanCharacter, color);
+        edge = new Glyph(type.edgeCharacter, color);
     }
     
     @Override
@@ -71,7 +112,7 @@ public class Border extends Component {
                      position++)
                 {
                     Glyph[] glyphs = new Glyph[bounds.getWidth()];
-                    Arrays.fill(glyphs, border);
+                    Arrays.fill(glyphs, span);
                     GString border = new GString(glyphs);
                     
                     frame.update(border, new Region(line,
@@ -83,8 +124,8 @@ public class Border extends Component {
                 continue;
             }
             
-            frame.update(border, new Location(line, bounds.start.position));
-            frame.update(border, new Location(line, bounds.end.position - 1));
+            frame.update(edge, new Location(line, bounds.start.position));
+            frame.update(edge, new Location(line, bounds.end.position - 1));
         }
         
         component.draw(frame);

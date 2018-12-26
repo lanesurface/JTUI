@@ -17,7 +17,7 @@ package jtxt.emulator.tui;
 
 import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.GString;
-import jtxt.emulator.Region;
+import jtxt.emulator.Location;
 
 public class TextBox extends Component {
     /**
@@ -50,10 +50,8 @@ public class TextBox extends Component {
             default: break;
             }
             
-            frame.update(lines[line], new Region(bounds.start.line + line,
-                                                 spos,
-                                                 bounds.start.line + line + 1,
-                                                 bounds.end.position));
+            frame.update(lines[line], new Location(bounds.start.line + line,
+                                                   spos));
         }
     }
 }

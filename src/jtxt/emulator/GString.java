@@ -131,11 +131,37 @@ public class GString implements Iterable<Glyph> {
     }
     
     /**
-     * TODO
+     * Appends the given glyph to the end of this string. This is equivalent to
+     * concatenating this string with a string containing the given glyph,
+     * assuming that the string to be appended has a length of one.
      * 
-     * @param index
-     * @param glyph
-     * @return
+     * @param glyph The glyph to append to the end of this string.
+     * 
+     * @return A new string containing this string and the given glyph inserted
+     *         at the end, with a length of one + the length of this string.
+     */
+    public GString append(Glyph glyph) {
+        Glyph[] glyphs = new Glyph[this.glyphs.length + 1];
+        glyphs[glyphs.length - 1] = glyph;
+        System.arraycopy(this.glyphs,
+                         0,
+                         glyphs,
+                         0,
+                         this.glyphs.length);
+        
+        return new GString(glyphs);
+    }
+    
+    /**
+     * Sets the glyph in this string at the index to the given glyph, 
+     * discarding the glyph that was at that position within the string
+     * previously.
+     * 
+     * @param index The position within this string to change the glyph of.
+     * @param glyph The glyph that will replace the glyph which occupied this
+     *              position previously.
+     *              
+     * @return A new string with the given glyph at the index.
      */
     public GString set(int index, Glyph glyph) {
         Glyph[] glyphs = Arrays.copyOf(this.glyphs, this.glyphs.length);

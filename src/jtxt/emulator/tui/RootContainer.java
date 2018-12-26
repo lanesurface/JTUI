@@ -11,9 +11,12 @@ public class RootContainer extends Container {
      * 
      * @param bounds The region that this container occupy.
      */
-    public RootContainer(Context context, Region bounds) {
+    public RootContainer(Context context) {
         this.context = context;
-        this.bounds = bounds;
+        this.bounds = new Region(0,
+                                 0,
+                                 context.numLines,
+                                 context.lineSize);
         children = new ArrayList<>();
     }
 }

@@ -136,7 +136,7 @@ public class Context {
         return charSize;
     }
     
-    public Dimension getWindowDimension() {
+    public Dimension getWindowDimensions() {
         return windowSize;
     }
 }

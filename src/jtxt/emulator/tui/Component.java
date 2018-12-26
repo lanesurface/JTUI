@@ -47,6 +47,17 @@ public abstract class Component {
     protected Region bounds;
     
     /**
+     * The number of characters that this component will occupy within a
+     * line in the terminal.
+     */
+    protected int width;
+    
+    /**
+     * The number of lines that this component will occupy within the terminal.
+     */
+    protected int height;
+    
+    /**
      * The container that this component belongs to. Although only containers
      * will make requests of their respective components, we may use this
      * reference to ask that the container perform some action with us, such
@@ -55,8 +66,8 @@ public abstract class Component {
     protected Container parent;
     
     /**
-     * A reference to the context which holds rendering properties related
-     * to this instance of the terminal.
+     * A reference to the context which was constructed with this instance of
+     * the terminal, and which contains important rendering properties.
      */
     protected Context context;
     
@@ -64,28 +75,21 @@ public abstract class Component {
      * Renders the component and any children within the bounds of that this
      * component has been inflated to. 
      * 
-     * @param frame The frame that is up to be rendered to the terminal next;
-     *              adding characters within the region owned by this component
-     *              guarantees that the characters will be rendered at the
-     *              appropriate time.
+     * @param frame The frame that that terminal will draw next. Updating 
+     *              characters within this frame will cause them to appear
+     *              after the next update to the screen.
      */
     public abstract void draw(BufferedFrame frame);
     
     /**
-     * Resizes this component to the given width and height, provided that the
-     * parent container has enough room within its bounds to accommodate this
-     * change; if not, the component will be inflated to the maximum size
-     * available within the container's layout.
+     * Sets the width and height of this component.
      * 
-     * @param width The new width for this component.
-     * @param height The new height for this component.
+     * @param width The width of this component.
+     * @param height The height of this component.
      */
-    public void inflate(int width, int height) {
-        if (parent == null)
-            throw new IllegalStateException("Component must be the child of " +
-                                            "a container before inflating.");
-        
-        bounds = parent.layout.getBounds(width, height);
+    public void setSize(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
     
     /**
@@ -95,13 +99,14 @@ public abstract class Component {
      */
     void setParent(Container parent) {
         this.parent = parent;
-        /*
-         * Preserve contextual information so that this variable only needs to
-         * be passed into the root container when an instance of the terminal
-         * is created; this allows us to be more silent about passing these
-         * properties around (and not have to pass them into constructors).
-         */
         this.context = parent.context;
+        
+        /* 
+         * Get the bounds that this component may occupy within parent. If the
+         * parent doesn't have enough room to accommodate the requested width
+         * and height, we will wrap this component in a scrollable interface.
+         */
+        bounds = parent.layout.getBounds(width, height);
     }
     
     /**

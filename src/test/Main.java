@@ -30,16 +30,16 @@ public class Main {
         Border bnother = new Border(nother,
                                     Border.Type.DOTTED,
                                     Color.GREEN);
+        bnother.setSize(15, 6);
         term.add(bnother);
-        bnother.inflate(15, 6);
         
         BufferedImage source = ImageIO.read(ClassLoader.getSystemResource("arches.jpg"));
         ASCIImage image = new ASCIImage(source);
         Border border = new Border(image,
                                    Border.Type.DASHED,
                                    Color.GRAY);
+        border.setSize(40, 15);
         term.add(border);
-        border.inflate(40, 15);
         
         term.update();
     }

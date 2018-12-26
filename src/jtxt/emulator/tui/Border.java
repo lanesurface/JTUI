@@ -89,8 +89,8 @@ public class Border extends Component {
     }
     
     @Override
-    public void inflate(int width, int height) {
-        super.inflate(width, height);
+    public void setParent(Container parent) {
+        super.setParent(parent);
         
         component.bounds = new Region(bounds.start.line + 1,
                                       bounds.start.position + 1,
@@ -115,10 +115,8 @@ public class Border extends Component {
                     Arrays.fill(glyphs, span);
                     GString border = new GString(glyphs);
                     
-                    frame.update(border, new Region(line,
-                                                    bounds.start.position,
-                                                    line + 1,
-                                                    bounds.end.position));
+                    frame.update(border, new Location(line, 
+                                                      bounds.start.position));
                 }
                 
                 continue;

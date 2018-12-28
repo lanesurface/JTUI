@@ -100,6 +100,14 @@ public class BufferedFrame extends JComponent {
                          .set(location.position, glyph));
     }
 
+    /**
+     * Starting at the given {@code Location}, this method will will replace
+     * the glyphs from start to the length of the string, assuming that this
+     * string is within the bounds of the buffer.
+     * 
+     * @param glyphs The string to place in the buffer.
+     * @param start The {@code Location} of the first glyph.
+     */
     public void update(GString glyphs, Location start) {
         GString line = buffer.get(start.line);
         

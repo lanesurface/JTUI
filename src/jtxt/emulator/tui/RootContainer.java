@@ -13,10 +13,10 @@ public class RootContainer extends Container {
      */
     public RootContainer(Context context) {
         this.context = context;
-        this.bounds = new Region(0,
-                                 0,
-                                 context.numLines,
-                                 context.lineSize);
+        bounds = new Region(0,
+                            0,
+                            context.numLines,
+                            context.lineSize);
         children = new ArrayList<>();
     }
     

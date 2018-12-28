@@ -34,7 +34,7 @@ public interface KeyboardTarget {
      * 
      * @param event The keyboard event carrying information about the key press.
      */
-    void keyPressed(Event event);
+    void keyPressed(char character);
     
     /**
      * Carries contextual information when a key is pressed. This information is
@@ -74,14 +74,23 @@ public interface KeyboardTarget {
     }
     
     public static enum Key {
-        SHIFT,
-        CONTROL,
-        ALTER,
-        BACKSPACE,
-        ESCAPE,
-        ARROW_RIGHT,
-        ARROW_LEFT,
-        ARROW_UP,
-        ARROW_DOWN;
+        BACKSPACE('\b'),
+        ESCAPE('\u001B'),
+        DELETE('\u007F');
+        
+        public final char character;
+        
+        Key(char character) {
+            this.character = character;
+        }
+        
+        public static Key forCharacter(char character) {
+            /* 
+             * TODO: Somehow traverse the keys that are defined in this enum, 
+             * and return a key reference for the character if it exists.
+             */
+            
+            return null;
+        }
     }
 }

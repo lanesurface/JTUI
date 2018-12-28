@@ -43,26 +43,64 @@ public class SequentialLayout implements Layout {
      */
     private Location next;
     
+    /**
+     * The number of lines that the largest component on the current line is
+     * occupying. As components should never intersect one another, there may
+     * be some empty space when components of differing dimensions are added to
+     * the same line.
+     */
+    private int extent;
+    
     public SequentialLayout(Container container, Axis axis) {
         this.axis = axis;
-        parentBounds = container.getBounds();
+        parentBounds = container.bounds;
         next = parentBounds.getStart();
     }
     
     @Override
     public Region getBounds(int width, int height) {
-        int roomX = parentBounds.getWidth() - next.position,
-            roomY = parentBounds.getHeight() - next.line;
-        width = Math.min(roomX, width);
-        height = Math.min(roomY, height);
-        
         Location start = new Location(next);
-        next.setLocation(axis == Axis.X
-                         ? next.line
-                         : next.line + height + 1,
-                         axis == Axis.Y
-                         ? next.position
-                         : next.position + width + 1);
+        
+        switch (axis) {
+        case X:
+            {
+                int room = parentBounds.getWidth() - next.position;
+                
+                if (height > extent) extent = height;
+                
+                /*
+                 * If we overflow the width of the container, wrap this
+                 * component onto the next available line.
+                 */
+                if (width > room)
+                    start.setLocation(next.line + extent,
+                                      parentBounds.start.position);
+                
+                next.setLocation(next.line,
+                                 next.position + width);
+                
+                break;
+            }
+        case Y:
+            {
+                int room = parentBounds.getHeight() - next.line;
+                
+                if (width > extent) extent = width;
+                
+                /*
+                 * If we overflow the height of the container, wrap this
+                 * component at the next available position.
+                 */
+                if (height > room)
+                    start.setLocation(parentBounds.start.line,
+                                      next.position + extent);
+                
+                next.setLocation(next.line + height,
+                                 next.position);
+                
+                break;
+            }
+        }
         
         return new Region(start.line,
                           start.position,

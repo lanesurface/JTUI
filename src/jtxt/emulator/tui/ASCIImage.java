@@ -51,8 +51,8 @@ public class ASCIImage extends Component {
     private final BufferedImage source;
     
     /**
-     * The strings that make up this image; each string represents row of
-     * glyphs in the image.
+     * The array of strings which make up this image. Each string in the array
+     * corresponds to a row of characters in the ASCII image.
      */
     private GString[] cached;
     
@@ -62,9 +62,14 @@ public class ASCIImage extends Component {
      * @param source The image to use for creating this ASCII image.
      */
     public ASCIImage(BufferedImage source) {
+        java.util.Objects.requireNonNull(source, "The source image must be " +
+                                                 "loaded before conversion.");
         this.source = source;
     }
     
+    /*
+     * This method will resize the image...
+     */
     private BufferedImage resize(BufferedImage source, int width) {
         int height = source.getHeight() / (source.getWidth() / width);
         
@@ -95,8 +100,7 @@ public class ASCIImage extends Component {
                 int index = (int)Math.min(Math.round(lum / range), 
                                           ASCII_CHARS.length - 1);
                 char out = ASCII_CHARS[ASCII_CHARS.length - index - 1];
-                Glyph glyph = new Glyph(out, new Color(rgb));
-                line = line.append(glyph);
+                line = line.append(new Glyph(out, new Color(rgb)));
             }
             
             glyphs[y] = line;

@@ -73,7 +73,7 @@ public abstract class Component {
     
     /**
      * Renders the component and any children within the bounds of that this
-     * component has been inflated to. 
+     * component has been inflated to.
      * 
      * @param frame The frame that that terminal will draw next. Updating 
      *              characters within this frame will cause them to appear

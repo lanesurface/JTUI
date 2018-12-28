@@ -18,7 +18,11 @@ package jtxt.emulator.tui;
 import jtxt.emulator.Region;
 
 /**
- * 
+ * Allocates the bounds that a component will occupy within its parent 
+ * container, using the width and height of a component to determine the
+ * respective space that it may occupy. If these space requirements cannot be
+ * met (because there is not enough space within the parent), the Layout will
+ * return the largest amount of space that can be allocated within the parent.
  */
 public interface Layout {
     /**
@@ -43,12 +47,13 @@ public interface Layout {
      * it updates and only passes in more characters than can fit within these
      * bounds if it intends for them to be discarded.
      * 
-     * @param parent The parent of the component.
-     * @param component The component to calculate bounds for.
      * @param width The requested width of the component.
      * @param height The requested height for the component.
+     * @param parameter An optional argument to use when determining where the
+     *                  bounds should be allocated within the parent.
      * 
-     * @return The bounds within the frame that the given component can occupy.
+     * @return The bounds within the container that the given component can 
+     *         occupy.
      */
     Region getBounds(int width, int height);
 }

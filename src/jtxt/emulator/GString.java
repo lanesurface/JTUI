@@ -101,8 +101,16 @@ public class GString implements Iterable<Glyph> {
             otherLength = other.length();
         
         Glyph[] glyphs = new Glyph[thisLength + otherLength];
-        System.arraycopy(this.glyphs, 0, glyphs, 0, thisLength);
-        System.arraycopy(other.glyphs, 0, glyphs, thisLength, otherLength);
+        System.arraycopy(this.glyphs,
+                         0,
+                         glyphs,
+                         0,
+                         thisLength);
+        System.arraycopy(other.glyphs, 
+                         0,
+                         glyphs,
+                         thisLength,
+                         otherLength);
         
         return new GString(glyphs);
     }
@@ -236,13 +244,12 @@ public class GString implements Iterable<Glyph> {
      * attempt to balance the distribution of glyphs between lines.
      * </p>
      * 
-     * @param line The line of text to wrap.
      * @param length The maximum number of glyphs that can appear on a line
      *               before being wrapped.
      * 
      * @return An array of glyphs, where each line's length is guaranteed to
-     *         be no greater than the length, and spaces between words at the 
-     *         rightmost bound of a line are discarded.
+     *         be no greater than the given length, and spaces between words at
+     *         the rightmost bound of a line are discarded.
      */
     public GString[] wrap(int length) {
         if (glyphs.length > length) {

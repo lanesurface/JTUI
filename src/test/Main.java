@@ -33,13 +33,23 @@ public class Main {
         bnother.setSize(15, 6);
         term.add(bnother);
         
-        BufferedImage source = ImageIO.read(ClassLoader.getSystemResource("arches.jpg"));
+        BufferedImage source = ImageIO.read(
+            ClassLoader.getSystemResource("arches.jpg")
+        );
         ASCIImage image = new ASCIImage(source);
         Border border = new Border(image,
                                    Border.Type.DASHED,
                                    Color.GRAY);
         border.setSize(40, 15);
         term.add(border);
+        
+        TextBox box = new TextBox("Hello, O Beautiful World!",
+                                  TextBox.Justification.RIGHT);
+        Border bbox = new Border(box,
+                                 Border.Type.CROSS,
+                                 Color.MAGENTA);
+        bbox.setSize(25, 4);
+        term.add(bbox);
         
         term.update();
     }

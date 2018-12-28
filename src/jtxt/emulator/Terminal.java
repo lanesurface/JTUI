@@ -18,12 +18,14 @@ package jtxt.emulator;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
-import jtxt.emulator.tui.Layout;
+import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.RootContainer;
 
 /**
@@ -60,7 +62,7 @@ public final class Terminal {
     private Context context;
     
     /**
-     * The window for displaying the console to the screen. Used for Java2D
+     * The window for displaying the buffer to the screen. Used for Java2D
      * abstraction over the text-based application.
      * 
      * @see BufferedFrame
@@ -95,17 +97,17 @@ public final class Terminal {
      * belong to. Components that are not added to another container will be
      * direct ancestors of this container.
      * 
-     * @see #add(Component, Layout)
+     * @see #add(Component)
      */
     private Container root;
     
     /**
-     * The target for key events within the terminal. 
+     * The current component receiving key events.
      * 
      * @see #focus(Component)
      * @see #focusAt(Location)
      */
-    private Component focused;
+    private KeyboardTarget focused;
     
     /**
      * Creates a new instance of {@code Terminal} based on the given 
@@ -119,6 +121,14 @@ public final class Terminal {
         window = new JFrame(context.title);
         window.setResizable(false);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        window.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent event) {
+                // Temporarily send the key char for testing purposes.
+                focused.keyPressed(event.getKeyChar());
+                update();
+            }
+        });
         
         FontMetrics fm = window.getFontMetrics(context.font);
         context.setCharDimensions(fm.charWidth('X'),
@@ -148,32 +158,28 @@ public final class Terminal {
     }
     
     /**
-     * Get the properties of this {@code Terminal} as a {@code Configuration}.
+     * Gets the root container, which is the parent of all components within
+     * the terminal.
      * 
-     * @return The {@code Configuration} representing the properties of this
-     *         {@code Terminal}.
+     * @return The root container of this terminal.
      */
-    public Context getContext() {
-        return new Context(context);
-    }
-    
     public Container getRootContainer() {
         return root;
     }
     
+    /**
+     * Redraws all components within the terminal.
+     */
     public void update() {
+        frame.clear();
         root.draw(frame);
         frame.repaint();
     }
     
     /**
-     * Adds the given component to the terminal with the specified layout. The
-     * layout will determine the positioning of this component within the root
-     * container.
+     * Adds the component to the root container.
      * 
-     * @param component The component to add to the terminal.
-     * @param layout The layout to use for positioning this component within the
-     *               terminal.
+     * @param component The component to add to the root container.
      */
     public void add(Component component) {
         root.add(component);
@@ -184,7 +190,7 @@ public final class Terminal {
      * 
      * @param component The component to focus at.
      */
-    public void focus(Component component) {
+    public void focus(KeyboardTarget component) {
         focused = component;
     }
     
@@ -195,13 +201,16 @@ public final class Terminal {
      * @param location The location to focus at.
      */
     public void focusAt(Location location) {
-        for (Component c : root) {
-            Region bounds = c.getBounds();
-            if (location.inside(bounds)) {
-                focused = c;
+        for (Component component : root) {
+            Region bounds = component.getBounds();
+            if (location.inside(bounds) 
+                && component instanceof KeyboardTarget)
+            {
+                focused = (KeyboardTarget)component;
                 break;
             }
         }
+        
     }
     
     /**

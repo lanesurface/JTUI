@@ -34,7 +34,7 @@ public class Main {
         term.add(bnother);
         
         BufferedImage source = ImageIO.read(
-            ClassLoader.getSystemResource("arches.jpg")
+            ClassLoader.getSystemResource("app.jpg")
         );
         ASCIImage image = new ASCIImage(source);
         Border border = new Border(image,

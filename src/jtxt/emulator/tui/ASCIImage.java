@@ -67,17 +67,28 @@ public class ASCIImage extends Component {
         this.source = source;
     }
     
-    /*
-     * This method will resize the image...
-     */
-    private BufferedImage resize(BufferedImage source, int width) {
-        int height = source.getHeight() / (source.getWidth() / width);
+    private BufferedImage resize(BufferedImage source) {
+        int sourceWidth = source.getWidth(),
+            sourceHeight = source.getHeight();
+        java.awt.Dimension cdim = context.getCharacterDimensions();
         
-        Image scaled = source.getScaledInstance(width,
-                                                height,
+        /*
+         * In resizing the source image, we wish to keep the original aspect
+         * ratio during conversion, so that the scaled image has the 
+         * appropriate width and height to map to the number of glyphs that
+         * need to be output.
+         */
+        int xScale = sourceWidth / width,
+            yScale = xScale * (cdim.height / cdim.width);
+
+        int xChars = sourceWidth / xScale,
+            yChars = sourceHeight / yScale;
+        
+        Image scaled = source.getScaledInstance(xChars,
+                                                yChars,
                                                 Image.SCALE_SMOOTH);
-        BufferedImage image = new BufferedImage(width,
-                                                height,
+        BufferedImage image = new BufferedImage(xChars,
+                                                yChars,
                                                 BufferedImage.TYPE_INT_ARGB);
         Graphics graphics = image.getGraphics();
         graphics.drawImage(scaled, 0, 0, null);
@@ -112,14 +123,14 @@ public class ASCIImage extends Component {
     @Override
     public void draw(BufferedFrame frame) {
         if (cached == null
-            || cached.length != bounds.getHeight()
-            || cached[0].length() != bounds.getWidth())
+            || cached.length != height
+            || cached[0].length() != width)
         {
-            BufferedImage image = resize(source, bounds.getWidth());
+            BufferedImage image = resize(source);
             cached = mapToGlyphs(image);
         }
         
-        for (int line = 0; line < bounds.getHeight(); line++)
+        for (int line = 0; line < height; line++)
             frame.update(cached[line], new Location(bounds.start.line + line,
                                                     bounds.start.position));
     }

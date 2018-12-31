@@ -92,6 +92,8 @@ public class Border extends Component {
     public void setParent(Container parent) {
         super.setParent(parent);
         
+        component.setParent(parent);
+        component.setSize(width - 2, height - 2);
         component.bounds = new Region(bounds.start.line + 1,
                                       bounds.start.position + 1,
                                       bounds.end.line - 1,
@@ -103,15 +105,14 @@ public class Border extends Component {
         for (int line = bounds.start.line; line < bounds.end.line; line++) {
             /* 
              * Only fill the line when this is the top or bottom edge; 
-             * otherwise, only add the border at the left and rightmost
-             * positions.
+             * otherwise, add the border at the left and rightmost positions.
              */
             if (line == bounds.start.line || line == bounds.end.line - 1) {
                 for (int position = bounds.start.position;
                      position < bounds.end.position;
                      position++)
                 {
-                    Glyph[] glyphs = new Glyph[bounds.getWidth()];
+                    Glyph[] glyphs = new Glyph[width];
                     Arrays.fill(glyphs, span);
                     GString border = new GString(glyphs);
                     

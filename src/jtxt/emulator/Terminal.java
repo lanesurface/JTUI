@@ -15,7 +15,6 @@
  */
 package jtxt.emulator;
 
-import java.awt.AWTEvent;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -133,13 +132,6 @@ public final class Terminal {
                     lineSize = width / context.charSize.width;
                 context.setNumberOfLines(numLines);
                 context.setLineSize(lineSize);
-                /*
-                 * Snap the window to the closest dimensions that our font
-                 * allows for, so that the window's dimensions are always a
-                 * multiple of them.
-                 */
-//                window.setSize(lineSize * context.charSize.width,
-//                               numLines * context.charSize.height);
                 
                 if (root != null) update();
             }

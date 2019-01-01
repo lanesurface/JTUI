@@ -92,7 +92,9 @@ public class Border extends Component {
     public void setParent(Container parent) {
         super.setParent(parent);
         
-        component.setParent(parent);
+//        component.setParent(parent);
+        component.parent = parent;
+        component.context = context;
         component.setSize(width - 2, height - 2);
         component.bounds = new Region(bounds.start.line + 1,
                                       bounds.start.position + 1,

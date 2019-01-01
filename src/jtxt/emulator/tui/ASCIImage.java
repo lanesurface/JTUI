@@ -67,6 +67,15 @@ public class ASCIImage extends Component {
         this.source = source;
     }
     
+    /**
+     * Resize the given image to the appropriate aspect width and height to
+     * create an image with an similar aspect ratio when mapped to glyphs.
+     * 
+     * @param source The image to resize.
+     * 
+     * @return An approprately scaled image for the dimensions of the
+     *         characters and the requested size of this image.
+     */
     private BufferedImage resize(BufferedImage source) {
         int sourceWidth = source.getWidth(),
             sourceHeight = source.getHeight();

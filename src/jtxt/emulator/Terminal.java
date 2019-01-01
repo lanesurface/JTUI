@@ -15,9 +15,12 @@
  */
 package jtxt.emulator;
 
+import java.awt.AWTEvent;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
@@ -59,7 +62,7 @@ public final class Terminal {
      * Holds general information regarding the settings of this instance of the
      * terminal.
      */
-    private Context context;
+    public Context context;
     
     /**
      * The window for displaying the buffer to the screen. Used for Java2D
@@ -119,7 +122,28 @@ public final class Terminal {
         this.context = context;
         
         window = new JFrame(context.title);
-        window.setResizable(false);
+        window.setResizable(true);
+        window.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int width = window.getWidth(),
+                    height = window.getHeight();
+                
+                int numLines = height / context.charSize.height,
+                    lineSize = width / context.charSize.width;
+                context.setNumberOfLines(numLines);
+                context.setLineSize(lineSize);
+                /*
+                 * Snap the window to the closest dimensions that our font
+                 * allows for, so that the window's dimensions are always a
+                 * multiple of them.
+                 */
+//                window.setSize(lineSize * context.charSize.width,
+//                               numLines * context.charSize.height);
+                
+                if (root != null) update();
+            }
+        });
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.addKeyListener(new KeyAdapter() {
             @Override
@@ -137,6 +161,7 @@ public final class Terminal {
         frame = new BufferedFrame(context);
         frame.setPreferredSize(context.windowSize);
         frame.setFont(context.font);
+        context.subscribe((ResizeSubscriber)frame);
         window.add(frame);
         
         prompt = new Prompt();
@@ -155,6 +180,7 @@ public final class Terminal {
                            "window until the application has terminated.");
         
         root = new RootContainer(context);
+        context.subscribe((ResizeSubscriber)root);
     }
     
     /**

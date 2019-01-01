@@ -1,14 +1,11 @@
 package test;
 
 import java.awt.Color;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
 import jtxt.emulator.Terminal;
-import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.Border;
+import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.SequentialLayout;
 import jtxt.emulator.tui.TextBox;
@@ -21,8 +18,7 @@ public class Main {
                                     .build();
         
         Container root = term.getRootContainer();
-        root.setLayout(new SequentialLayout(root,
-                                            SequentialLayout.Axis.X));
+        root.setLayout(new SequentialLayout(SequentialLayout.Axis.X));
         
         TextBox nother = new TextBox("\\e[000;255;255mDoes this box also " +
                                      "paint itself correctly?",
@@ -33,15 +29,32 @@ public class Main {
         bnother.setSize(15, 6);
         term.add(bnother);
         
-        BufferedImage source = ImageIO.read(
-            ClassLoader.getSystemResource("app.jpg")
-        );
-        ASCIImage image = new ASCIImage(source);
-        Border border = new Border(image,
-                                   Border.Type.DASHED,
-                                   Color.GRAY);
-        border.setSize(40, 15);
-        term.add(border);
+//        long before = System.nanoTime();
+//        BufferedImage source = ImageIO.read(
+//            ClassLoader.getSystemResource("app.jpg")
+//        );
+//        ASCIImage image = new ASCIImage(source);
+//        long now = System.nanoTime();
+//        System.out.format("Image conversion took %d ms.",
+//                          (now - before) / 1_000_000);
+//        
+//        // RM RM RM
+//        before = System.nanoTime();
+//        jtxt.emulator.util.image.ASCIImage img = 
+//            new jtxt.emulator.util.image.ASCIImage(term.context,
+//                                                   "app.jpg",
+//                                                   jtxt.emulator.util.image.ColorSamplingStrategy.MODAL,
+//                                                   30);
+//        now = System.nanoTime();
+//        System.out.format("Image conversion took %d ms.",
+//                          (now - before) / 1_000_000);
+//        // RM RM RM
+//        
+//        Border border = new Border(image,
+//                                   Border.Type.DASHED,
+//                                   Color.GRAY);
+//        border.setSize(40, 15);
+//        term.add(border);
         
         TextBox box = new TextBox("Hello, O Beautiful World!",
                                   TextBox.Justification.RIGHT);
@@ -50,6 +63,10 @@ public class Main {
                                  Color.MAGENTA);
         bbox.setSize(25, 4);
         term.add(bbox);
+        
+        Button button = new Button("Okay", Color.GRAY);
+        button.setSize(10, 4);
+        term.add(button);
         
         term.update();
     }

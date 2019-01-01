@@ -1,9 +1,9 @@
 package jtxt.emulator.util;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,15 +27,15 @@ public class InitializationReader {
      */
     private Map<String, String> properties;
     
-    public InitializationReader(File iniFile) {
+    public InitializationReader(String fileName) {
         properties = new HashMap<>();
         
         try {
-            Files.readAllLines(Paths.get(iniFile.toURI()))
-                 .forEach(this::parse);
+            Path path = Paths.get(fileName);
+            Files.readAllLines(path).forEach(this::parse);
         }
         catch (IOException ie) {
-            System.err.println("Could not find the ini file " + iniFile);
+            System.err.println("Could not find the file " + fileName);
             return;
         }
     }

@@ -46,19 +46,6 @@ public class GString implements Iterable<Glyph> {
     }
     
     /**
-     * Initializes a new string with blank glyphs. This string is guaranteed to
-     * not appear in the terminal when rendered.
-     * 
-     * @see Glyph#BLANK
-     */
-    public GString(int length) {
-        Glyph[] glyphs = new Glyph[length];
-        Arrays.fill(glyphs, Glyph.BLANK);
-        
-        this.glyphs = glyphs;
-    }
-    
-    /**
      * Returns the length of this string of glyphs. Note that if this object
      * was created by the GString#of(String) method, the length of this object 
      * may not necessarily be the same length as the given string. See this 
@@ -180,6 +167,19 @@ public class GString implements Iterable<Glyph> {
     
     public GString substring(int start, int end) {
         return new GString(Arrays.copyOfRange(glyphs, start, end));
+    }
+    
+    /**
+     * Creates a new string with blank glyphs. This string is guaranteed to not
+     * appear in the terminal when rendered.
+     * 
+     * @see Glyph#BLANK
+     */
+    public static GString blank(int length) {
+        Glyph[] glyphs = new Glyph[length];
+        Arrays.fill(glyphs, Glyph.BLANK);
+        
+        return new GString(glyphs);
     }
     
     /**

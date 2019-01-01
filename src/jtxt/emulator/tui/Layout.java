@@ -56,4 +56,12 @@ public interface Layout {
      *         occupy.
      */
     Region getBounds(int width, int height);
+    
+    /**
+     * Sets the bounds of the parent container that this {@code Layout}
+     * manages.
+     * 
+     * @param parentBounds The bounds of the parent container.
+     */
+    void setParentBounds(Region parentBounds);
 }

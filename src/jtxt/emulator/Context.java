@@ -17,6 +17,8 @@ package jtxt.emulator;
 
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 
 import jtxt.emulator.util.InitializationReader;
 
@@ -27,7 +29,7 @@ import jtxt.emulator.util.InitializationReader;
  * {@code Configuration} object, and passed to the {@code Terminal} 
  * constructor.
  */
-public class Context {
+public class Context implements ResizeSubject {
     /**
      * The title of the application window.
      */
@@ -36,12 +38,12 @@ public class Context {
     /**
      * The number of characters per line in the text-pane.
      */
-    public final int lineSize;
+    private int lineSize;
     
     /**
      * The number of lines in the text-pane.
      */
-    public final int numLines;
+    private int numLines;
     
     /**
      * The font used for rendering text in the window.
@@ -62,6 +64,12 @@ public class Context {
      * @see setCharDimensions(int, int)
      */
     Dimension windowSize;
+
+    /**
+     * All of the objects which wish to be notified when the dimensions of the
+     * text interface are changed.
+     */
+    private List<ResizeSubscriber> resizeSubscribers;
 
     /**
      * Constructs a new {@code Configuration} object with properties identical
@@ -94,20 +102,21 @@ public class Context {
         this.title = title;
         this.lineSize = lineSize;
         this.numLines = numLines;
-        
         font = new Font(fontName, Font.PLAIN, fontSize);
+        
+        resizeSubscribers = new ArrayList<>();
     }
-    
+
     /**
      * Constructs a configuration for the given initialization file. See the
      * documentation for details about property values and their respective
      * format in the initialization file.
      * 
-     * @param initialzation An initialization file for this context, given
-     *                      appropriate key=value pairs for the emulator.
+     * @param fileName An initialization file for this context, given
+     *                 appropriate key=value pairs for the emulator.
      */
-    public Context(java.io.File initialzation) {
-        InitializationReader reader = new InitializationReader(initialzation);
+    public Context(String fileName) {
+        InitializationReader reader = new InitializationReader(fileName);
         title = reader.getValue("title");
         lineSize = Integer.parseInt(reader.getValue("num_chars_x"));
         numLines = Integer.parseInt(reader.getValue("num_chars_y"));
@@ -116,7 +125,7 @@ public class Context {
         String fontName = reader.getValue("font");
         font = new Font(fontName, Font.PLAIN, height);
     }
-    
+
     /**
      * Sets the dimensions of the font and calculates the size of the window
      * based on the number of lines, line size, and the font dimensions.
@@ -131,12 +140,48 @@ public class Context {
             h = numLines * charHeight;
         windowSize = new Dimension(w, h);
     }
-    
+
     public Dimension getCharacterDimensions() {
         return charSize;
     }
-    
+
     public Dimension getWindowDimensions() {
         return windowSize;
+    }
+
+    @Override
+    public void subscribe(ResizeSubscriber subscriber) {
+        resizeSubscribers.add(subscriber);
+    }
+
+    @Override
+    public void remove(ResizeSubscriber subscriber) {
+        resizeSubscribers.remove(subscriber);
+    }
+
+    @Override
+    public void resized() {
+        for (ResizeSubscriber subscriber : resizeSubscribers)
+            subscriber.resize(numLines, lineSize);
+    }
+    
+    public void setNumberOfLines(int numLines) {
+        this.numLines = numLines;
+        windowSize.height = numLines * charSize.height;
+        resized();
+    }
+    
+    public int getNumberOfLines() {
+        return numLines;
+    }
+    
+    public void setLineSize(int lineSize) {
+        this.lineSize = lineSize;
+        windowSize.width = lineSize * charSize.width;
+        resized();
+    }
+    
+    public int getLineSize() {
+        return lineSize;
     }
 }

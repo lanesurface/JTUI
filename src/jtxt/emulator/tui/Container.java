@@ -84,6 +84,7 @@ public abstract class Container extends Component
      */
     public void setLayout(Layout layout) {
         this.layout = layout;
+        layout.setParentBounds(bounds);
     }
     
     @Override

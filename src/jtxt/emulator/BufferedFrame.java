@@ -24,30 +24,34 @@ import java.util.Arrays;
 import javax.swing.JComponent;
 
 /**
- * Similar to a video frame, this is a frame of glyphs that represents the
- * entirety of characters that are available to be fetched and painted to the
- * screen by the renderer at a specific point in time. Not all characters added
- * to the frame may be painted; but, rather, the characters that are within the
- * clipping bounds that the renderer has set forth. TUI components therefore
- * should only be concerned with how they will appear on the screen, and
- * request that this class updates when their representation has been modified.
- * The renderer will determine which of these characters should be visible.
+ * Similar to a video frame, this is a frame of {@code Glyphs} that represents
+ * the entirety of characters that are available to be fetched and painted to
+ * the screen by the renderer at a specific point in time. TUI components are
+ * passed an instance of this class, and may paint themselves within the bounds
+ * that their parent container's layout has allocated to them. After all
+ * components in the terminal have finished painting, the Glyphs belonging to
+ * this frame are rasterized and rendered on the screen.
  * 
- * TODO: Since this buffer is now dynamically sized (as was meant to be 
- * originally), we only need to verify that the starting coordinates are within
- * valid indices within the buffer when inserting glyphs. The buffer will then
- * be resized accordingly for the number of lines/glyphs that overflow this
- * frame, and numLines and lineSize will be updated. We may need some sort of
- * resize method, which makes sure all lines have the same number of glyphs.
- * (Otherwise we could run into some issues when fetching regions.)
+ * TODO: Make this class serializable so that it may be passed over a network
+ *       connection, making way for SSH and other useful utilities.
  */
 @SuppressWarnings("serial")
-public class BufferedFrame extends JComponent {
+public class BufferedFrame extends JComponent
+                           implements ResizeSubscriber,
+                                      java.io.Serializable {
     /**
-     * The entirety of the characters that may appear within the terminal.
-     * Note, however, that not all of these characters are guaranteed to be
-     * painted, as the renderer itself determines which characters are within
-     * the clipping area of the screen.
+     * <P>
+     *  The rows of {@code GString}s which make up this frame. Each GString
+     *  represents a line in the buffer, where a line spans the width of the
+     *  frame specified in the initial context when the terminal that this
+     *  frame belongs to is constructed, or whenever this frame is resized.
+     * </P>
+     * <P>
+     *  This buffer is a dynamic list so that the frame is readily adaptable
+     *  when the frame is requested to resize; although writing outside the
+     *  bounds defined by the context is considered an error (and will throw
+     *  a {@code LocationOutOfBoundsException}).
+     * </P>
      */
     private java.util.List<GString> buffer;
     
@@ -57,15 +61,11 @@ public class BufferedFrame extends JComponent {
     private Context context;
     
     /**
-     * The number of lines in this frame.
+     * The region which spans from the origin (0,&nbsp;0) in the upper-left
+     * corner to the maximum dimensions on the x- and y-axis. Components
+     * which attempt to place characters outside of these bounds will trigger
+     * an exception.
      */
-    private int numLines;
-    
-    /**
-     * The width in characters of the buffer.
-     */
-    private int lineSize;
-    
     private Region bounds;
     
     /**
@@ -75,13 +75,14 @@ public class BufferedFrame extends JComponent {
      */
     public BufferedFrame(Context config) {
         this.context = config;
-        numLines = config.numLines;
-        lineSize = config.lineSize;
-        bounds = new Region(0, 0, numLines, lineSize);
+        bounds = new Region(0,
+                            0,
+                            context.getNumberOfLines(),
+                            context.getLineSize());
         buffer = new ArrayList<>();
-        
-        // Make sure there are no null characters in the buffer.
-        clear();
+        // FIXME: Do NOT call this method ourselves; the subject should resize
+        //        us once the frame is instantiated.
+        resize(context.getNumberOfLines(), context.getLineSize());
     }
     
     /**
@@ -114,7 +115,7 @@ public class BufferedFrame extends JComponent {
         for (int c = 0; c < glyphs.length(); c++)
             line = line.set(c + start.position, glyphs.get(c));
         
-        buffer.set(start.line, line.substring(0, context.lineSize));
+        buffer.set(start.line, line.substring(0, bounds.getWidth()));
     }
     
     /**
@@ -200,12 +201,25 @@ public class BufferedFrame extends JComponent {
      * Clear all characters out of this frame's buffer.
      */
     public void clear() {
-        for (int i = 0; i < numLines; i++) {
-            GString string = new GString(lineSize);
-            
-            if (buffer.size() <= i) buffer.add(string);
-            else buffer.set(i, string);
-        }
+        for (int line = 0; line < bounds.getHeight(); line++)
+            buffer.set(line, GString.blank(bounds.getWidth()));
+    }
+    
+    @Override
+    public void resize(int lines, int lineSize) {
+        /*
+         * The context has been resized, and so we need to update the buffer
+         * accordingly; otherwise, components which are passed this frame may
+         * unintentionally throw errors while attempting to draw themselves
+         * within the bounds that the layout has allocated for them.
+         */
+        for (int line = 0; line < lines; line++)
+            buffer.add(GString.blank(lineSize));
+        
+        bounds = new Region(0,
+                            0,
+                            lines,
+                            lineSize);
     }
     
     @Override
@@ -223,8 +237,8 @@ public class BufferedFrame extends JComponent {
                      context.windowSize.height);
         
         int baseline = g2d.getFontMetrics().getHeight();
-        for (int i = 0; i < numLines; i++) {
-            for (int j = 0; j < lineSize; j++) {
+        for (int i = 0; i < bounds.getHeight(); i++) {
+            for (int j = 0; j < bounds.getWidth(); j++) {
                 Glyph glyph = buffer.get(i)
                                     .get(j);
                 g2d.setColor(glyph.getColor());

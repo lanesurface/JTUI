@@ -33,7 +33,7 @@ public class SequentialLayout implements Layout {
      * The bounds of the parent container that components requesting bounding
      * information are being added to.
      */
-    private final Region parentBounds;
+    private Region parentBounds;
     
     /**
      * The upper-right corner of the bounding box that is to be returned to
@@ -51,9 +51,13 @@ public class SequentialLayout implements Layout {
      */
     private int extent;
     
-    public SequentialLayout(Container container, Axis axis) {
+    public SequentialLayout(Axis axis) {
         this.axis = axis;
-        parentBounds = container.bounds;
+    }
+    
+    @Override
+    public void setParentBounds(Region parentBounds) {
+        this.parentBounds = parentBounds;
         next = parentBounds.getStart();
     }
     

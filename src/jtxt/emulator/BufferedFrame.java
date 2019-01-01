@@ -18,8 +18,9 @@ package jtxt.emulator;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import javax.swing.JComponent;
 
@@ -36,9 +37,8 @@ import javax.swing.JComponent;
  *       connection, making way for SSH and other useful utilities.
  */
 @SuppressWarnings("serial")
-public class BufferedFrame extends JComponent
-                           implements ResizeSubscriber,
-                                      java.io.Serializable {
+public class BufferedFrame extends JComponent implements ResizeSubscriber,
+                                                         Serializable {
     /**
      * <P>
      *  The rows of {@code GString}s which make up this frame. Each GString
@@ -53,7 +53,7 @@ public class BufferedFrame extends JComponent
      *  a {@code LocationOutOfBoundsException}).
      * </P>
      */
-    private java.util.List<GString> buffer;
+    private List<GString> buffer;
     
     /**
      * Holds information about the way to render the text on the screen.
@@ -80,9 +80,6 @@ public class BufferedFrame extends JComponent
                             context.getNumberOfLines(),
                             context.getLineSize());
         buffer = new ArrayList<>();
-        // FIXME: Do NOT call this method ourselves; the subject should resize
-        //        us once the frame is instantiated.
-        resize(context.getNumberOfLines(), context.getLineSize());
     }
     
     /**
@@ -213,6 +210,7 @@ public class BufferedFrame extends JComponent
          * unintentionally throw errors while attempting to draw themselves
          * within the bounds that the layout has allocated for them.
          */
+        buffer.clear();
         for (int line = 0; line < lines; line++)
             buffer.add(GString.blank(lineSize));
         

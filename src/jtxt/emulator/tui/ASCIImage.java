@@ -108,10 +108,10 @@ public class ASCIImage extends Component {
     private GString[] mapToGlyphs(BufferedImage image) {
         double range = 255.0 / ASCII_CHARS.length;
         
-        GString[] glyphs = new GString[image.getHeight()];
-        for (int y = 0; y < image.getHeight(); y++) {
+        GString[] glyphs = new GString[height];
+        for (int y = 0; y < height; y++) {
             GString line = GString.of("");
-            for (int x = 0; x < image.getWidth(); x++) {
+            for (int x = 0; x < width; x++) {
                 int rgb = image.getRGB(x, y),
                     lum = ((rgb >> 16 & 0xFF) +
                            (rgb >> 8 & 0xFF) + 

@@ -59,6 +59,7 @@ public class SequentialLayout implements Layout {
     public void setParentBounds(Region parentBounds) {
         this.parentBounds = parentBounds;
         next = parentBounds.getStart();
+        extent = 0;
     }
     
     @Override

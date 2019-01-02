@@ -139,7 +139,7 @@ public class ASCIImage extends Component {
             cached = mapToGlyphs(image);
         }
         
-        for (int line = 0; line < bounds.getHeight(); line++)
+        for (int line = 0; line < height; line++)
             frame.update(cached[line], new Location(bounds.start.line + line,
                                                     bounds.start.position));
     }

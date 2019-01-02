@@ -25,7 +25,7 @@ import java.util.List;
 import javax.swing.JComponent;
 
 /**
- * Similar to a video frame, this is a frame of {@code Glyphs} that represents
+ * Similar to a video frame, this is a frame of {@code Glyph}s that represents
  * the entirety of characters that are available to be fetched and painted to
  * the screen by the renderer at a specific point in time. TUI components are
  * passed an instance of this class, and may paint themselves within the bounds
@@ -34,7 +34,7 @@ import javax.swing.JComponent;
  * this frame are rasterized and rendered on the screen.
  * 
  * TODO: Make this class serializable so that it may be passed over a network
- *       connection, making way for SSH and other useful utilities.
+ *       connection, making way for an RFB implementation.
  */
 @SuppressWarnings("serial")
 public class BufferedFrame extends JComponent implements ResizeSubscriber,
@@ -48,9 +48,8 @@ public class BufferedFrame extends JComponent implements ResizeSubscriber,
      * </P>
      * <P>
      *  This buffer is a dynamic list so that the frame is readily adaptable
-     *  when the frame is requested to resize; although writing outside the
-     *  bounds defined by the context is considered an error (and will throw
-     *  a {@code LocationOutOfBoundsException}).
+     *  when the frame is requested to resize; though characters added to the
+     *  buffer outside of the current bounds will be ignored.
      * </P>
      */
     private List<GString> buffer;
@@ -71,10 +70,10 @@ public class BufferedFrame extends JComponent implements ResizeSubscriber,
     /**
      * Creates a new frame.
      * 
-     * @param config The properties used for rendering the text.
+     * @param context The properties used for rendering the text.
      */
-    public BufferedFrame(Context config) {
-        this.context = config;
+    public BufferedFrame(Context context) {
+        this.context = context;
         bounds = new Region(0,
                             0,
                             context.getNumberOfLines(),

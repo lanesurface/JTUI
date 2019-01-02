@@ -71,8 +71,6 @@ public class SequentialLayout implements Layout {
             {
                 int room = parentBounds.getWidth() - next.position;
                 
-                if (height > extent) extent = height;
-                
                 /*
                  * If we overflow the width of the container, wrap this
                  * component onto the next available line.
@@ -80,6 +78,8 @@ public class SequentialLayout implements Layout {
                 if (width > room)
                     start.setLocation(next.line + extent,
                                       parentBounds.start.position);
+                
+                if (height > extent) extent = height;
                 
                 next.setLocation(start.line,
                                  start.position + width);
@@ -90,8 +90,6 @@ public class SequentialLayout implements Layout {
             {
                 int room = parentBounds.getHeight() - next.line;
                 
-                if (width > extent) extent = width;
-                
                 /*
                  * If we overflow the height of the container, wrap this
                  * component at the next available position.
@@ -99,6 +97,8 @@ public class SequentialLayout implements Layout {
                 if (height > room)
                     start.setLocation(parentBounds.start.line,
                                       next.position + extent);
+                
+                if (width > extent) extent = width;
                 
                 next.setLocation(start.line + height,
                                  start.position);

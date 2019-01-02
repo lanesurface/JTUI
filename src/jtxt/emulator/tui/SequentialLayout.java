@@ -81,8 +81,8 @@ public class SequentialLayout implements Layout {
                     start.setLocation(next.line + extent,
                                       parentBounds.start.position);
                 
-                next.setLocation(next.line,
-                                 next.position + width);
+                next.setLocation(start.line,
+                                 start.position + width);
                 
                 break;
             }
@@ -100,8 +100,8 @@ public class SequentialLayout implements Layout {
                     start.setLocation(parentBounds.start.line,
                                       next.position + extent);
                 
-                next.setLocation(next.line + height,
-                                 next.position);
+                next.setLocation(start.line + height,
+                                 start.position);
                 
                 break;
             }

@@ -133,6 +133,10 @@ public final class Terminal {
                 context.setNumberOfLines(numLines);
                 context.setLineSize(lineSize);
                 
+//                Dimension win = context.getWindowDimensions();
+//                window.setSize(win.width - win.width % lineSize,
+//                               win.height - win.height % numLines);
+                
                 if (root != null) update();
             }
         });

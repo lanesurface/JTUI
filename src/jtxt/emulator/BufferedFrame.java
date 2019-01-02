@@ -90,12 +90,10 @@ public class BufferedFrame extends JComponent implements ResizeSubscriber,
      * @param location The location to place this glyph.
      */
     public void update(Glyph glyph, Location location) {
-        if (!location.inside(bounds))
-            throw new LocationOutOfBoundsException(location);
+        if (!location.inside(bounds)) return;
         
-        buffer.set(location.line,
-                   buffer.get(location.line)
-                         .set(location.position, glyph));
+        buffer.set(location.line, buffer.get(location.line)
+                                        .set(location.position, glyph));
     }
 
     /**
@@ -107,50 +105,34 @@ public class BufferedFrame extends JComponent implements ResizeSubscriber,
      * @param start The {@code Location} of the first glyph.
      */
     public void update(GString glyphs, Location start) {
-        GString line = buffer.get(start.line);
+        if (!start.inside(bounds)) return;
         
-        for (int c = 0; c < glyphs.length(); c++)
+        GString line = buffer.get(start.line);
+        for (int c = 0;
+             c + start.position < bounds.getWidth() && c < glyphs.length();
+             c++)
+        {
             line = line.set(c + start.position, glyphs.get(c));
+        }
         
         buffer.set(start.line, line.substring(0, bounds.getWidth()));
     }
-    
-    /**
-     * Update the glyphs in the given region, such that the region is defined 
-     * as the bounding box for these glyphs. Glyphs that overflow the region
-     * will be discarded.
-     * 
-     * @param glyphs The glyphs to place within the given region.
-     * @param region The bounding box for these glyphs, such that all glyphs
-     *               are guaranteed to be within it. Glyphs may not take up the
-     *               full region, but will never overflow it.
-     */
-    public void update(GString glyphs, Region region) {
-        int width = region.getWidth(),
-            height = region.getHeight();
-        Location start = region.getStart();
-        
-        GString[] lines = glyphs.wrap(width);
-        for (int l = 0; l < height && l < lines.length; l++) {
-            for (int p = 0; p < width && p < lines[l].length(); p++) {
-                Location local = start.add(new Location(l, p));
-                update(lines[l].get(p), local);
-            }
-        }
-    }
 
     /**
-     * Updates the region in the renderer bounded in the upper-right corner by
-     * start, assuming that the renderer has allocated enough space to store
-     * this array in it's internal buffer.
+     * For each {@code GString} in the array, this method updates the frame at
+     * the start location, starting at the given line and incrementing by one
+     * for each subsequent element in the array, and retaining the position for
+     * all lines added to the buffer.
      * 
-     * @param glyphs
-     * @param start
+     * @param lines The strings to place in the frame.
+     * @param start The location for the first character in the first line of
+     *              the array.
      */
-    public void update(GString[] glyphs, Location start) {
-        for (int l = 0; l < glyphs.length; l++)
-            for (int p = 0; p < glyphs[l].length(); p++)
-                update(glyphs[l].get(p), start.add(new Location(l, p)));
+    public void update(GString[] lines, Location start) {
+        for (int line = 0; line < lines.length; line++)
+            for (int pos = 0; pos < lines[line].length(); pos++)
+                update(lines[line].get(pos),
+                       new Location(start.line + line, start.position + pos));
     }
 
     /**

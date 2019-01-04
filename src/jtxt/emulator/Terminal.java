@@ -126,29 +126,24 @@ public final class Terminal {
             @Override
             public void componentResized(ComponentEvent e) {
                 int width = window.getWidth(),
-                    height = window.getHeight();
-                
-                int numLines = height / context.charSize.height,
+                    height = window.getHeight(),
+                    numLines = height / context.charSize.height,
                     lineSize = width / context.charSize.width;
-                context.setNumberOfLines(numLines);
-                context.setLineSize(lineSize);
                 
-//                Dimension win = context.getWindowDimensions();
-//                window.setSize(win.width - win.width % lineSize,
-//                               win.height - win.height % numLines);
+                /*
+                 * FIXME: Slight rounding errors from using `int` causes the
+                 *        layout to wrap slightly slower than the window's
+                 *        resized.
+                 */
                 
+                context.setDimensions(numLines,
+                                      lineSize,
+                                      width,
+                                      height);
                 if (root != null) update();
             }
         });
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyTyped(KeyEvent event) {
-                // Temporarily send the key char for testing purposes.
-                focused.keyPressed(event.getKeyChar());
-                update();
-            }
-        });
         
         FontMetrics fm = window.getFontMetrics(context.font);
         context.setCharDimensions(fm.charWidth('X'),

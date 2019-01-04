@@ -7,8 +7,7 @@ import jtxt.emulator.Context;
 import jtxt.emulator.Region;
 import jtxt.emulator.ResizeSubscriber;
 
-public class RootContainer extends Container
-                           implements ResizeSubscriber {
+public class RootContainer extends Container implements ResizeSubscriber {
     /**
      * Creates a new container which occupies the entire area which was given
      * when the context was created. The size of this container will match the
@@ -34,24 +33,13 @@ public class RootContainer extends Container
         /*
          * The context has received a request to change the dimensions of the
          * text interface, so we need to update the bounds our children may
-         * render themselves within before they attempt to draw themselves
-         * again.
+         * render themselves within before before they are redrawn.
          */
         bounds = new Region(0,
                             0,
                             lines,
                             lineSize);
         layout.setParentBounds(bounds);
-
-        /*
-         * Now each of this container's children need to update their positions
-         * within their parent's new bounds.
-         * 
-         * FIXME: There are some issues with how the layout determines the
-         *        bounds of this container's children when the size of the
-         *        window changes.
-         */
-        for (Component child : children)
-            child.setParent(this);
+        children.forEach(child -> child.getBoundsFromParent());
     }
 }

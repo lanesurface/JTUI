@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.util.Objects;
 
 import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.GString;
@@ -46,7 +47,7 @@ public class ASCIImage extends Component {
     /**
      * The source image that this ASCII image is made from. We keep a reference
      * to it here so that we can resize the ASCII image later if we ever need 
-     * to.
+     * to. (This is also incredibly expensive to load.)
      */
     private final BufferedImage source;
     
@@ -62,8 +63,8 @@ public class ASCIImage extends Component {
      * @param source The image to use for creating this ASCII image.
      */
     public ASCIImage(BufferedImage source) {
-        java.util.Objects.requireNonNull(source, "The source image must be " +
-                                                 "loaded before conversion.");
+        Objects.requireNonNull(source, "The source image must be loaded " + 
+                                       "before conversion.");
         this.source = source;
     }
     
@@ -77,27 +78,11 @@ public class ASCIImage extends Component {
      *         characters and the requested size of this image.
      */
     private BufferedImage resize(BufferedImage source) {
-        int sourceWidth = source.getWidth(),
-            sourceHeight = source.getHeight();
-        java.awt.Dimension cdim = context.getCharacterDimensions();
-        
-        /*
-         * In resizing the source image, we wish to keep the original aspect
-         * ratio during conversion, so that the scaled image has the 
-         * appropriate width and height to map to the number of glyphs that
-         * need to be output.
-         */
-        int xScale = sourceWidth / width,
-            yScale = xScale * (cdim.height / cdim.width);
-
-        int xChars = sourceWidth / xScale,
-            yChars = sourceHeight / yScale;
-        
-        Image scaled = source.getScaledInstance(xChars,
-                                                yChars,
+        Image scaled = source.getScaledInstance(width,
+                                                height,
                                                 Image.SCALE_SMOOTH);
-        BufferedImage image = new BufferedImage(xChars,
-                                                yChars,
+        BufferedImage image = new BufferedImage(width,
+                                                height,
                                                 BufferedImage.TYPE_INT_ARGB);
         Graphics graphics = image.getGraphics();
         graphics.drawImage(scaled, 0, 0, null);

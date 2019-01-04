@@ -129,9 +129,8 @@ public class BufferedFrame extends JComponent implements ResizeSubscriber,
      */
     public void update(GString[] lines, Location start) {
         for (int line = 0; line < lines.length; line++)
-            for (int pos = 0; pos < lines[line].length(); pos++)
-                update(lines[line].get(pos),
-                       new Location(start.line + line, start.position + pos));
+            update(lines[line], new Location(start.line + line,
+                                             start.position));
     }
 
     /**

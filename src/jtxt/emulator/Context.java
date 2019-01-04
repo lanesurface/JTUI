@@ -165,6 +165,18 @@ public class Context implements ResizeSubject {
             subscriber.resize(numLines, lineSize);
     }
     
+    public void setDimensions(int numLines,
+                              int lineSize,
+                              int width,
+                              int height) {
+        this.numLines = numLines;
+        this.lineSize = lineSize;
+        windowSize.width = width;
+        windowSize.height = height;
+        
+        resized();
+    }
+    
     public void setNumberOfLines(int numLines) {
         this.numLines = numLines;
         windowSize.height = numLines * charSize.height;

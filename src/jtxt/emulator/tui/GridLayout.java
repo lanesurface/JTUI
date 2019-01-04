@@ -1,5 +1,7 @@
 package jtxt.emulator.tui;
 
+import java.util.Objects;
+
 import jtxt.emulator.Region;
 
 public class GridLayout implements Layout {
@@ -11,6 +13,8 @@ public class GridLayout implements Layout {
      * in those cells which are disabled, otherwise components might overlap.
      */
     private boolean[][] cells;
+    
+    private Region parentBounds;
     
     /**
      * The number of lines each row is made up of.
@@ -33,7 +37,8 @@ public class GridLayout implements Layout {
     
     @Override
     public void setParentBounds(Region parentBounds) {
-        // TODO
+        this.parentBounds = parentBounds;
+        rowLength = parentBounds.getHeight() / cells.length;
     }
     
     @Override

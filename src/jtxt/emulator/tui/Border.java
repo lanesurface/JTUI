@@ -89,13 +89,16 @@ public class Border extends Component {
     }
     
     @Override
-    public void setParent(Container parent) {
-        super.setParent(parent);
-        
-//        component.setParent(parent);
-        component.parent = parent;
-        component.context = context;
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
         component.setSize(width - 2, height - 2);
+    }
+    
+    @Override
+    void getBoundsFromParent() {
+        super.getBoundsFromParent();
+        
+        component.setParent(parent);
         component.bounds = new Region(bounds.start.line + 1,
                                       bounds.start.position + 1,
                                       bounds.end.line - 1,

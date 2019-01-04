@@ -24,13 +24,12 @@ import jtxt.emulator.BufferedFrame;
 /**
  * A container is a {@link Component} that owns other components. All
  * components that appear in the terminal must belong to a parent container,
- * which defines their layout within the terminal and keeps track of the
- * location of each. A container may contain other containers (as it's a
- * component itself). A container owned by another does not necessarily have
- * the same layout as its parent, thus making it easy to create complex
- * layouts.
+ * which defines their layout within the terminal. A container may contain
+ * other containers (as it's a component itself). A container owned by another
+ * does not necessarily have the same layout as its parent, thus making it easy 
+ * to create complex layouts.
  */
-public abstract class Container extends Component 
+public abstract class Container extends Component
                                 implements Iterable<Component> {
     /**
      * A collection of all the children this container owns. Components owned
@@ -61,6 +60,7 @@ public abstract class Container extends Component
     public void add(Component child) {
         children.add(child);
         child.setParent(this);
+        child.getBoundsFromParent();
     }
     
     /**

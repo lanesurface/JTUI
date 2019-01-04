@@ -59,7 +59,10 @@ public interface Layout {
     
     /**
      * Sets the bounds of the parent container that this {@code Layout}
-     * manages.
+     * manages. <STRONG>Note that this method will cause all previously
+     * allocated bounds within the parent to be freed, and so a call to
+     * {@link Component#getBoundsFromParent()} needs to be made for each child
+     * of the parent calling this method.</STRONG>
      * 
      * @param parentBounds The bounds of the parent container.
      */

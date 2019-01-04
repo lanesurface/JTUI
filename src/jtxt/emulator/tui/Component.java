@@ -15,6 +15,8 @@
  */
 package jtxt.emulator.tui;
 
+import java.util.Objects;
+
 import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.Context;
 import jtxt.emulator.Region;
@@ -93,6 +95,16 @@ public abstract class Component {
     }
     
     /**
+     * Requests the parent container's layout to allocate bounds within the
+     * parent for this component.
+     */
+    void getBoundsFromParent() {
+        Objects.requireNonNull(parent, "Cannot set bounds of a component " +
+                                       "with no parent.");
+        this.bounds = parent.layout.getBounds(width, height);
+    }
+    
+    /**
      * Sets the parent container of this component.
      * 
      * @param parent The parent container of this component.
@@ -100,13 +112,6 @@ public abstract class Component {
     void setParent(Container parent) {
         this.parent = parent;
         this.context = parent.context;
-        
-        /* 
-         * Get the bounds that this component may occupy within parent. If the
-         * parent doesn't have enough room to accommodate the requested width
-         * and height, we will wrap this component in a scrollable interface.
-         */
-        bounds = parent.layout.getBounds(width, height);
     }
     
     /**

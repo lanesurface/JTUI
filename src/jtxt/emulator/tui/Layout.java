@@ -67,4 +67,23 @@ public interface Layout {
      * @param parentBounds The bounds of the parent container.
      */
     void setParentBounds(Region parentBounds);
+    
+    public static class Parameters {
+        private int width;
+        
+        private int height;
+        
+        public Parameters(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+        
+        public int getWidth() {
+            return width;
+        }
+        
+        public int getHeight() {
+            return height;
+        }
+    }
 }

@@ -1,7 +1,19 @@
-
+/* 
+ * Copyright 2018 Lane W. Surface 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jtxt.emulator.tui;
-
-import java.util.ArrayList;
 
 import jtxt.emulator.Context;
 import jtxt.emulator.Region;
@@ -13,33 +25,38 @@ public class RootContainer extends Container implements ResizeSubscriber {
      * when the context was created. The size of this container will match the
      * dimensions passed to terminal's builder.
      */
-    public RootContainer(Context context) {
-        this.context = context;
+    public RootContainer(Context context,
+                         Layout layout,
+                         Component... children) {
+        super(null, layout, children);
         bounds = new Region(0,
                             0,
                             context.getNumberOfLines(),
                             context.getLineSize());
-        children = new ArrayList<>();
     }
-
+    
     @Override
-    public void setParent(Container parent) {
-        throw new UnsupportedOperationException("Cannot set the parent of a " +
-                                                "root container.");
+    public void setBounds(Region bounds) {
+        bounds = new Region(bounds.start.line,
+                            bounds.start.position,
+                            bounds.end.line,
+                            bounds.end.position);
+        layout.setParentBounds(bounds);
+        children.forEach(child ->
+            child.setBounds(layout.getBounds(parameters.getWidth(),
+                                             parameters.getHeight()))
+        );
     }
 
     @Override
     public void resize(int lines, int lineSize) {
         /*
-         * The context has received a request to change the dimensions of the
-         * text interface, so we need to update the bounds our children may
-         * render themselves within before before they are redrawn.
+         * The context notified us that the window has been resized, so the
+         * bounds of this container need to be adjusted.
          */
-        bounds = new Region(0,
-                            0,
-                            lines,
-                            lineSize);
-        layout.setParentBounds(bounds);
-        children.forEach(child -> child.getBoundsFromParent());
+        setBounds(new Region(0,
+                             0,
+                             lines,
+                             lineSize));
     }
 }

@@ -15,10 +15,7 @@
  */
 package jtxt.emulator.tui;
 
-import java.util.Objects;
-
 import jtxt.emulator.BufferedFrame;
-import jtxt.emulator.Context;
 import jtxt.emulator.Region;
 
 /**
@@ -40,88 +37,31 @@ import jtxt.emulator.Region;
  * context.
  * </p>
  */
-public abstract class Component {
+public interface Component {
     /**
-     * The region within the terminal that this component has control over.
-     * (This is used when determining which component should receive input
-     * events, as well as the bounds in which this component can draw itself.)
-     */
-    protected Region bounds;
-    
-    /**
-     * The number of characters that this component will occupy within a
-     * line in the terminal.
-     */
-    protected int width;
-    
-    /**
-     * The number of lines that this component will occupy within the terminal.
-     */
-    protected int height;
-    
-    /**
-     * The container that this component belongs to. Although only containers
-     * will make requests of their respective components, we may use this
-     * reference to ask that the container perform some action with us, such
-     * as modifying our positioning within it.
-     */
-    protected Container parent;
-    
-    /**
-     * A reference to the context which was constructed with this instance of
-     * the terminal, and which contains important rendering properties.
-     */
-    protected Context context;
-    
-    /**
-     * Renders the component and any children within the bounds of that this
-     * component has been inflated to.
+     * Renders the component within the bounds of that this component has been
+     * inflated to.
      * 
      * @param frame The frame that that terminal will draw next. Updating 
      *              characters within this frame will cause them to appear
      *              after the next update to the screen.
      */
-    public abstract void draw(BufferedFrame frame);
+    void draw(BufferedFrame frame);
     
     /**
-     * Sets the width and height of this component.
+     * Sets the bounds of this component to the given {@code Region}.
      * 
-     * @param width The width of this component.
-     * @param height The height of this component.
+     * @param region The new bounds that this component may use to render
+     *               itself within.
      */
-    public void setSize(int width, int height) {
-        this.width = width;
-        this.height = height;
-    }
+    void setBounds(Region region);
     
     /**
-     * Requests the parent container's layout to allocate bounds within the
-     * parent for this component.
-     */
-    void getBoundsFromParent() {
-        Objects.requireNonNull(parent, "Cannot set bounds of a component " +
-                                       "with no parent.");
-        this.bounds = parent.layout.getBounds(width, height);
-    }
-    
-    /**
-     * Sets the parent container of this component.
+     * Gets the parameters that define how this component should be placed
+     * within its parent container.
      * 
-     * @param parent The parent container of this component.
+     * @return The parameters which define how this component should be placed
+     *         within its parent.
      */
-    void setParent(Container parent) {
-        this.parent = parent;
-        this.context = parent.context;
-    }
-    
-    /**
-     * Gets the region which this component controls. This region is the bounds
-     * set forth for rendering, and which sub-components (if any) are contained
-     * in.
-     * 
-     * @return The region that this component controls.
-     */
-    public Region getBounds() {
-        return bounds;
-    }
+    Layout.Parameters getLayoutParameters();
 }

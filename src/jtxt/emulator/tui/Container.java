@@ -16,21 +16,26 @@
 package jtxt.emulator.tui;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import jtxt.emulator.BufferedFrame;
+import jtxt.emulator.Region;
 
 /**
- * A container is a {@link Component} that owns other components. All
- * components that appear in the terminal must belong to a parent container,
- * which defines their layout within the terminal. A container may contain
- * other containers (as it's a component itself). A container owned by another
- * does not necessarily have the same layout as its parent, thus making it easy 
- * to create complex layouts.
+ * A {@code Container} is a component which owns other components. Containers
+ * handle the placement of their children (the components which they own)
+ * inside the bounds that the container that owns themselves has allocated. A
+ * container that does not have a parent is called a {@code RootContainer} and
+ * lies at the top of the component hierarchy. Each container can decide which
+ * {@code Layout} it would like to use whenever it's constructed, and
+ * subcontainers don't necessarily have the same layout as their parents.
+ * 
+ * @see RootContainer
  */
-public abstract class Container extends Component
-                                implements Iterable<Component> {
+public class Container implements Component,
+                                  Iterable<Component> {
     /**
      * A collection of all the children this container owns. Components owned
      * by this container inherit certain properties of it. This container may
@@ -45,10 +50,31 @@ public abstract class Container extends Component
     protected Layout layout;
     
     /**
+     * TODO
+     */
+    protected Layout.Parameters parameters;
+    
+    /**
+     * The bounds that this container occupies.
+     */
+    protected Region bounds;
+    
+    /**
      * Each container can define its own background color for painting onto
      * the screen.
      */
     protected Color background;
+    
+    public Container(Layout.Parameters parameters,
+                     Layout layout,
+                     Component... children) {
+        this.parameters = parameters;
+        this.layout = layout;
+        Arrays.asList(children)
+              .stream()
+              .forEach(child -> add(child,
+                                    child.getLayoutParameters()));
+    }
     
     /**
      * Adds the component to this container, using the inflated properties
@@ -57,10 +83,10 @@ public abstract class Container extends Component
      * 
      * @param child The component to add to this container.
      */
-    public void add(Component child) {
+    public void add(Component child, Layout.Parameters parameters) {
         children.add(child);
-        child.setParent(this);
-        child.getBoundsFromParent();
+        child.setBounds(layout.getBounds(parameters.getWidth(),
+                                         parameters.getHeight()));
     }
     
     /**
@@ -74,29 +100,7 @@ public abstract class Container extends Component
         return children.toArray(new Component[0]);
     }
     
-    /**
-     * Sets the layout for this container. The layout is used to determine
-     * how components placed within this container will be oriented within
-     * the terminal. 
-     * 
-     * @param layout The layout to use for orienting components within this
-     *               container.
-     */
-    public void setLayout(Layout layout) {
-        this.layout = layout;
-        layout.setParentBounds(bounds);
-    }
-    
     @Override
-    public void draw(BufferedFrame frame) {
-        for (Component child : children)
-            child.draw(frame);
-    }
-    
-    /**
-     * Gets an iterator for the components within this container, and returns
-     * them according to the order they will appear in the terminal.
-     */
     public Iterator<Component> iterator() {
         return new ContainerIterator(this);
     }
@@ -133,12 +137,37 @@ public abstract class Container extends Component
             Component current = children[index++];
             if (current instanceof Container) {
                 Container container = (Container)current;
-                
                 for (Component component : container)
                     return component;
             }
             
             return current;
         }
+    }
+    
+    @Override
+    public void draw(BufferedFrame frame) {
+        for (Component child : children)
+            child.draw(frame);
+    }
+    
+    @Override
+    public void setBounds(Region bounds) {
+        this.bounds = bounds;
+        layout.setParentBounds(bounds);
+        /*
+         * Now we need to make sure each of our children has been adjusted
+         * for these new bounds.
+         */
+        for (Component child : children) {
+            Layout.Parameters params = child.getLayoutParameters();
+            child.setBounds(layout.getBounds(params.getWidth(),
+                                             params.getHeight()));
+        }
+    }
+    
+    @Override
+    public Layout.Parameters getLayoutParameters() {
+        return parameters;
     }
 }

@@ -19,8 +19,6 @@ import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 public class SequentialLayout implements Layout {
-    public static enum Axis { X, Y }
-    
     /**
      * The axis that components will be aligned on. If this value is set to
      * Axis.X, components will be layed out horizontally before being wrapped

@@ -19,17 +19,22 @@ import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.GString;
 import jtxt.emulator.Location;
 
-public class TextBox extends Component {
+public class TextBox extends DefaultComponent {
     /**
      * The text to draw onto the screen.
      */
     private GString text;
     
-    public static enum Justification { LEFT, CENTER, RIGHT }
+    public static enum Position { LEFT,
+                                  CENTER,
+                                  RIGHT }
     
-    private Justification justification;
+    private Position justification;
     
-    public TextBox(String text, Justification justification) {
+    public TextBox(Layout.Parameters parameters,
+                   String text,
+                   Position justification) {
+        this.parameters = parameters;
         this.text = GString.of(text);
         this.justification = justification;
     }
@@ -44,7 +49,7 @@ public class TextBox extends Component {
             case RIGHT:
                 spos += bounds.getWidth() - lines[line].length();
                 break;
-            case CENTER: 
+            case CENTER:
                 spos += (bounds.getWidth() - lines[line].length()) / 2;
                 break;
             default: break;

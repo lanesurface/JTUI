@@ -69,15 +69,13 @@ public class ASCIImage extends Component {
     }
     
     /**
-     * Resize the given image to the appropriate aspect width and height to
-     * create an image with an similar aspect ratio when mapped to glyphs.
+     * Resize the source image to the width and height given by the
+     * {@link #setSize(int, int)} method. Each of the pixels in the returned
+     * image represent a single glyph.
      * 
-     * @param source The image to resize.
-     * 
-     * @return An approprately scaled image for the dimensions of the
-     *         characters and the requested size of this image.
+     * @return An appropriately scaled image for the size of this component.
      */
-    private BufferedImage resize(BufferedImage source) {
+    private BufferedImage resize() {
         Image scaled = source.getScaledInstance(width,
                                                 height,
                                                 Image.SCALE_SMOOTH);
@@ -90,10 +88,12 @@ public class ASCIImage extends Component {
         return image;
     }
     
-    private GString[] mapToGlyphs(BufferedImage image) {
+    private void mapToGlyphs() {
+        BufferedImage image = resize();
+
         double range = 255.0 / ASCII_CHARS.length;
-        
-        GString[] glyphs = new GString[height];
+        cached = new GString[height];
+
         for (int y = 0; y < height; y++) {
             GString line = GString.of("");
             for (int x = 0; x < width; x++) {
@@ -108,21 +108,15 @@ public class ASCIImage extends Component {
                 line = line.append(new Glyph(out, new Color(rgb)));
             }
             
-            glyphs[y] = line;
+            cached[y] = line;
         }
-        
-        return glyphs;
     }
     
     @Override
     public void draw(BufferedFrame frame) {
         if (cached == null
             || cached.length != height
-            || cached[0].length() != width)
-        {
-            BufferedImage image = resize(source);
-            cached = mapToGlyphs(image);
-        }
+            || cached[0].length() != width) mapToGlyphs();
         
         for (int line = 0; line < height; line++)
             frame.update(cached[line], new Location(bounds.start.line + line,

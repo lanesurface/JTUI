@@ -19,7 +19,7 @@ public class Button extends Component {
     
     public Button(String text, Color textColor) {
         this.text = new TextBox(Glyphs.escape(textColor) + text,
-                                TextBox.Justification.CENTER);
+                                TextBox.Position.CENTER);
         outline = new Border(this.text,
                              Border.Type.DASHED,
                              Color.WHITE);

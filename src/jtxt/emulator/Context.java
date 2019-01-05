@@ -148,6 +148,26 @@ public class Context implements ResizeSubject {
     public Dimension getWindowDimensions() {
         return windowSize;
     }
+    
+    public void setDimensions(int numLines,
+                              int lineSize,
+                              int width,
+                              int height) {
+        this.numLines = numLines;
+        this.lineSize = lineSize;
+        windowSize.width = width;
+        windowSize.height = height;
+        
+        resized();
+    }
+    
+    public int getNumberOfLines() {
+        return numLines;
+    }
+    
+    public int getLineSize() {
+        return lineSize;
+    }
 
     @Override
     public void subscribe(ResizeSubscriber subscriber) {
@@ -163,37 +183,5 @@ public class Context implements ResizeSubject {
     public void resized() {
         for (ResizeSubscriber subscriber : resizeSubscribers)
             subscriber.resize(numLines, lineSize);
-    }
-    
-    public void setDimensions(int numLines,
-                              int lineSize,
-                              int width,
-                              int height) {
-        this.numLines = numLines;
-        this.lineSize = lineSize;
-        windowSize.width = width;
-        windowSize.height = height;
-        
-        resized();
-    }
-    
-    public void setNumberOfLines(int numLines) {
-        this.numLines = numLines;
-        windowSize.height = numLines * charSize.height;
-        resized();
-    }
-    
-    public int getNumberOfLines() {
-        return numLines;
-    }
-    
-    public void setLineSize(int lineSize) {
-        this.lineSize = lineSize;
-        windowSize.width = lineSize * charSize.width;
-        resized();
-    }
-    
-    public int getLineSize() {
-        return lineSize;
     }
 }

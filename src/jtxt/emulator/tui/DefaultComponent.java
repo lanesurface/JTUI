@@ -8,6 +8,10 @@ public abstract class DefaultComponent implements Component {
     
     protected Layout.Parameters parameters;
     
+    protected int width;
+    
+    protected int height;
+    
     @Override
     public void setBounds(Region bounds) {
         this.bounds = bounds;

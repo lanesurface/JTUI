@@ -34,19 +34,6 @@ public class RootContainer extends Container implements ResizeSubscriber {
                             context.getNumberOfLines(),
                             context.getLineSize());
     }
-    
-    @Override
-    public void setBounds(Region bounds) {
-        bounds = new Region(bounds.start.line,
-                            bounds.start.position,
-                            bounds.end.line,
-                            bounds.end.position);
-        layout.setParentBounds(bounds);
-        children.forEach(child ->
-            child.setBounds(layout.getBounds(parameters.getWidth(),
-                                             parameters.getHeight()))
-        );
-    }
 
     @Override
     public void resize(int lines, int lineSize) {

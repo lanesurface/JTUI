@@ -69,9 +69,11 @@ public interface Layout {
     void setParentBounds(Region parentBounds);
     
     public static class Parameters {
-        private int width;
+        protected int width;
         
-        private int height;
+        protected int height;
+        
+        protected Parameters() { /* Do nothing; we need time to calculate. */ }
         
         public Parameters(int width, int height) {
             this.width = width;

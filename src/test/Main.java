@@ -1,10 +1,12 @@
 
 package test;
 
+import java.awt.Color;
 import java.io.IOException;
 
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.Axis;
+import jtxt.emulator.tui.Border;
 import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
 import jtxt.emulator.tui.SequentialLayout;
@@ -51,15 +53,22 @@ public class Main {
         // button.setSize(10, 4);
         // term.add(button);
         
-        term.add(new RootContainer(
-            term.context,
-            new SequentialLayout(Axis.X),
-            new TextBox(
-                new Layout.Parameters(10, 4),
-                "Hallo, world!",
-                TextBox.Position.CENTER
+        term.add(
+            new RootContainer(
+                term.context,
+                new SequentialLayout(Axis.X),
+                new Border(
+                    Border.Type.DOTTED,
+                    Color.CYAN,
+                    new Layout.Parameters(-1, -1),
+                    new TextBox(
+                        new Layout.Parameters(10, 4),
+                        "Hallo, world!",
+                        TextBox.Position.CENTER
+                    )
+                )
             )
-        ));
+        );
 
         term.update();
     }

@@ -24,7 +24,7 @@ import jtxt.emulator.Glyph;
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
-public class Border extends Component {
+public class Border extends DefaultComponent {
     /**
      * The component that this border will draw itself around. This component
      * is inflated with the border, so that the border may be displayed on its
@@ -82,29 +82,35 @@ public class Border extends Component {
      * @param type The type of character to use for drawing the border.
      * @param color The color of the border.
      */
-    public Border(Component component, Type type, Color color) {
+    public Border(Type type,
+                  Color color,
+                  Layout.Parameters parameters,
+                  Component component) {
         this.component = component;
+        this.parameters = parameters;
+        width = parameters.getWidth();
+        height = parameters.getHeight();
         span = new Glyph(type.spanCharacter, color);
         edge = new Glyph(type.edgeCharacter, color);
     }
     
-    @Override
-    public void setSize(int width, int height) {
-        super.setSize(width, height);
-        component.setSize(width - 2, height - 2);
-    }
-    
-    @Override
-    void getBoundsFromParent() {
-        super.getBoundsFromParent();
-        
-        component.setParent(parent);
-        component.bounds = new Region(bounds.start.line + 1,
-                                      bounds.start.position + 1,
-                                      bounds.end.line - 1,
-                                      bounds.end.position - 1);
-    }
-    
+//    @Override
+//    public void setSize(int width, int height) {
+//        super.setSize(width, height);
+//        component.setSize(width - 2, height - 2);
+//    }
+//    
+//    @Override
+//    void getBoundsFromParent() {
+//        super.getBoundsFromParent();
+//        
+//        component.setParent(parent);
+//        component.bounds = new Region(bounds.start.line + 1,
+//                                      bounds.start.position + 1,
+//                                      bounds.end.line - 1,
+//                                      bounds.end.position - 1);
+//    }
+//    
     @Override
     public void draw(BufferedFrame frame) {
         for (int line = bounds.start.line; line < bounds.end.line; line++) {

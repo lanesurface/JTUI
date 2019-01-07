@@ -52,7 +52,7 @@ public class Container implements Component,
     /**
      * TODO
      */
-    protected Layout.Parameters parameters;
+    protected Object parameters;
     
     /**
      * The bounds that this container occupies.
@@ -65,15 +65,14 @@ public class Container implements Component,
      */
     protected Color background;
     
-    public Container(Layout.Parameters parameters,
+    public Container(Object parameters,
                      Layout layout,
                      Component... children) {
         this.parameters = parameters;
         this.layout = layout;
         Arrays.asList(children)
               .stream()
-              .forEach(child -> add(child,
-                                    child.getLayoutParameters()));
+              .forEach(this::add);
     }
     
     /**
@@ -83,10 +82,10 @@ public class Container implements Component,
      * 
      * @param child The component to add to this container.
      */
-    public void add(Component child, Layout.Parameters parameters) {
+    public void add(Component child) {
         children.add(child);
-        child.setBounds(layout.getBounds(parameters.getWidth(),
-                                         parameters.getHeight()));
+        Region bounds = layout.getBounds(child.getLayoutParameters());
+        child.setBounds(bounds);
     }
     
     /**
@@ -152,6 +151,11 @@ public class Container implements Component,
     }
     
     @Override
+    public Region getBounds() {
+        return bounds;
+    }
+    
+    @Override
     public void setBounds(Region bounds) {
         this.bounds = bounds;
         layout.setParentBounds(bounds);
@@ -160,14 +164,13 @@ public class Container implements Component,
          * for these new bounds.
          */
         for (Component child : children) {
-            Layout.Parameters params = child.getLayoutParameters();
-            child.setBounds(layout.getBounds(params.getWidth(),
-                                             params.getHeight()));
+            Object params = child.getLayoutParameters();
+            child.setBounds(layout.getBounds(params));
         }
     }
     
     @Override
-    public Layout.Parameters getLayoutParameters() {
+    public Object getLayoutParameters() {
         return parameters;
     }
 }

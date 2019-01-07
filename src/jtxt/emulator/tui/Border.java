@@ -84,12 +84,10 @@ public class Border extends DefaultComponent {
      */
     public Border(Type type,
                   Color color,
-                  Layout.Parameters parameters,
+                  Object parameters,
                   Component component) {
         this.component = component;
         this.parameters = parameters;
-        width = parameters.getWidth();
-        height = parameters.getHeight();
         span = new Glyph(type.spanCharacter, color);
         edge = new Glyph(type.edgeCharacter, color);
     }

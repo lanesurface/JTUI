@@ -26,7 +26,7 @@ import jtxt.emulator.GString;
 import jtxt.emulator.Glyph;
 import jtxt.emulator.Location;
 
-public class ASCIImage extends Component {
+public class ASCIImage extends DefaultComponent {
     /**
      * The characters that can be used for converting the image into ASCII
      * characters. These are stored in descending order of intensity.

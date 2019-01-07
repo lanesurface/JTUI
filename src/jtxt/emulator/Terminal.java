@@ -25,10 +25,12 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.JFrame;
 
+import jtxt.emulator.tui.Axis;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.RootContainer;
+import jtxt.emulator.tui.SequentialLayout;
 
 /**
  * <p>
@@ -170,7 +172,8 @@ public final class Terminal {
         System.out.println("Terminal created...\nWARNING: Do not close this " +
                            "window until the application has terminated.");
         
-        root = new RootContainer(context);
+        root = new RootContainer(context,
+                                 new SequentialLayout(Axis.X));
         context.subscribe((ResizeSubscriber)root);
     }
     

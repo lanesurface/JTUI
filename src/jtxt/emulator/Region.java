@@ -137,4 +137,22 @@ public class Region {
     public String toString() {
         return String.format("Region: [%s,%s]", start, end);
     }
+    
+    /**
+     * Creates a new {@code Region} from the given start position, determining
+     * the end {@code Location} from the width and height.
+     * 
+     * @param start The upper-left location of this region.
+     * @param width The width of this region.
+     * @param height The height of this region.
+     * 
+     * @return A new region which starts at the given location, and which will
+     *         have the width and height that are specified.
+     */
+    public static Region fromLocation(Location start, int width, int height) {
+        return new Region(start.line,
+                          start.position,
+                          start.line + height,
+                          start.line + width);
+    }
 }

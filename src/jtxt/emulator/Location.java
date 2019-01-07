@@ -62,6 +62,11 @@ public class Location {
         this.position = position;
     }
     
+    public void add(int lines, int characters) {
+        line += lines;
+        position += characters;
+    }
+    
     /**
      * Adds the line and position of this location to the specified location.
      * 
@@ -69,8 +74,16 @@ public class Location {
      * 
      * @return A new location that is the sum of these two locations.
      */
-    public Location add(Location other) {
-        return new Location(line + other.line, position + other.position);
+    public void add(Location other) {
+        add(other.line, other.position);
+    }
+    
+    public void advanceDown(int amount) {
+        add(amount, 0);
+    }
+    
+    public void advanceForward(int amount) {
+        add(0, amount);
     }
     
     /**

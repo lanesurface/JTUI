@@ -49,12 +49,20 @@ public interface Component {
     void draw(BufferedFrame frame);
     
     /**
+     * Gets the bounds that this component has been allocated within its parent
+     * container.
+     * 
+     * @return The bounds that this component occupies within its container.
+     */
+    Region getBounds();
+    
+    /**
      * Sets the bounds of this component to the given {@code Region}.
      * 
      * @param region The new bounds that this component may use to render
      *               itself within.
      */
-    void setBounds(Region region);
+    void setBounds(Region region);    
     
     /**
      * Gets the parameters that define how this component should be placed
@@ -63,5 +71,5 @@ public interface Component {
      * @return The parameters which define how this component should be placed
      *         within its parent.
      */
-    Layout.Parameters getLayoutParameters();
+    Object getLayoutParameters();
 }

@@ -53,6 +53,7 @@ public class Main {
         // button.setSize(10, 4);
         // term.add(button);
         
+        // Oh, wow, I don't think I quite like it like this.... :/
         term.add(
             new RootContainer(
                 term.context,
@@ -60,9 +61,9 @@ public class Main {
                 new Border(
                     Border.Type.DOTTED,
                     Color.CYAN,
-                    new Layout.Parameters(-1, -1),
+                    new SequentialLayout.SequentialParameters(-1, -1), // Hmm?
                     new TextBox(
-                        new Layout.Parameters(10, 4),
+                        new SequentialLayout.SequentialParameters(10, 4),
                         "Hallo, world!",
                         TextBox.Position.CENTER
                     )

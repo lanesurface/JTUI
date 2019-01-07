@@ -31,7 +31,7 @@ public class TextBox extends DefaultComponent {
     
     private Position justification;
     
-    public TextBox(Layout.Parameters parameters,
+    public TextBox(Object parameters,
                    String text,
                    Position justification) {
         this.parameters = parameters;

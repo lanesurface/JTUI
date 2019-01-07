@@ -15,6 +15,9 @@
  */
 package jtxt.emulator.tui;
 
+import java.util.Arrays;
+import java.util.List;
+
 import jtxt.emulator.Region;
 
 /**
@@ -55,37 +58,17 @@ public interface Layout {
      * @return The bounds within the container that the given component can 
      *         occupy.
      */
-    Region getBounds(int width, int height);
+    Region getBounds(Object parameters);
     
     /**
      * Sets the bounds of the parent container that this {@code Layout}
-     * manages. <STRONG>Note that this method will cause all previously
-     * allocated bounds within the parent to be freed, and so a call to
-     * {@link Component#getBoundsFromParent()} needs to be made for each child
-     * of the parent calling this method.</STRONG>
+     * manages.
      * 
      * @param parentBounds The bounds of the parent container.
      */
     void setParentBounds(Region parentBounds);
     
     public static class Parameters {
-        protected int width;
         
-        protected int height;
-        
-        protected Parameters() { /* Do nothing; we need time to calculate. */ }
-        
-        public Parameters(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
-        
-        public int getWidth() {
-            return width;
-        }
-        
-        public int getHeight() {
-            return height;
-        }
     }
 }

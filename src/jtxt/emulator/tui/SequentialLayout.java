@@ -61,7 +61,8 @@ public class SequentialLayout implements Layout {
     }
     
     @Override
-    public Region getBounds(int width, int height) {
+    public Region getBounds(Object params) {
+        SequentialParameters seqParams = (SequentialParameters)params;
         Location start = new Location(next);
         
         switch (axis) {
@@ -73,14 +74,14 @@ public class SequentialLayout implements Layout {
                  * If we overflow the width of the container, wrap this
                  * component onto the next available line.
                  */
-                if (width > room)
+                if (seqParams.width > room)
                     start.setLocation(next.line + extent,
                                       parentBounds.start.position);
                 
-                if (height > extent) extent = height;
+                if (seqParams.height > extent) extent = seqParams.height;
                 
                 next.setLocation(start.line,
-                                 start.position + width);
+                                 start.position + seqParams.width);
                 
                 break;
             }
@@ -92,22 +93,31 @@ public class SequentialLayout implements Layout {
                  * If we overflow the height of the container, wrap this
                  * component at the next available position.
                  */
-                if (height > room)
+                if (seqParams.height > room)
                     start.setLocation(parentBounds.start.line,
                                       next.position + extent);
                 
-                if (width > extent) extent = width;
+                if (seqParams.width > extent) extent = seqParams.width;
                 
-                next.setLocation(start.line + height,
+                next.setLocation(start.line + seqParams.height,
                                  start.position);
                 
                 break;
             }
         }
         
-        return new Region(start.line,
-                          start.position,
-                          start.line + height,
-                          start.position + width);
+        return Region.fromLocation(start,
+                                   seqParams.width,
+                                   seqParams.height);
+    }
+    
+    public static class SequentialParameters {
+        protected int width,
+                      height;
+        
+        public SequentialParameters(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
     }
 }

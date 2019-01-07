@@ -16,9 +16,10 @@ public class GridLayout implements Layout {
     private Region parentBounds;
     
     private static class Cell {
-        private int width;
+        private Region bounds;
         
-        private int height;
+        private int width,
+                    height;
         
         private boolean occupied;
         
@@ -27,7 +28,15 @@ public class GridLayout implements Layout {
             this.height = height;
         }
         
-        public void enable() {
+        private void setBounds(Region bounds) {
+            this.bounds = bounds;
+        }
+        
+        public Region getBounds() {
+            return bounds;
+        }
+        
+        private void enable() {
             occupied = true;
         }
         
@@ -52,50 +61,51 @@ public class GridLayout implements Layout {
             cells[i] = new Cell[dimensions[i]];
     }
     
-    protected Region getCellBounds(int row, int col) {
-        Cell cell = cells[row][col];
-        
-        // TODO: Replace `2` and `4` with something meaningful.
-        Location start = new Location(parentBounds.start.line * 2,
-                                      parentBounds.start.position * 4);
-        return new Region(start.line,
-                          start.position,
-                          start.line + cell.height,
-                          start.position + cell.width);
-    }
-    
-    /**
-     * Gets the {@link Layout.Parameters} object which represents the region
-     * defined by the chosen cell within the grid.
-     * 
-     * @param row The row within the layout that this parameter object should
-     *            be created for.
-     * @param col The column within the layout that this parameter object
-     *            should be created for.
-     * 
-     * @return A new {@code Layout.Parameter} object which represents the row
-     *         and column within this layout that has been selected.
-     */
-    public Layout.Parameters getParametersFromPosition(int row,
-                                                       int col) {
-        Region bounds = getCellBounds(row, col);
-        
-        return new Layout.Parameters(bounds.getWidth(),
-                                     bounds.getHeight());
-    }
-    
     @Override
     public void setParentBounds(Region parentBounds) {
         this.parentBounds = parentBounds;
+        
+        // We need to recalculate the bounds of each cell now.
+        Location current = parentBounds.getStart();
+        int height = parentBounds.getHeight() / cells.length;
+        
+        for (int row = 0; row < cells.length; row++) {
+            int width = parentBounds.getWidth() / cells[row].length;
+            
+            for (int col = 0; col < cells[row].length; col++) {
+                cells[row][col].setBounds(Region.fromLocation(current,
+                                                              width,
+                                                              height));
+                current.advanceForward(width);
+            }
+            
+            current = new Location(current.line + height,
+                                   parentBounds.start.position);
+        }
     }
     
     @Override
-    public Region getBounds(int width, int height) {
-        /*
-         * Every time that a component requests bounds within this layout, make
-         * sure to enable the cells which are now allocated to this component.
-         */
+    public Region getBounds(Object params) {
+        if (!(params instanceof GridParameters))
+            throw new IllegalArgumentException("Layout parameters must be " +
+                                               "of an appropriate type.");
         
-        return null;
+        GridParameters gridParams = (GridParameters)params;
+        
+        return new Region(gridParams.first.bounds.start,
+                          gridParams.last.bounds.end);
+    }
+    
+    public class GridParameters {
+        protected Cell first,
+                       last;
+        
+        public GridParameters(int startRow,
+                              int startCol,
+                              int endRow,
+                              int endCol) {
+            first = cells[startRow][startCol];
+            last = cells[endRow][endCol];
+        }
     }
 }

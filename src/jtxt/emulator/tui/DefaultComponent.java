@@ -1,24 +1,29 @@
 package jtxt.emulator.tui;
 
 import jtxt.emulator.Region;
-import jtxt.emulator.tui.Layout.Parameters;
 
 public abstract class DefaultComponent implements Component {
     protected Region bounds;
     
-    protected Layout.Parameters parameters;
+    protected Object parameters;
     
-    protected int width;
+    protected int width,
+                  height;
     
-    protected int height;
+    @Override
+    public Region getBounds() {
+        return bounds;
+    }
     
     @Override
     public void setBounds(Region bounds) {
         this.bounds = bounds;
+        width = bounds.getWidth();
+        height = bounds.getHeight();
     }
 
     @Override
-    public Parameters getLayoutParameters() {
+    public Object getLayoutParameters() {
         return parameters;
     }
 }

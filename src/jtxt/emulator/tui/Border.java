@@ -99,8 +99,12 @@ public class Border extends DefaultComponent {
     @Override
     public void setBounds(Region bounds) {
         super.setBounds(bounds);
+        
+        System.out.format("start=%s,end=%s%n",
+                          bounds.start,
+                          bounds.end);
         component.setBounds(new Region(bounds.start.line + 1,
-                                       bounds.start.position+ 1,
+                                       bounds.start.position + 1,
                                        bounds.end.line - 1,
                                        bounds.end.position - 1));
     }
@@ -121,7 +125,7 @@ public class Border extends DefaultComponent {
                     Arrays.fill(glyphs, span);
                     GString border = new GString(glyphs);
                     
-                    frame.update(border, new Location(line, 
+                    frame.update(border, new Location(line,
                                                       bounds.start.position));
                 }
                 

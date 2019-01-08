@@ -4,8 +4,6 @@ import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 public class GridLayout implements Layout {
-    private Region parentBounds;
-    
     protected Cell[][] cells;
     
     /**
@@ -27,15 +25,12 @@ public class GridLayout implements Layout {
     }
     
     @Override
-    public void setParentBounds(Region parentBounds) {
-        this.parentBounds = parentBounds;
-        
-        // We need to recalculate the bounds of each cell now.
-        Location current = parentBounds.getStart();
-        int height = parentBounds.getHeight() / cells.length;
+    public void setParentBounds(Region bounds) {
+        Location current = bounds.getStart();
+        int height = bounds.getHeight() / cells.length;
         
         for (int row = 0; row < cells.length; row++) {
-            int width = parentBounds.getWidth() / cells[row].length;
+            int width = bounds.getWidth() / cells[row].length;
             
             for (int col = 0; col < cells[row].length; col++) {
                 cells[row][col].setBounds(Region.fromLocation(current,
@@ -45,36 +40,28 @@ public class GridLayout implements Layout {
             }
             
             current = new Location(current.line + height,
-                                   parentBounds.start.position);
+                                   bounds.start.position);
         }
     }
     
-    private void enableCells(GridParameters params) {
-        for (int row = params.startRow; row < params.endRow; row++)
-            for (int col = params.startCol; col < params.endCol; col++)
-                cells[row][col].enable();
+    public GridParameters getParametersForCell(int row, int col) {
+        return new GridParameters(row,
+                                  col,
+                                  row,
+                                  col);
     }
     
-    @Override
-    public Region getBounds(Object params) {
-        if (!(params instanceof GridParameters))
-            throw new IllegalArgumentException("Layout parameters must be " +
-                                               "of an appropriate type.");
-        
-        // TODO: Ensure requested cells are unoccupied.
-        
-        GridParameters gridParams = (GridParameters)params;
-        enableCells(gridParams);
-        
-        Cell first = gridParams.first,
-             last = gridParams.last;
-        Region area = new Region(first.bounds.start,
-                                 last.bounds.end);
-        
-        return area;
+    public GridParameters getParametersForCellsFrom(int startRow,
+                                                    int startCol,
+                                                    int endRow,
+                                                    int endCol) {
+        return new GridParameters(startRow,
+                                  startCol,
+                                  endRow,
+                                  endCol);
     }
     
-    public class GridParameters {
+    protected class GridParameters {
         protected final Cell first,
                              last;
         
@@ -95,6 +82,42 @@ public class GridLayout implements Layout {
             first = cells[startRow][startCol];
             last = cells[endRow][endCol];
         }
+    }
+    
+    private void enableCells(GridParameters params) {
+        for (int row = params.startRow;
+             row < cells.length && row < params.endRow;
+             row++)
+        {
+            for (int col = params.startCol;
+                 col < cells[row].length && col < params.endCol;
+                 col++)
+            {
+                Cell cell = cells[row][col];
+                if (cell.isOccupied())
+                    throw new IllegalArgumentException("Cells are already " +
+                                                       "occupied.");
+                
+                cell.enable();
+            }
+        }
+    }
+    
+    @Override
+    public Region getBounds(Object params) {
+        if (!(params instanceof GridParameters))
+            throw new IllegalArgumentException("Layout parameters must be " +
+                                               "of an appropriate type.");
+        
+        GridParameters gridParams = (GridParameters)params;
+        enableCells(gridParams);
+        
+        Cell first = gridParams.first,
+             last = gridParams.last;
+        Region area = new Region(first.bounds.start,
+                                 last.bounds.end);
+        
+        return area;
     }
     
     private static class Cell {

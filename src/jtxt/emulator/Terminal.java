@@ -63,7 +63,7 @@ public final class Terminal {
      * Holds general information regarding the settings of this instance of the
      * terminal.
      */
-    public Context context;
+    private Context context;
     
     /**
      * The window for displaying the buffer to the screen. Used for Java2D
@@ -103,7 +103,7 @@ public final class Terminal {
      * 
      * @see #add(Component)
      */
-    private Container root;
+    private RootContainer root;
     
     /**
      * The current component receiving key events.
@@ -174,7 +174,11 @@ public final class Terminal {
         
         root = new RootContainer(context,
                                  new SequentialLayout(Axis.X));
-        context.subscribe((ResizeSubscriber)root);
+        context.subscribe(root);
+    }
+    
+    public Context getContext() {
+        return new Context(context);
     }
     
     /**
@@ -197,6 +201,8 @@ public final class Terminal {
      * @param root The new root container in the terminal.
      */
     public void setRootContainer(RootContainer root) {
+        context.remove(this.root);
+        context.subscribe(root);
         this.root = root;
     }
     

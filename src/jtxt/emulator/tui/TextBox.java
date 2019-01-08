@@ -62,7 +62,7 @@ public class TextBox extends DefaultComponent {
     @Override
     public void draw(BufferedFrame frame) {
         GString[] lines = text.wrap(width);
-        for (int line = 0; line < height; line++) {
+        for (int line = 0; line < lines.length; line++) {
             int spos = bounds.start.position;
             
             switch (justification) {

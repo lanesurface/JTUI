@@ -17,6 +17,7 @@ package jtxt.emulator.tui;
 
 import java.awt.Color;
 import java.util.Arrays;
+import java.util.Optional;
 
 import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.GString;
@@ -68,10 +69,15 @@ public class Border extends DefaultComponent {
      * @param component The component to draw this border around.
      * @param border The glyph to use when drawing the border.
      */
-    public Border(Component component, Glyph border) {
+    public Border(Glyph span,
+                  Optional<Glyph> edge,
+                  Component component) {
         this.component = component;
-        this.span = border;
-        this.edge = border;
+        this.parameters = component.getLayoutParameters();
+        this.span = span;
+        this.edge = edge.isPresent()
+                    ? edge.get()
+                    : span;
     }
     
     /**
@@ -84,31 +90,21 @@ public class Border extends DefaultComponent {
      */
     public Border(Type type,
                   Color color,
-                  Object parameters,
                   Component component) {
-        this.component = component;
-        this.parameters = parameters;
-        span = new Glyph(type.spanCharacter, color);
-        edge = new Glyph(type.edgeCharacter, color);
+        this(new Glyph(type.spanCharacter, color),
+             Optional.of(new Glyph(type.edgeCharacter, color)),
+             component);
     }
     
-//    @Override
-//    public void setSize(int width, int height) {
-//        super.setSize(width, height);
-//        component.setSize(width - 2, height - 2);
-//    }
-//    
-//    @Override
-//    void getBoundsFromParent() {
-//        super.getBoundsFromParent();
-//        
-//        component.setParent(parent);
-//        component.bounds = new Region(bounds.start.line + 1,
-//                                      bounds.start.position + 1,
-//                                      bounds.end.line - 1,
-//                                      bounds.end.position - 1);
-//    }
-//    
+    @Override
+    public void setBounds(Region bounds) {
+        super.setBounds(bounds);
+        component.setBounds(new Region(bounds.start.line + 1,
+                                       bounds.start.position+ 1,
+                                       bounds.end.line - 1,
+                                       bounds.end.position - 1));
+    }
+    
     @Override
     public void draw(BufferedFrame frame) {
         for (int line = bounds.start.line; line < bounds.end.line; line++) {

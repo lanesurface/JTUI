@@ -73,7 +73,7 @@ public class SequentialLayout implements Layout {
                 /*
                  * If we overflow the width of the container, wrap this
                  * component onto the next available line.
-                 */
+                 */ 
                 if (seqParams.width > room)
                     start.setLocation(next.line + extent,
                                       parentBounds.start.position);

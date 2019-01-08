@@ -25,7 +25,6 @@ public class Button extends DefaultComponent {
                                 TextBox.Position.CENTER);
         outline = new Border(Border.Type.DASHED,
                              Color.WHITE,
-                             parameters,
                              this.text);
         
         /*

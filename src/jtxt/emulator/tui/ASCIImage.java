@@ -62,9 +62,11 @@ public class ASCIImage extends DefaultComponent {
      * 
      * @param source The image to use for creating this ASCII image.
      */
-    public ASCIImage(BufferedImage source) {
+    public ASCIImage(Object parameters,
+                     BufferedImage source) {
         Objects.requireNonNull(source, "The source image must be loaded " + 
                                        "before conversion.");
+        this.parameters = parameters;
         this.source = source;
     }
     

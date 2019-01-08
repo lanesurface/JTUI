@@ -15,9 +15,6 @@
  */
 package jtxt.emulator.tui;
 
-import java.util.Arrays;
-import java.util.List;
-
 import jtxt.emulator.Region;
 
 /**
@@ -67,8 +64,4 @@ public interface Layout {
      * @param parentBounds The bounds of the parent container.
      */
     void setParentBounds(Region parentBounds);
-    
-    public static class Parameters {
-        
-    }
 }

@@ -16,6 +16,7 @@
 package jtxt.emulator.tui;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -70,6 +71,7 @@ public class Container implements Component,
                      Component... children) {
         this.parameters = parameters;
         this.layout = layout;
+        this.children = new ArrayList<>();
         Arrays.asList(children)
               .stream()
               .forEach(this::add);

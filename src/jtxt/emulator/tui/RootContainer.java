@@ -29,10 +29,11 @@ public class RootContainer extends Container implements ResizeSubscriber {
                          Layout layout,
                          Component... children) {
         super(null, layout, children);
-        bounds = new Region(0,
-                            0,
-                            context.getNumberOfLines(),
-                            context.getLineSize());
+        
+        setBounds(new Region(0,
+                             0,
+                             context.getNumberOfLines(),
+                             context.getLineSize()));
     }
 
     @Override

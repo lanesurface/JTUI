@@ -25,12 +25,32 @@ public class TextBox extends DefaultComponent {
      */
     private GString text;
     
+    /**
+     * The position within the bounds of this component that the text should
+     * be justified in.
+     */
     public static enum Position { LEFT,
                                   CENTER,
                                   RIGHT }
     
     private Position justification;
     
+    /**
+     * Creates a new {@code TextBox} containing the given string in the
+     * given position (see {@link Position}). The string is interpreted before
+     * the component is drawn, so the presence of escapes within the string
+     * will be applied to their respective characters. (In other words, there 
+     * is no need to convert an escaped string into a {@link GString}.
+     * 
+     * @param parameters The parameters for the layout that this component's
+     *                   parent container has defined. Note passing an
+     *                   incompatible parameter type into this argument may
+     *                   cause the layout to throw an exception when this
+     *                   component is added.
+     * @param text The text which this component should contain.
+     * @param justification The position within this component in which the
+     *                      text should be placed.
+     */
     public TextBox(Object parameters,
                    String text,
                    Position justification) {
@@ -41,8 +61,8 @@ public class TextBox extends DefaultComponent {
     
     @Override
     public void draw(BufferedFrame frame) {
-        GString[] lines = text.wrap(bounds.getWidth());
-        for (int line = 0; line < lines.length; line++) {
+        GString[] lines = text.wrap(width);
+        for (int line = 0; line < height; line++) {
             int spos = bounds.start.position;
             
             switch (justification) {

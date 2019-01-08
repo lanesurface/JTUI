@@ -4,46 +4,7 @@ import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 public class GridLayout implements Layout {
-//    /**
-//     * Each cell within this layout has a region which it represents. A row is
-//     * made up of one or more cells in which components can be placed when they
-//     * request bounds within their parent container. Enabled cells (true)
-//     * are those which are occupied; requesting components can only be placed
-//     * in those cells which are disabled, otherwise components might overlap.
-//     */
-//    private boolean[][] cells;
-    
     private Region parentBounds;
-    
-    private static class Cell {
-        private Region bounds;
-        
-        private int width,
-                    height;
-        
-        private boolean occupied;
-        
-        public Cell(int width, int height) {
-            this.width = width;
-            this.height = height;
-        }
-        
-        private void setBounds(Region bounds) {
-            this.bounds = bounds;
-        }
-        
-        public Region getBounds() {
-            return bounds;
-        }
-        
-        private void enable() {
-            occupied = true;
-        }
-        
-        public boolean isOccupied() {
-            return occupied;
-        }
-    }
     
     protected Cell[][] cells;
     
@@ -84,28 +45,69 @@ public class GridLayout implements Layout {
         }
     }
     
+    private void enableCells(GridParameters params) {
+        for (int row = params.startRow; row < params.endRow; row++)
+            for (int col = params.startCol; col < params.endCol; col++)
+                cells[row][col].enable();
+    }
+    
     @Override
     public Region getBounds(Object params) {
         if (!(params instanceof GridParameters))
             throw new IllegalArgumentException("Layout parameters must be " +
                                                "of an appropriate type.");
         
-        GridParameters gridParams = (GridParameters)params;
+        // TODO: Ensure requested cells are unoccupied.
         
-        return new Region(gridParams.first.bounds.start,
-                          gridParams.last.bounds.end);
+        GridParameters gridParams = (GridParameters)params;
+        enableCells(gridParams);
+        
+        Cell first = gridParams.first,
+             last = gridParams.last;
+        Region area = new Region(first.bounds.start,
+                                 last.bounds.end);
+        
+        return area;
     }
     
     public class GridParameters {
-        protected Cell first,
-                       last;
+        protected final Cell first,
+                             last;
+        
+        protected final int startRow,
+                            startCol,
+                            endRow,
+                            endCol;
         
         public GridParameters(int startRow,
                               int startCol,
                               int endRow,
                               int endCol) {
+            this.startRow = startRow;
+            this.startCol = startCol;
+            this.endRow = endRow;
+            this.endCol = endCol;
+            
             first = cells[startRow][startCol];
             last = cells[endRow][endCol];
+        }
+    }
+    
+    private static class Cell {
+        private Region bounds;
+        
+        private boolean occupied;
+        
+        private void setBounds(Region bounds) {
+            this.bounds = bounds;
+        }
+        
+        private void enable() {
+            occupied = true;
+        }
+        
+        public boolean isOccupied() {
+            return occupied;
         }
     }
 }

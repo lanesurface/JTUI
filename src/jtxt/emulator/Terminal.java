@@ -188,6 +188,19 @@ public final class Terminal {
     }
     
     /**
+     * This sets the root container of the terminal; however, do note that
+     * calling this method means that all components which have been added to
+     * the old root container will be discarded. (This is primarily because
+     * some information which these components are constructed with are not
+     * necessarily compatible with this object.)
+     * 
+     * @param root The new root container in the terminal.
+     */
+    public void setRootContainer(RootContainer root) {
+        this.root = root;
+    }
+    
+    /**
      * Redraws all components within the terminal.
      */
     public void update() {

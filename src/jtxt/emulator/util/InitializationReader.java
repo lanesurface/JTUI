@@ -1,6 +1,5 @@
 package jtxt.emulator.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,8 +16,6 @@ import java.util.Map;
  * format <a href="https://en.wikipedia.org/wiki/INI_file">here</a>.
  */
 public class InitializationReader {
-    private BufferedReader fileReader;
-    
     /**
      * A map of key-value pairs defined in the initialization file. The 
      * properties of this map must retain the order in which they are defined
@@ -32,7 +29,8 @@ public class InitializationReader {
         
         try {
             Path path = Paths.get(fileName);
-            Files.readAllLines(path).forEach(this::parse);
+            Files.readAllLines(path)
+                 .forEach(this::parse);
         }
         catch (IOException ie) {
             System.err.println("Could not find the file " + fileName);
@@ -55,8 +53,27 @@ public class InitializationReader {
         }
     }
     
-    public String getValue(String key) {
+    /**
+     * Fetches the property for the given key in this initialization file, and
+     * returns the raw string that was read from the file. If this property
+     * cannot be found... what happens?
+     * 
+     * @param key A key in the initialization file.
+     * 
+     * @return The value which the given key represents.
+     */
+    public String getRawValue(String key) {
         return properties.get(key);
+    }
+    
+    /**
+     * 
+     * @param key
+     * @return
+     */
+    public int getValueAsInt(String key) {
+        String value = properties.get(key);
+        return Integer.parseInt(value);
     }
     
     public boolean hasKey(String key) {

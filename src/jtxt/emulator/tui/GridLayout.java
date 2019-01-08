@@ -18,8 +18,12 @@ public class GridLayout implements Layout {
      */
     public GridLayout(int... dimensions) {
         cells = new Cell[dimensions.length][];
-        for (int i = 0; i < cells.length; i++)
+        for (int i = 0; i < cells.length; i++) {
             cells[i] = new Cell[dimensions[i]];
+            
+            for (int j = 0; j < dimensions[i]; j++)
+                cells[i][j] = new Cell();
+        }
     }
     
     @Override

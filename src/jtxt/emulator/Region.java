@@ -53,7 +53,7 @@ public class Region {
             throw new IllegalArgumentException("The start position [pos=" + 
                                                start.position + "] must be " + 
                                                "less than the end position " + 
-                                               "pos=[" + end.position + "].");
+                                               "[pos=" + end.position + "].");
         
         if (start.line > end.line)
             throw new IllegalArgumentException("The start line [line=" + 
@@ -153,6 +153,6 @@ public class Region {
         return new Region(start.line,
                           start.position,
                           start.line + height,
-                          start.line + width);
+                          start.position + width);
     }
 }

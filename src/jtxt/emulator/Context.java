@@ -112,18 +112,21 @@ public class Context implements ResizeSubject {
      * documentation for details about property values and their respective
      * format in the initialization file.
      * 
-     * @param fileName An initialization file for this context, given
+     * @param filename An initialization file for this context, given
      *                 appropriate key=value pairs for the emulator.
      */
-    public Context(String fileName) {
-        InitializationReader reader = new InitializationReader(fileName);
-        title = reader.getValue("title");
-        lineSize = Integer.parseInt(reader.getValue("num_chars_x"));
-        numLines = Integer.parseInt(reader.getValue("num_chars_y"));
+    public Context(String filename) {
+        InitializationReader reader = new InitializationReader(filename);
         
-        int height = Integer.parseInt(reader.getValue("text_size"));
-        String fontName = reader.getValue("font");
-        font = new Font(fontName, Font.PLAIN, height);
+        title = reader.getRawValue("title");
+        lineSize = reader.getValueAsInt("num_chars_x");
+        numLines = reader.getValueAsInt("num_chars_y");
+        
+        int size = reader.getValueAsInt("text_size");
+        String fontName = reader.getRawValue("font");
+        font = new Font(fontName, Font.PLAIN, size);
+        
+        resizeSubscribers = new ArrayList<>();
     }
 
     /**

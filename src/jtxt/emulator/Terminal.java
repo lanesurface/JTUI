@@ -20,11 +20,11 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.JFrame;
 
+import jtxt.Canvas;
 import jtxt.emulator.tui.Axis;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
@@ -124,6 +124,7 @@ public final class Terminal {
         
         window = new JFrame(context.title);
         window.setResizable(true);
+        
         window.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -172,7 +173,10 @@ public final class Terminal {
         System.out.println("Terminal created...\nWARNING: Do not close this " +
                            "window until the application has terminated.");
         
-        root = new RootContainer(context,
+        root = new RootContainer(new Region(0,
+                                            0,
+                                            context.getLineSize(),
+                                            context.getNumberOfLines()),
                                  new SequentialLayout(Axis.X));
         context.subscribe(root);
     }
@@ -211,8 +215,8 @@ public final class Terminal {
      */
     public void update() {
         frame.clear();
-        root.draw(frame);
-        frame.repaint();
+        root.draw((Canvas)frame);
+//        frame.repaint();
     }
     
     /**

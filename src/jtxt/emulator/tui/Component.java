@@ -15,7 +15,7 @@
  */
 package jtxt.emulator.tui;
 
-import jtxt.emulator.BufferedFrame;
+import jtxt.Canvas;
 import jtxt.emulator.Region;
 
 /**
@@ -40,13 +40,16 @@ import jtxt.emulator.Region;
 public interface Component {
     /**
      * Renders the component within the bounds of that this component has been
-     * inflated to.
+     * inflated to. A component which updates glyphs within the bounds that
+     * have been allocated by the layout can be sure that the characters will
+     * be updated appropriately; the behavior for a component which does not is
+     * undefined.
      * 
-     * @param frame The frame that that terminal will draw next. Updating 
-     *              characters within this frame will cause them to appear
-     *              after the next update to the screen.
+     * @param canvas An object on which a component can draw itself, and which
+     *               makes certain guarantees about conforming to the bounds
+     *               which are allocated by a {@code Container}'s layout.
      */
-    void draw(BufferedFrame frame);
+    void draw(Canvas canvas);
     
     /**
      * Gets the bounds that this component has been allocated within its parent
@@ -62,7 +65,7 @@ public interface Component {
      * @param region The new bounds that this component may use to render
      *               itself within.
      */
-    void setBounds(Region region);    
+    void setBounds(Region region);
     
     /**
      * Gets the parameters that define how this component should be placed

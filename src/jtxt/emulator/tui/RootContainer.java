@@ -15,7 +15,6 @@
  */
 package jtxt.emulator.tui;
 
-import jtxt.emulator.Context;
 import jtxt.emulator.Region;
 import jtxt.emulator.ResizeSubscriber;
 
@@ -25,15 +24,11 @@ public class RootContainer extends Container implements ResizeSubscriber {
      * when the context was created. The size of this container will match the
      * dimensions passed to terminal's builder.
      */
-    public RootContainer(Context context,
+    public RootContainer(Region bounds,
                          Layout layout,
                          Component... children) {
         super(null, layout, children);
-        
-        setBounds(new Region(0,
-                             0,
-                             context.getNumberOfLines(),
-                             context.getLineSize()));
+        setBounds(bounds);
     }
 
     @Override

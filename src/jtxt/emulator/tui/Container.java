@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import jtxt.Canvas;
 import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.Region;
 
@@ -147,7 +148,7 @@ public class Container implements Component,
     }
     
     @Override
-    public void draw(BufferedFrame frame) {
+    public void draw(Canvas frame) {
         for (Component child : children)
             child.draw(frame);
     }

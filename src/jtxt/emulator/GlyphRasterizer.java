@@ -15,13 +15,20 @@
  */
 package jtxt.emulator;
 
+import java.awt.Image;
+
 public interface GlyphRasterizer {
     /**
-     * TODO
+     * For the given frame of {@code Glyphs}, this method will rasterize the
+     * glyphs onto an image, according to the properties defined in the
+     * {@code Context} which was used to construct this instance.
      * 
-     * @param frame
+     * @param frame The frame of glyphs to rasterize to the image.
      * 
-     * @return
+     * @return An image which contains the appropriately rasterized glyphs, and
+     *         which is the same width and height set in the context the frame
+     *         has been constructed with, so that this image can be rendered
+     *         directly to the window.
      */
-    int[][] rasterize(BufferedFrame frame);
+    Image rasterize(BufferedFrame frame);
 }

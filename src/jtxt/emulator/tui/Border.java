@@ -19,7 +19,7 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.Optional;
 
-import jtxt.emulator.BufferedFrame;
+import jtxt.Canvas;
 import jtxt.emulator.GString;
 import jtxt.emulator.Glyph;
 import jtxt.emulator.Location;
@@ -100,9 +100,6 @@ public class Border extends DefaultComponent {
     public void setBounds(Region bounds) {
         super.setBounds(bounds);
         
-        System.out.format("start=%s,end=%s%n",
-                          bounds.start,
-                          bounds.end);
         component.setBounds(new Region(bounds.start.line + 1,
                                        bounds.start.position + 1,
                                        bounds.end.line - 1,
@@ -110,7 +107,7 @@ public class Border extends DefaultComponent {
     }
     
     @Override
-    public void draw(BufferedFrame frame) {
+    public void draw(Canvas frame) {
         for (int line = bounds.start.line; line < bounds.end.line; line++) {
             /* 
              * Only fill the line when this is the top or bottom edge; 

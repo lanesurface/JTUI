@@ -9,9 +9,12 @@ import javax.imageio.ImageIO;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.Border;
+import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.GridLayout;
+import jtxt.emulator.tui.GridLayout.GridParameters;
 import jtxt.emulator.tui.RootContainer;
+import jtxt.emulator.tui.TextBox;
 
 public class TestGridLayout {
     public static void main(String[] args) {
@@ -48,21 +51,35 @@ public class TestGridLayout {
                 ClassLoader.getSystemResource("app.jpg")
             );
             
-            Component photo = new ASCIImage(layout.getParametersForCellsFrom(0,
-                                                                             0,
-                                                                             2,
-                                                                             2),
+            GridParameters picParams = layout.getParametersForCellsInRange(0,
+                                                                           0,
+                                                                           1,
+                                                                           1);
+            Component photo = new ASCIImage(picParams,
                                             source),
                       border = new Border(Border.Type.DASHED,
                                           Color.GRAY,
                                           photo);
             terminal.add(border);
+            
+            GridParameters textParams = layout.getParametersForCellsInRange(2,
+                                                                            0,
+                                                                            2,
+                                                                            2);
+            Component text = new TextBox(textParams,
+                                         "Hello, O Beautiful World!",
+                                         TextBox.Position.CENTER);
+            terminal.add(text);
         }
         catch (IOException ie) {
             System.err.println("The resource could not be loaded from the " +
                                "classpath. Make sure the resource exists " +
                                "and the classpath is configured correctly.");
+            ie.printStackTrace();
+            
+            System.exit(-1);
         }
+        
         terminal.update();
     }
 }

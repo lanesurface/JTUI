@@ -21,7 +21,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 
-import jtxt.emulator.BufferedFrame;
+import jtxt.Canvas;
 import jtxt.emulator.GString;
 import jtxt.emulator.Glyph;
 import jtxt.emulator.Location;
@@ -115,7 +115,7 @@ public class ASCIImage extends DefaultComponent {
     }
     
     @Override
-    public void draw(BufferedFrame frame) {
+    public void draw(Canvas frame) {
         if (cached == null
             || cached.length != height
             || cached[0].length() != width) mapToGlyphs();

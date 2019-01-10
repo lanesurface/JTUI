@@ -33,9 +33,12 @@ public class GridLayout implements Layout {
             int width = bounds.getWidth() / cells[row].length;
             
             for (int col = 0; col < cells[row].length; col++) {
-                cells[row][col].setBounds(Region.fromLocation(current,
-                                                              width,
-                                                              height));
+                Cell cell = cells[row][col];
+                cell.setBounds(Region.fromLocation(current,
+                                                   width,
+                                                   height));
+                cell.occupied = false;
+                
                 current.advanceForward(width);
             }
             
@@ -51,17 +54,17 @@ public class GridLayout implements Layout {
                                   col);
     }
     
-    public GridParameters getParametersForCellsFrom(int startRow,
-                                                    int startCol,
-                                                    int endRow,
-                                                    int endCol) {
+    public GridParameters getParametersForCellsInRange(int startRow,
+                                                       int startCol,
+                                                       int endRow,
+                                                       int endCol) {
         return new GridParameters(startRow,
                                   startCol,
                                   endRow,
                                   endCol);
     }
     
-    protected class GridParameters {
+    public class GridParameters {
         protected final Cell first,
                              last;
         
@@ -94,11 +97,11 @@ public class GridLayout implements Layout {
                  col++)
             {
                 Cell cell = cells[row][col];
-                if (cell.isOccupied())
+                if (cell.occupied)
                     throw new IllegalArgumentException("Cells are already " +
                                                        "occupied.");
                 
-                cell.enable();
+                cell.occupied = true;
             }
         }
     }
@@ -114,27 +117,18 @@ public class GridLayout implements Layout {
         
         Cell first = gridParams.first,
              last = gridParams.last;
-        Region area = new Region(first.bounds.start,
-                                 last.bounds.end);
         
-        return area;
+        return new Region(first.bounds.start,
+                          last.bounds.end);
     }
     
     private static class Cell {
-        private Region bounds;
+        Region bounds;
         
-        private boolean occupied;
+        boolean occupied;
         
         private void setBounds(Region bounds) {
             this.bounds = bounds;
-        }
-        
-        private void enable() {
-            occupied = true;
-        }
-        
-        public boolean isOccupied() {
-            return occupied;
         }
     }
 }

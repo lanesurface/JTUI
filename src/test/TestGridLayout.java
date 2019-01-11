@@ -9,7 +9,6 @@ import javax.imageio.ImageIO;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.Border;
-import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.GridLayout;
 import jtxt.emulator.tui.GridLayout.GridParameters;
@@ -43,7 +42,8 @@ public class TestGridLayout {
         GridLayout layout = new GridLayout(new int[] { 1,
                                                        2,
                                                        3 });
-        RootContainer root = new RootContainer(terminal.getContext(), layout);
+        RootContainer root = new RootContainer(terminal.getContext().getBounds(),
+                                               layout);
         terminal.setRootContainer(root);
         
         try {

@@ -18,10 +18,11 @@ package jtxt.emulator;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Graphics;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import jtxt.Canvas;
@@ -86,6 +87,8 @@ public final class Terminal {
      * using hardware acceleration.
      */
     private GlyphRasterizer rasterizer;
+    
+    private JComponent paintComponent;
     
     /**
      * The prompt handles all user-input in the terminal. Separate from the
@@ -153,10 +156,19 @@ public final class Terminal {
                                   fm.getHeight());
         
         frame = new BufferedFrame(context);
-        frame.setPreferredSize(context.windowSize);
-        frame.setFont(context.font);
         context.subscribe((ResizeSubscriber)frame);
-        window.add(frame);
+        rasterizer = new SRasterizer(context);
+        paintComponent = new JComponent() {
+            @Override
+            public void paint(Graphics g) {
+                g.drawImage(rasterizer.rasterize(frame),
+                            0,
+                            0,
+                            null);
+            }
+        };
+        paintComponent.setPreferredSize(context.windowSize);
+        window.add(paintComponent);
         
         prompt = new Prompt();
         // The prompt spans a single line at the bottom of the window.
@@ -168,15 +180,14 @@ public final class Terminal {
         window.pack();
         window.setVisible(true);
 
-        // Warning message sent to the system console when an application is
-        // created from the command line.
+        /* 
+         * Warning message sent to the system console when an application is
+         * created from the command line.
+         */
         System.out.println("Terminal created...\nWARNING: Do not close this " +
                            "window until the application has terminated.");
         
-        root = new RootContainer(new Region(0,
-                                            0,
-                                            context.getLineSize(),
-                                            context.getNumberOfLines()),
+        root = new RootContainer(context.getBounds(),
                                  new SequentialLayout(Axis.X));
         context.subscribe(root);
     }
@@ -215,8 +226,9 @@ public final class Terminal {
      */
     public void update() {
         frame.clear();
-        root.draw((Canvas)frame);
-//        frame.repaint();
+        
+        root.draw(frame);
+        paintComponent.repaint();
     }
     
     /**

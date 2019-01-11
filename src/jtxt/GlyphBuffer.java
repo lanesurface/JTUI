@@ -8,7 +8,7 @@ import jtxt.emulator.Location;
 import jtxt.emulator.LocationOutOfBoundsException;
 import jtxt.emulator.Region;
 
-public abstract class GlyphBuffer implements Canvas {
+public class GlyphBuffer implements Canvas {
     /**
      * <P>
      *  The rows of {@code GString}s which make up this frame. Each GString
@@ -83,7 +83,7 @@ public abstract class GlyphBuffer implements Canvas {
             update(lines[line], new Location(start.line + line,
                                              start.position));
     }
-
+    
     /**
      * Returns the glyph which occupies the given location.
      * 
@@ -131,5 +131,9 @@ public abstract class GlyphBuffer implements Canvas {
     public void clear() {
         for (int line = 0; line < bounds.getHeight(); line++)
             buffer.set(line, GString.blank(bounds.getWidth()));
+    }
+    
+    public Region getBounds() {
+        return bounds;
     }
 }

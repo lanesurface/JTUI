@@ -54,15 +54,6 @@ public class BufferedFrame extends GlyphBuffer implements ResizeSubscriber,
         buffer = new ArrayList<>();
     }
     
-    /**
-     * Gets the {@code Region} in which glyphs can be added to this frame.
-     * 
-     * @return The region which defines the bounds of this frame.
-     */
-    Region getBounds() {
-        return bounds;
-    }
-    
     @Override
     public void resize(int lines, int lineSize) {
         /*
@@ -80,31 +71,4 @@ public class BufferedFrame extends GlyphBuffer implements ResizeSubscriber,
                             lines,
                             lineSize);
     }
-    
-//    @Override
-//    public void paintComponent(java.awt.Graphics g) {
-//        super.paintComponent(g);
-//        
-//        Graphics2D g2d = (Graphics2D)g;
-//        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-//                             RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-//        
-//        g2d.setColor(Color.BLACK);
-//        g2d.fillRect(0, 
-//                     0, 
-//                     context.windowSize.width, 
-//                     context.windowSize.height);
-//        
-//        int ascent = g2d.getFontMetrics().getAscent();
-//        for (int i = 0; i < bounds.getHeight(); i++) {
-//            for (int j = 0; j < bounds.getWidth(); j++) {
-//                Glyph glyph = buffer.get(i)
-//                                    .get(j);
-//                g2d.setColor(glyph.getColor());
-//                g2d.drawString(glyph.getCharacter() + "",
-//                               j * context.charSize.width,
-//                               i * context.charSize.height + ascent);
-//            }
-//        }
-//    }
 }

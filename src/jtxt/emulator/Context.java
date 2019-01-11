@@ -70,6 +70,8 @@ public class Context implements ResizeSubject {
      * text interface are changed.
      */
     private List<ResizeSubscriber> resizeSubscribers;
+    
+    private Region bounds;
 
     /**
      * Constructs a new {@code Configuration} object with properties identical
@@ -105,6 +107,10 @@ public class Context implements ResizeSubject {
         font = new Font(fontName, Font.PLAIN, fontSize);
         
         resizeSubscribers = new ArrayList<>();
+        bounds = new Region(0,
+                            0,
+                            numLines,
+                            lineSize);
     }
 
     /**
@@ -172,6 +178,10 @@ public class Context implements ResizeSubject {
         return lineSize;
     }
 
+    public Region getBounds() {
+        return bounds;
+    }
+    
     @Override
     public void subscribe(ResizeSubscriber subscriber) {
         resizeSubscribers.add(subscriber);
@@ -184,6 +194,11 @@ public class Context implements ResizeSubject {
 
     @Override
     public void resized() {
+        bounds = new Region(0,
+                            0,
+                            numLines,
+                            lineSize);
+        
         for (ResizeSubscriber subscriber : resizeSubscribers)
             subscriber.resize(numLines, lineSize);
     }

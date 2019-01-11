@@ -17,6 +17,9 @@ package jtxt.emulator;
 
 import java.awt.Image;
 
+import jtxt.Canvas;
+import jtxt.GlyphBuffer;
+
 public interface GlyphRasterizer {
     /**
      * For the given frame of {@code Glyphs}, this method will rasterize the
@@ -30,5 +33,5 @@ public interface GlyphRasterizer {
      *         has been constructed with, so that this image can be rendered
      *         directly to the window.
      */
-    Image rasterize(BufferedFrame frame);
+    Image rasterize(GlyphBuffer buffer);
 }

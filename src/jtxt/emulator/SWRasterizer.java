@@ -8,10 +8,10 @@ import java.awt.image.BufferedImage;
 
 import jtxt.GlyphBuffer;
 
-public class SRasterizer implements GlyphRasterizer {
+public class SWRasterizer implements GlyphRasterizer {
     protected Context context;
     
-    public SRasterizer(Context context) {
+    public SWRasterizer(Context context) {
         this.context = context;
     }
     
@@ -34,10 +34,12 @@ public class SRasterizer implements GlyphRasterizer {
                    context.windowSize.height);
         
         g.setFont(context.font);
-        int ascent = g.getFontMetrics().getAscent();
+        int ascent = g.getFontMetrics().getAscent(),
+            numLines = bounds.getHeight(),
+            lineSize = bounds.getWidth();
         
-        for (int i = 0; i < bounds.getHeight(); i++) {
-            for (int j = 0; j < bounds.getWidth(); j++) {
+        for (int i = 0; i < numLines; i++) {
+            for (int j = 0; j < lineSize; j++) {
                 Glyph glyph = buffer.getGlyph(new Location(i, j));
                 g.setColor(glyph.getColor());
                 g.drawString(glyph.getCharacter() + "",

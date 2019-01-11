@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import jtxt.Canvas;
-import jtxt.emulator.BufferedFrame;
+import jtxt.GlyphBuffer;
 import jtxt.emulator.Region;
 
 /**
@@ -73,9 +72,7 @@ public class Container implements Component,
         this.parameters = parameters;
         this.layout = layout;
         this.children = new ArrayList<>();
-        Arrays.asList(children)
-              .stream()
-              .forEach(this::add);
+        add(children);
     }
     
     /**
@@ -85,10 +82,13 @@ public class Container implements Component,
      * 
      * @param child The component to add to this container.
      */
-    public void add(Component child) {
-        children.add(child);
-        Region bounds = layout.getBounds(child.getLayoutParameters());
-        child.setBounds(bounds);
+    public void add(Component... children) {
+        Arrays.stream(children)
+        .forEach(child -> {
+            this.children.add(child);
+            Region bounds = layout.getBounds(child.getLayoutParameters());
+            child.setBounds(bounds);
+        });
     }
     
     /**
@@ -148,7 +148,7 @@ public class Container implements Component,
     }
     
     @Override
-    public void draw(Canvas frame) {
+    public void draw(GlyphBuffer frame) {
         for (Component child : children)
             child.draw(frame);
     }

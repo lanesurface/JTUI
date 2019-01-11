@@ -17,7 +17,6 @@ package jtxt.emulator;
 
 import java.awt.Image;
 
-import jtxt.Canvas;
 import jtxt.GlyphBuffer;
 
 public interface GlyphRasterizer {

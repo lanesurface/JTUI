@@ -21,7 +21,7 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 
-import jtxt.Canvas;
+import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
 import jtxt.emulator.Glyph;
 import jtxt.emulator.Location;
@@ -115,13 +115,13 @@ public class ASCIImage extends DefaultComponent {
     }
     
     @Override
-    public void draw(Canvas frame) {
+    public void draw(GlyphBuffer buffer) {
         if (cached == null
             || cached.length != height
             || cached[0].length() != width) mapToGlyphs();
         
         for (int line = 0; line < height; line++)
-            frame.update(cached[line], new Location(bounds.start.line + line,
-                                                    bounds.start.position));
+            buffer.update(cached[line], new Location(bounds.start.line + line,
+                                                     bounds.start.position));
     }
 }

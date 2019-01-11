@@ -25,7 +25,6 @@ import java.awt.event.ComponentEvent;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
-import jtxt.Canvas;
 import jtxt.emulator.tui.Axis;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
@@ -59,12 +58,12 @@ import jtxt.emulator.tui.SequentialLayout;
  * displayed can still use the OS terminal for logging.
  * </p>
  */
-public final class Terminal {
+public class Terminal {
     /**
      * Holds general information regarding the settings of this instance of the
      * terminal.
      */
-    private Context context;
+    protected Context context;
     
     /**
      * The window for displaying the buffer to the screen. Used for Java2D
@@ -72,13 +71,13 @@ public final class Terminal {
      * 
      * @see BufferedFrame
      */
-    private JFrame window;
+    protected JFrame window;
     
     /**
      * The current frame buffer, where all glyphs that are currently available
      * to be rendered are stored.
      */
-    private BufferedFrame frame;
+    protected BufferedFrame frame;
     
     /**
      * Used for converting glyphs (character and color values) into a series
@@ -88,6 +87,10 @@ public final class Terminal {
      */
     private GlyphRasterizer rasterizer;
     
+    /**
+     * The component which is used for rendering the rasterized image onto the
+     * window.
+     */
     private JComponent paintComponent;
     
     /**
@@ -116,6 +119,8 @@ public final class Terminal {
      */
     private KeyboardTarget focused;
     
+    private boolean ready;
+    
     /**
      * Creates a new instance of {@code Terminal} based on the given 
      * {@code Configuration}'s properties. 
@@ -127,28 +132,6 @@ public final class Terminal {
         
         window = new JFrame(context.title);
         window.setResizable(true);
-        
-        window.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int width = window.getWidth(),
-                    height = window.getHeight(),
-                    numLines = height / context.charSize.height,
-                    lineSize = width / context.charSize.width;
-                
-                /*
-                 * FIXME: Slight rounding errors from using `int` causes the
-                 *        layout to wrap slightly slower than the window's
-                 *        resized.
-                 */
-                
-                context.setDimensions(numLines,
-                                      lineSize,
-                                      width,
-                                      height);
-                if (root != null) update();
-            }
-        });
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         FontMetrics fm = window.getFontMetrics(context.font);
@@ -157,10 +140,15 @@ public final class Terminal {
         
         frame = new BufferedFrame(context);
         context.subscribe((ResizeSubscriber)frame);
-        rasterizer = new SRasterizer(context);
+        rasterizer = new SWRasterizer(context);
         paintComponent = new JComponent() {
             @Override
             public void paint(Graphics g) {
+                if (!ready) return;
+                /*
+                 * We convert the current `GlyphBuffer` to an image and paint
+                 * it to the screen.
+                 */
                 g.drawImage(rasterizer.rasterize(frame),
                             0,
                             0,
@@ -169,6 +157,10 @@ public final class Terminal {
         };
         paintComponent.setPreferredSize(context.windowSize);
         window.add(paintComponent);
+        
+        root = new RootContainer(context.getBounds(),
+                                 new SequentialLayout(Axis.X));
+        context.subscribe(root);
         
         prompt = new Prompt();
         // The prompt spans a single line at the bottom of the window.
@@ -179,7 +171,7 @@ public final class Terminal {
         
         window.pack();
         window.setVisible(true);
-
+        
         /* 
          * Warning message sent to the system console when an application is
          * created from the command line.
@@ -187,9 +179,8 @@ public final class Terminal {
         System.out.println("Terminal created...\nWARNING: Do not close this " +
                            "window until the application has terminated.");
         
-        root = new RootContainer(context.getBounds(),
-                                 new SequentialLayout(Axis.X));
-        context.subscribe(root);
+        Thread thread = new Thread(this::render);
+        thread.start();
     }
     
     public Context getContext() {
@@ -224,11 +215,48 @@ public final class Terminal {
     /**
      * Redraws all components within the terminal.
      */
-    public void update() {
-        frame.clear();
+    public void render() {
+        long last = System.currentTimeMillis(),
+             msPerUpdate = 1000 / context.updatesPerSecond,
+             lag = 0;
         
-        root.draw(frame);
-        paintComponent.repaint();
+        System.out.format("%d,%d%n",
+                          context.getNumberOfLines(),
+                          context.getLineSize());
+        
+        while (true) {
+            long now = System.currentTimeMillis(),
+                 elapsed = now - last;
+            last = now;
+            lag += elapsed;
+            
+            /*
+             * FIXME: `lag` is always less than `msPerUpdate`, which means that
+             *        the terminal will never update because it thinks that
+             */
+
+            while (lag >= msPerUpdate) {
+                // Make sure that the bounds of the window have not changed.
+                int width = window.getWidth(),
+                    height = window.getHeight(),
+                    numLines = height / context.charSize.height,
+                    lineSize = width / context.charSize.width;
+                
+                context.setDimensions(numLines,
+                                      lineSize,
+                                      width,
+                                      height);
+
+                frame.clear();
+
+                root.draw(frame);
+                ready = true;
+
+                paintComponent.repaint();
+
+                lag -= msPerUpdate;
+            }
+        }
     }
     
     /**
@@ -281,7 +309,8 @@ public final class Terminal {
                        fontName;
         private int lineSize,
                     numLines,
-                    textSize;
+                    textSize,
+                    updatesPerSecond;
         
         public Builder(String title) {
             this.title = title;
@@ -294,6 +323,7 @@ public final class Terminal {
             textSize = 12;
             lineSize = 80;
             numLines = 20;
+            updatesPerSecond = 60;
         }
         
         public Builder font(String fontName) {
@@ -315,12 +345,19 @@ public final class Terminal {
             return this;
         }
         
+        public Builder ups(int updatesPerSecond) {
+            this.updatesPerSecond = updatesPerSecond;
+            
+            return this;
+        }
+        
         public Terminal build() {
             return new Terminal(new Context(title,
                                             lineSize,
                                             numLines,
                                             fontName,
-                                            textSize));
+                                            textSize,
+                                            updatesPerSecond));
         }
     }
     

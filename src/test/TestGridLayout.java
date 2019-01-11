@@ -21,6 +21,7 @@ public class TestGridLayout {
                                         .dimensions(80, 20)
                                         .font("DejaVu Sans Mono")
                                         .textSize(11)
+                                        .ups(60)
                                         .build();
         /* 
          * This layout takes an array of integers, where each element in the
@@ -55,12 +56,9 @@ public class TestGridLayout {
                                                                            0,
                                                                            1,
                                                                            1);
-            Component photo = new ASCIImage(picParams,
-                                            source),
-                      border = new Border(Border.Type.DASHED,
-                                          Color.GRAY,
-                                          photo);
-            terminal.add(border);
+            Component photo = new Border(Border.Type.DASHED,
+                                         Color.GRAY,
+                                         new ASCIImage(picParams, source));
             
             GridParameters textParams = layout.getParametersForCellsInRange(2,
                                                                             0,
@@ -69,7 +67,13 @@ public class TestGridLayout {
             Component text = new TextBox(textParams,
                                          "Hello, O Beautiful World!",
                                          TextBox.Position.CENTER);
-            terminal.add(text);
+            
+            /*
+             * Components can be added with a single method invocation, as long
+             * as we are working with the container, and not the terminal.
+             */
+            root.add(photo,
+                     text);
         }
         catch (IOException ie) {
             System.err.println("The resource could not be loaded from the " +
@@ -79,7 +83,5 @@ public class TestGridLayout {
             
             System.exit(-1);
         }
-        
-        terminal.update();
     }
 }

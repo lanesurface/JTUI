@@ -37,7 +37,6 @@ public class Main {
         Component image = new ASCIImage(new SequentialParameters(40, 15),
                                         source);
         term.add(image);
-        term.update();
         
         Thread.sleep(1000);
         
@@ -45,6 +44,5 @@ public class Main {
         image.setBounds(Region.fromLocation(image.getBounds().start,
                                             50,
                                             15));
-        term.update();
     }
 }

@@ -15,7 +15,7 @@
  */
 package jtxt.emulator.tui;
 
-import jtxt.Canvas;
+import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
 import jtxt.emulator.Location;
 
@@ -60,7 +60,7 @@ public class TextBox extends DefaultComponent {
     }
     
     @Override
-    public void draw(Canvas frame) {
+    public void draw(GlyphBuffer buffer) {
         GString[] lines = text.wrap(width);
         for (int line = 0; line < lines.length; line++) {
             int spos = bounds.start.position;
@@ -75,8 +75,8 @@ public class TextBox extends DefaultComponent {
             default: break;
             }
             
-            frame.update(lines[line], new Location(bounds.start.line + line,
-                                                   spos));
+            buffer.update(lines[line], new Location(bounds.start.line + line,
+                                                    spos));
         }
     }
 }

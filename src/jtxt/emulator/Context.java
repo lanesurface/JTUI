@@ -71,7 +71,12 @@ public class Context implements ResizeSubject {
      */
     private List<ResizeSubscriber> resizeSubscribers;
     
+    /**
+     * The bounds of the root container of the terminal.
+     */
     private Region bounds;
+    
+    final int updatesPerSecond;
 
     /**
      * Constructs a new {@code Configuration} object with properties identical
@@ -80,8 +85,12 @@ public class Context implements ResizeSubject {
      * @param context The {@code Configuration} to replicate.
      */
     public Context(Context context) {
-        this(context.title, context.lineSize, context.numLines, 
-             context.font.getName(), context.font.getSize());
+        this(context.title,
+             context.lineSize,
+             context.numLines,
+             context.font.getName(),
+             context.font.getSize(),
+             context.updatesPerSecond);
         /*
          *  Make sure the dimensions are copied into the new context; this
          *  is used for returning context instance from the terminal, and
@@ -98,19 +107,27 @@ public class Context implements ResizeSubject {
      * @param fontName The name of the font to use for rendering the text in
      *                 the terminal.
      * @param fontSize The size of the terminal's font.
+     * @param updatesPerSecond The number of times per second that the terminal
+     *                         should poll the window to see if any changes
+     *                         need to be applied.
      */
-    public Context(String title, int lineSize, int numLines,
-                   String fontName, int fontSize) {
+    public Context(String title,
+                   int lineSize,
+                   int numLines,
+                   String fontName,
+                   int fontSize,
+                   int updatesPerSecond) {
         this.title = title;
-        this.lineSize = lineSize;
-        this.numLines = numLines;
         font = new Font(fontName, Font.PLAIN, fontSize);
         
         resizeSubscribers = new ArrayList<>();
+        this.lineSize = lineSize;
+        this.numLines = numLines;
         bounds = new Region(0,
                             0,
                             numLines,
                             lineSize);
+        this.updatesPerSecond = updatesPerSecond;
     }
 
     /**
@@ -133,6 +150,7 @@ public class Context implements ResizeSubject {
         font = new Font(fontName, Font.PLAIN, size);
         
         resizeSubscribers = new ArrayList<>();
+        this.updatesPerSecond = 60; // TODO: Replace default value.
     }
 
     /**
@@ -152,10 +170,6 @@ public class Context implements ResizeSubject {
 
     public Dimension getCharacterDimensions() {
         return charSize;
-    }
-
-    public Dimension getWindowDimensions() {
-        return windowSize;
     }
     
     public void setDimensions(int numLines,

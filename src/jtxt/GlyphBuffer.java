@@ -8,7 +8,7 @@ import jtxt.emulator.Location;
 import jtxt.emulator.LocationOutOfBoundsException;
 import jtxt.emulator.Region;
 
-public class GlyphBuffer implements Canvas {
+public class GlyphBuffer {
     /**
      * <P>
      *  The rows of {@code GString}s which make up this frame. Each GString

@@ -17,4 +17,6 @@ public class Document {
     public Document(File file) {
         this.file = file;
     }
+    
+    
 }

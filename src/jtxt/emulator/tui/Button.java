@@ -2,7 +2,7 @@ package jtxt.emulator.tui;
 
 import java.awt.Color;
 
-import jtxt.Canvas;
+import jtxt.GlyphBuffer;
 import jtxt.emulator.util.Glyphs;
 
 public class Button extends DefaultComponent {
@@ -29,7 +29,7 @@ public class Button extends DefaultComponent {
     }
     
     @Override
-    public void draw(Canvas frame) {
-        outline.draw(frame);
+    public void draw(GlyphBuffer buffer) {
+        outline.draw(buffer);
     }
 }

@@ -15,7 +15,7 @@
  */
 package jtxt.emulator.tui;
 
-import jtxt.Canvas;
+import jtxt.GlyphBuffer;
 import jtxt.emulator.Region;
 
 /**
@@ -45,11 +45,11 @@ public interface Component {
      * be updated appropriately; the behavior for a component which does not is
      * undefined.
      * 
-     * @param canvas An object on which a component can draw itself, and which
+     * @param buffer An object on which a component can draw itself, and which
      *               makes certain guarantees about conforming to the bounds
      *               which are allocated by a {@code Container}'s layout.
      */
-    void draw(Canvas canvas);
+    void draw(GlyphBuffer buffer);
     
     /**
      * Gets the bounds that this component has been allocated within its parent

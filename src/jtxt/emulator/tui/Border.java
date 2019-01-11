@@ -19,7 +19,7 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.Optional;
 
-import jtxt.Canvas;
+import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
 import jtxt.emulator.Glyph;
 import jtxt.emulator.Location;
@@ -107,7 +107,7 @@ public class Border extends DefaultComponent {
     }
     
     @Override
-    public void draw(Canvas frame) {
+    public void draw(GlyphBuffer buffer) {
         for (int line = bounds.start.line; line < bounds.end.line; line++) {
             /* 
              * Only fill the line when this is the top or bottom edge; 
@@ -122,17 +122,17 @@ public class Border extends DefaultComponent {
                     Arrays.fill(glyphs, span);
                     GString border = new GString(glyphs);
                     
-                    frame.update(border, new Location(line,
-                                                      bounds.start.position));
+                    buffer.update(border, new Location(line,
+                                                       bounds.start.position));
                 }
                 
                 continue;
             }
             
-            frame.update(edge, new Location(line, bounds.start.position));
-            frame.update(edge, new Location(line, bounds.end.position - 1));
+            buffer.update(edge, new Location(line, bounds.start.position));
+            buffer.update(edge, new Location(line, bounds.end.position - 1));
         }
         
-        component.draw(frame);
+        component.draw(buffer);
     }
 }

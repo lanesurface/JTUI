@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,12 @@ package jtxt.emulator.tui;
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
+/**
+ * A {@code Layout} which aligns components along an axis, and which wraps
+ * {@code Component}s which overflow the bounds of their parent container
+ * onto the next suitable {@code Location} within the container, such that no
+ * two components will ever intersect.
+ */
 public class SequentialLayout implements Layout {
     /**
      * The axis that components will be aligned on. If this value is set to
@@ -42,10 +48,9 @@ public class SequentialLayout implements Layout {
     private Location next;
     
     /**
-     * The number of lines that the largest component on the current line is
-     * occupying. As components should never intersect one another, there may
-     * be some empty space when components of differing dimensions are added to
-     * the same line.
+     * The width or height (depending on the {@code Axis} that this layout is
+     * initialized with) of the largest {@code Component} on this layout's
+     * major axis.
      */
     private int extent;
     
@@ -111,6 +116,10 @@ public class SequentialLayout implements Layout {
                                    seqParams.height);
     }
     
+    /**
+     * The parameter object which describes the width and height of a component
+     * that is added to this {@code Layout}'s container.
+     */
     public static class SequentialParameters {
         protected int width,
                       height;

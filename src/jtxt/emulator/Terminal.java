@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -58,7 +57,7 @@ import jtxt.emulator.tui.SequentialLayout;
  * displayed can still use the OS terminal for logging.
  * </p>
  */
-public class Terminal {
+public class Terminal implements ResizeSubscriber {
     /**
      * Holds general information regarding the settings of this instance of the
      * terminal.
@@ -74,10 +73,13 @@ public class Terminal {
     protected JFrame window;
     
     /**
-     * The current frame buffer, where all glyphs that are currently available
-     * to be rendered are stored.
+     * The next frame that needs to be rendered to the window. This frame could
+     * possibly change before it's rasterized, and so it's not guaranteed that
+     * all frames that are created will be rendered (especially in the case
+     * where the dimensions of the window change quickly, such as when it's
+     * resized).
      */
-    protected BufferedFrame frame;
+    protected BufferedFrame activeFrame;
     
     /**
      * Used for converting glyphs (character and color values) into a series
@@ -85,7 +87,7 @@ public class Terminal {
      * facilities to perform this process for us, but we may want to render
      * using hardware acceleration.
      */
-    private GlyphRasterizer rasterizer;
+    protected GlyphRasterizer rasterizer;
     
     /**
      * The component which is used for rendering the rasterized image onto the
@@ -109,7 +111,7 @@ public class Terminal {
      * 
      * @see #add(Component)
      */
-    private RootContainer root;
+    protected RootContainer root;
     
     /**
      * The current component receiving key events.
@@ -117,8 +119,9 @@ public class Terminal {
      * @see #focus(Component)
      * @see #focusAt(Location)
      */
-    private KeyboardTarget focused;
+    protected KeyboardTarget focused;
     
+    // Temporary variable to indicate if we can paint yet.
     private boolean ready;
     
     /**
@@ -138,8 +141,8 @@ public class Terminal {
         context.setCharDimensions(fm.charWidth('X'),
                                   fm.getHeight());
         
-        frame = new BufferedFrame(context);
-        context.subscribe((ResizeSubscriber)frame);
+        activeFrame = new BufferedFrame(context.getNumberOfLines(),
+                                        context.getLineSize());
         rasterizer = new SWRasterizer(context);
         paintComponent = new JComponent() {
             @Override
@@ -149,7 +152,7 @@ public class Terminal {
                  * We convert the current `GlyphBuffer` to an image and paint
                  * it to the screen.
                  */
-                g.drawImage(rasterizer.rasterize(frame),
+                g.drawImage(rasterizer.rasterize(activeFrame),
                             0,
                             0,
                             null);
@@ -172,14 +175,7 @@ public class Terminal {
         window.pack();
         window.setVisible(true);
         
-        /* 
-         * Warning message sent to the system console when an application is
-         * created from the command line.
-         */
-        System.out.println("Terminal created...\nWARNING: Do not close this " +
-                           "window until the application has terminated.");
-        
-        Thread thread = new Thread(this::render);
+        Thread thread = new Thread(this::poll);
         thread.start();
     }
     
@@ -210,30 +206,35 @@ public class Terminal {
         context.remove(this.root);
         context.subscribe(root);
         this.root = root;
+        
+        /*
+         * We need to do this initially as well, so that the interface isn't
+         * blank when the application starts up.
+         * 
+         * FIXME: For some reason, the window is still initially blank.
+         */
+        root.draw(activeFrame);
+        paintComponent.repaint();
     }
     
     /**
-     * Redraws all components within the terminal.
+     * Allows all components which have added themselves to the root container
+     * to draw themselves onto the active frame. They may or may not be
+     * rendered to the window before they are asked to draw themselves again,
+     * depending on the timing of this thread and Swing.
      */
-    public void render() {
+    private void poll() {
+        context.subscribe(this);
+        
         long last = System.currentTimeMillis(),
              msPerUpdate = 1000 / context.updatesPerSecond,
              lag = 0;
-        
-        System.out.format("%d,%d%n",
-                          context.getNumberOfLines(),
-                          context.getLineSize());
         
         while (true) {
             long now = System.currentTimeMillis(),
                  elapsed = now - last;
             last = now;
             lag += elapsed;
-            
-            /*
-             * FIXME: `lag` is always less than `msPerUpdate`, which means that
-             *        the terminal will never update because it thinks that
-             */
 
             while (lag >= msPerUpdate) {
                 // Make sure that the bounds of the window have not changed.
@@ -242,17 +243,15 @@ public class Terminal {
                     numLines = height / context.charSize.height,
                     lineSize = width / context.charSize.width;
                 
-                context.setDimensions(numLines,
-                                      lineSize,
-                                      width,
-                                      height);
-
-                frame.clear();
-
-                root.draw(frame);
-                ready = true;
-
-                paintComponent.repaint();
+                if (numLines != context.getNumberOfLines()
+                    || lineSize != context.getLineSize())
+                {
+                    // Don't cause us to redraw more that necessary.
+                    context.setDimensions(numLines,
+                                          lineSize,
+                                          width,
+                                          height);
+                }
 
                 lag -= msPerUpdate;
             }
@@ -377,5 +376,19 @@ public class Terminal {
         prompt.repaint();
         
         return prompt.getInput();
+    }
+
+    @Override
+    public void resize(int lines, int lineSize) {
+        activeFrame = new BufferedFrame(lines, lineSize);
+        
+        /* 
+         * We need to redraw all of the components now that the dimensions of
+         * the interface have changed, and notify the renderer that we are
+         * ready for an update.
+         */
+        root.draw(activeFrame);
+        ready = true;
+        paintComponent.repaint();
     }
 }

@@ -1,9 +1,29 @@
+/* 
+ * Copyright 2018, 2019 Lane W. Surface 
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package jtxt.emulator.tui;
 
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 public class GridLayout implements Layout {
+    /**
+     * All of the {@code Cell}s which {@code Component}s can occupy within this
+     * instance of the layout. See the constructor for more details about how
+     * the dimensions of this array are calculated.
+     */
     protected Cell[][] cells;
     
     /**
@@ -47,6 +67,17 @@ public class GridLayout implements Layout {
         }
     }
     
+    /**
+     * Creates an instance of {@code GridParameters} which uses the cell at the
+     * given width and height to calculate the bounds within the container this
+     * instance of the layout belongs to.
+     * 
+     * @param row The row within this layout of the cell.
+     * @param col The column within this layout of the cell.
+     * 
+     * @return An instance of {@code GridParameters} which represents the cell
+     *         at {@code row} and {@code col}.
+     */
     public GridParameters getParametersForCell(int row, int col) {
         return new GridParameters(row,
                                   col,
@@ -54,6 +85,22 @@ public class GridLayout implements Layout {
                                   col);
     }
     
+    /**
+     * Creates an instance of {@code GridParameters} for the given range of
+     * cells, so that the parameters specify that the {@code Component} which
+     * these parameters are applied to should occupy that entire range of cells
+     * within the layout.
+     * 
+     * @param startRow The row of the first cell in the range.
+     * @param startCol The column of the first cell in the range.
+     * @param endRow The row of the last cell in the range.
+     * @param endCol The column of the last cell in the range.
+     * 
+     * @return An instance of {@code GridParameters} which indicates that the
+     *         component should occupy all of the cells within the range from
+     *         the start (row,&nbsp;col) to the end (row,&nbsp;col), including
+     *         the last cell in this range.
+     */
     public GridParameters getParametersForCellsInRange(int startRow,
                                                        int startCol,
                                                        int endRow,
@@ -64,6 +111,10 @@ public class GridLayout implements Layout {
                                   endCol);
     }
     
+    /**
+     * The parameters which describe the {@code Cell}s which a
+     * {@code Component} should occupy within this layout.
+     */
     public class GridParameters {
         protected final Cell first,
                              last;
@@ -122,9 +173,22 @@ public class GridLayout implements Layout {
                           last.bounds.end);
     }
     
+    /**
+     * A region within this layout, which a given component can request to
+     * occupy, unless the {@code Cell} is already occupied by another
+     * component.
+     */
     private static class Cell {
+        /**
+         * The bounds within this layout's parent container that this cell
+         * occupies.
+         */
         Region bounds;
         
+        /**
+         * Whether this {@code Cell} is already occupied by another component
+         * within this layout.
+         */
         boolean occupied;
         
         private void setBounds(Region bounds) {

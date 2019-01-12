@@ -43,9 +43,9 @@ class Page extends GlyphBuffer {
                       marginRight,
                       marginLeft;
         
-        public PageSettings(int width, int height) {
-            this.width = width;
-            this.height = height;
+        public PageSettings(Size size) {
+            this.width = size.width;
+            this.height = size.height;
         }
         
         public PageSettings margin(int marginTop, 

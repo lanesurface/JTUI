@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,8 @@ public class Container implements Component,
     protected Layout layout;
     
     /**
-     * TODO
+     * The object which describes where this {@code Component} should be placed
+     * within it's parent container.
      */
     protected Object parameters;
     
@@ -61,8 +62,8 @@ public class Container implements Component,
     protected Region bounds;
     
     /**
-     * Each container can define its own background color for painting onto
-     * the screen.
+     * The color that will appear behind the text in this container and it's
+     * children (unless a child defines another color itself).
      */
     protected Color background;
     

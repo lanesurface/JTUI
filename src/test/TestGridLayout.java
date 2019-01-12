@@ -70,7 +70,7 @@ public class TestGridLayout {
             
             /*
              * Components can be added with a single method invocation, as long
-             * as we are working with the container, and not the terminal.
+             * as we are working with the container and not the terminal.
              */
             root.add(photo,
                      text);

@@ -25,13 +25,13 @@ import jtxt.emulator.Glyph;
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
-public class Border extends DefaultComponent {
-    /**
-     * The component that this border will draw itself around. This component
-     * is inflated with the border, so that the border may be displayed on its
-     * outer edge.
-     */
-    private Component component;
+public class Border extends Decorator {
+//    /**
+//     * The component that this border will draw itself around. This component
+//     * is inflated with the border, so that the border may be displayed on its
+//     * outer edge.
+//     */
+//    private Component component;
     
     /**
      * The type of border to draw. Each type defines the characters that it 
@@ -73,7 +73,6 @@ public class Border extends DefaultComponent {
                   Optional<Glyph> edge,
                   Component component) {
         this.component = component;
-        this.parameters = component.getLayoutParameters();
         this.span = span;
         this.edge = edge.isPresent()
                     ? edge.get()
@@ -108,6 +107,8 @@ public class Border extends DefaultComponent {
     
     @Override
     public void draw(GlyphBuffer buffer) {
+        super.draw(buffer);
+        
         for (int line = bounds.start.line; line < bounds.end.line; line++) {
             /* 
              * Only fill the line when this is the top or bottom edge; 
@@ -133,6 +134,6 @@ public class Border extends DefaultComponent {
             buffer.update(edge, new Location(line, bounds.end.position - 1));
         }
         
-        component.draw(buffer);
+//        component.draw(buffer);
     }
 }

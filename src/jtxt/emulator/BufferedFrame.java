@@ -33,42 +33,19 @@ import jtxt.GlyphBuffer;
  *       connection, making way for an RFB implementation.
  */
 @SuppressWarnings("serial")
-public class BufferedFrame extends GlyphBuffer implements ResizeSubscriber,
-                                                          Serializable {
-    /**
-     * Holds information about the way to render the text on the screen.
-     */
-    Context context;
-    
+public class BufferedFrame extends GlyphBuffer implements Serializable {
     /**
      * Creates a new frame.
      * 
      * @param context The properties used for rendering the text.
      */
-    public BufferedFrame(Context context) {
-        this.context = context;
+    public BufferedFrame(int numLines, int lineSize) {
         bounds = new Region(0,
                             0,
-                            context.getNumberOfLines(),
-                            context.getLineSize());
-        buffer = new ArrayList<>();
-    }
-    
-    @Override
-    public void resize(int lines, int lineSize) {
-        /*
-         * The context has been resized, and so we need to update the buffer
-         * accordingly; otherwise, components which are passed this frame may
-         * unintentionally throw errors while attempting to draw themselves
-         * within the bounds that the layout has allocated for them.
-         */
-        buffer.clear();
-        for (int line = 0; line < lines; line++)
-            buffer.add(GString.blank(lineSize));
-        
-        bounds = new Region(0,
-                            0,
-                            lines,
+                            numLines,
                             lineSize);
+        buffer = new ArrayList<>();
+        for (int line = 0; line < numLines; line++)
+            buffer.add(GString.blank(lineSize));
     }
 }

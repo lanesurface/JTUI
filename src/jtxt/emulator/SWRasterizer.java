@@ -43,8 +43,8 @@ public class SWRasterizer implements GlyphRasterizer {
                 Glyph glyph = buffer.getGlyph(new Location(i, j));
                 g.setColor(glyph.getColor());
                 g.drawString(glyph.getCharacter() + "",
-                               j * context.charSize.width,
-                               i * context.charSize.height + ascent);
+                             j * context.charSize.width,
+                             i * context.charSize.height + ascent);
             }
         }
         g.dispose();

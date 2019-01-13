@@ -174,7 +174,7 @@ public class GridLayout implements Layout {
     }
     
     /**
-     * A region within this layout, which a given component can request to
+     * A region within this layout which a given component can request to
      * occupy, unless the {@code Cell} is already occupied by another
      * component.
      */

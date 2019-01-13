@@ -47,6 +47,7 @@ public class TestGridLayout {
                                                layout);
         terminal.setRootContainer(root);
         
+        Component photo = null;
         try {
             BufferedImage source = ImageIO.read(
                 ClassLoader.getSystemResource("app.jpg")
@@ -56,24 +57,9 @@ public class TestGridLayout {
                                                                            0,
                                                                            1,
                                                                            1);
-            Component photo = new Border(Border.Type.DASHED,
-                                         Color.GRAY,
-                                         new ASCIImage(picParams, source));
-            
-            GridParameters textParams = layout.getParametersForCellsInRange(2,
-                                                                            0,
-                                                                            2,
-                                                                            2);
-            Component text = new TextBox(textParams,
-                                         "Hello, O Beautiful World!",
-                                         TextBox.Position.CENTER);
-            
-            /*
-             * Components can be added with a single method invocation, as long
-             * as we are working with the container and not the terminal.
-             */
-            root.add(photo,
-                     text);
+            photo = new Border(Border.Type.DASHED,
+                               Color.GRAY,
+                               new ASCIImage(picParams, source));
         }
         catch (IOException ie) {
             System.err.println("The resource could not be loaded from the " +
@@ -83,5 +69,20 @@ public class TestGridLayout {
             
             System.exit(-1);
         }
+        
+        GridParameters textParams = layout.getParametersForCellsInRange(2,
+                                                                        0,
+                                                                        2,
+                                                                        2);
+        Component text = new TextBox(textParams,
+                                     "Hello, O Beautiful World!",
+                                     TextBox.Position.CENTER);
+        
+        /*
+         * Components can be added with a single method invocation, as long
+         * as we are working with the container and not the terminal.
+         */
+        root.add(photo,
+                 text);
     }
 }

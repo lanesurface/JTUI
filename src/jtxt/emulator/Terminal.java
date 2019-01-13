@@ -19,7 +19,6 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -30,6 +29,7 @@ import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.RootContainer;
 import jtxt.emulator.tui.SequentialLayout;
+import sun.awt.AWTAccessor.ContainerAccessor;
 
 /**
  * <p>
@@ -57,7 +57,8 @@ import jtxt.emulator.tui.SequentialLayout;
  * displayed can still use the OS terminal for logging.
  * </p>
  */
-public class Terminal implements ResizeSubscriber {
+public class Terminal implements ResizeSubscriber,
+                                 Container.ChangeListener {
     /**
      * Holds general information regarding the settings of this instance of the
      * terminal.
@@ -93,7 +94,7 @@ public class Terminal implements ResizeSubscriber {
      * The component which is used for rendering the rasterized image onto the
      * window.
      */
-    private JComponent paintComponent;
+    private JComponent painter;
     
     /**
      * The prompt handles all user-input in the terminal. Separate from the
@@ -144,9 +145,13 @@ public class Terminal implements ResizeSubscriber {
         activeFrame = new BufferedFrame(context.getNumberOfLines(),
                                         context.getLineSize());
         rasterizer = new SWRasterizer(context);
-        paintComponent = new JComponent() {
+        painter = new JComponent() {
+            private static final long serialVersionUID = 1L;
+
             @Override
             public void paint(Graphics g) {
+                super.paint(g);
+                
                 if (!ready) return;
                 /*
                  * We convert the current `GlyphBuffer` to an image and paint
@@ -158,8 +163,8 @@ public class Terminal implements ResizeSubscriber {
                             null);
             }
         };
-        paintComponent.setPreferredSize(context.windowSize);
-        window.add(paintComponent);
+        painter.setPreferredSize(context.windowSize);
+        window.add(painter);
         
         root = new RootContainer(context.getBounds(),
                                  new SequentialLayout(Axis.X));
@@ -175,8 +180,8 @@ public class Terminal implements ResizeSubscriber {
         window.pack();
         window.setVisible(true);
         
-        Thread thread = new Thread(this::poll);
-        thread.start();
+        Thread poller = new Thread(this::poll);
+        poller.start();
     }
     
     public Context getContext() {
@@ -205,23 +210,14 @@ public class Terminal implements ResizeSubscriber {
     public void setRootContainer(RootContainer root) {
         context.remove(this.root);
         context.subscribe(root);
+        root.registerListener(this);
         this.root = root;
-        
-        /*
-         * We need to do this initially as well, so that the interface isn't
-         * blank when the application starts up.
-         * 
-         * FIXME: For some reason, the window is still initially blank.
-         */
-        root.draw(activeFrame);
-        paintComponent.repaint();
     }
     
     /**
-     * Allows all components which have added themselves to the root container
-     * to draw themselves onto the active frame. They may or may not be
-     * rendered to the window before they are asked to draw themselves again,
-     * depending on the timing of this thread and Swing.
+     * Polls for changes that can occur frequently and at random times (such
+     * as changes to window dimensions, and input events from the keyboard and
+     * mouse).
      */
     private void poll() {
         context.subscribe(this);
@@ -387,8 +383,13 @@ public class Terminal implements ResizeSubscriber {
          * the interface have changed, and notify the renderer that we are
          * ready for an update.
          */
+        update();
+    }
+
+    @Override
+    public void update() {
         root.draw(activeFrame);
         ready = true;
-        paintComponent.repaint();
+        painter.repaint();
     }
 }

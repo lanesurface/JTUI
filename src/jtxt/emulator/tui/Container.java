@@ -38,6 +38,18 @@ import jtxt.emulator.Region;
 public class Container implements Component,
                                   Iterable<Component> {
     /**
+     * Objects which want to be notified when new {@code Component}s are added
+     * to this container should implement this interface and register with the
+     * respective container's
+     * {@link Container#registerListener(ChangeListener)}.
+     */
+    public static interface ChangeListener {
+        public void update();
+    }
+    
+    protected List<ChangeListener> listeners;
+    
+    /**
      * A collection of all the children this container owns. Components owned
      * by this container inherit certain properties of it. This container may
      * also dictate the way that components added to it appear on the screen.
@@ -72,6 +84,7 @@ public class Container implements Component,
                      Component... children) {
         this.parameters = parameters;
         this.layout = layout;
+        this.listeners = new ArrayList<>();
         this.children = new ArrayList<>();
         add(children);
     }
@@ -90,6 +103,17 @@ public class Container implements Component,
             Region bounds = layout.getBounds(child.getLayoutParameters());
             child.setBounds(bounds);
         });
+        
+        notifyChangeListeners();
+    }
+    
+    private void notifyChangeListeners() {
+        listeners.stream()
+                 .forEach(ChangeListener::update);
+    }
+    
+    public void registerListener(ChangeListener listener) {
+        listeners.add(listener);
     }
     
     /**

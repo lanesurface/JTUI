@@ -1,6 +1,5 @@
 package jtxt;
 
-import java.util.Arrays;
 import java.util.List;
 
 import jtxt.emulator.GString;

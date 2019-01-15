@@ -26,13 +26,6 @@ import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 public class Border extends Decorator {
-//    /**
-//     * The component that this border will draw itself around. This component
-//     * is inflated with the border, so that the border may be displayed on its
-//     * outer edge.
-//     */
-//    private Component component;
-    
     /**
      * The type of border to draw. Each type defines the characters that it 
      * will use when being rendered.
@@ -133,7 +126,5 @@ public class Border extends Decorator {
             buffer.update(edge, new Location(line, bounds.start.position));
             buffer.update(edge, new Location(line, bounds.end.position - 1));
         }
-        
-//        component.draw(buffer);
     }
 }

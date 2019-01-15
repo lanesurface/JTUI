@@ -2,12 +2,11 @@ package jtxt;
 
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
-import jtxt.emulator.tui.Axis;
 import jtxt.emulator.tui.Container;
+import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
-import jtxt.emulator.tui.SequentialLayout;
 
-class Page extends GlyphBuffer {
+public class Page extends GlyphBuffer {
     protected PageSettings settings;
     
     /**
@@ -92,7 +91,7 @@ class Page extends GlyphBuffer {
         }
     }
     
-    public Page(PageSettings settings) {
+    public Page(PageSettings settings, Layout layout) {
         this.settings = settings;
         
         Location pageStart = new Location(settings.marginTop,
@@ -100,7 +99,7 @@ class Page extends GlyphBuffer {
         Region bounds = Region.fromLocation(pageStart,
                                             settings.getWidth(),
                                             settings.getHeight());
-        container = new RootContainer(bounds, new SequentialLayout(Axis.X));
+        container = new RootContainer(bounds, layout);
     }
     
     public Region getBounds() {

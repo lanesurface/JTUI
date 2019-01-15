@@ -6,10 +6,10 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import jtxt.emulator.Region;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.Border;
+import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.SequentialLayout.SequentialParameters;
 import jtxt.emulator.tui.TextBox;
@@ -38,11 +38,14 @@ public class Main {
                                         source);
         term.add(image);
         
-        Thread.sleep(1000);
-        
-        // Should this be exposed? It doesn't update the parameter variable.
-        image.setBounds(Region.fromLocation(image.getBounds().start,
-                                            50,
-                                            15));
+        Button button = new Button("Okay",
+                                   Color.GRAY,
+                                   new SequentialParameters(12, 4));
+        button.addCallback(Main::doSomething);
+        term.add(button);
+    }
+    
+    public static void doSomething() {
+        System.out.println("Button pressed!");
     }
 }

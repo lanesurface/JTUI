@@ -19,6 +19,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -26,10 +30,10 @@ import javax.swing.JFrame;
 import jtxt.emulator.tui.Axis;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
+import jtxt.emulator.tui.Interactable;
 import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.RootContainer;
 import jtxt.emulator.tui.SequentialLayout;
-import sun.awt.AWTAccessor.ContainerAccessor;
 
 /**
  * <p>
@@ -122,6 +126,14 @@ public class Terminal implements ResizeSubscriber,
      */
     protected KeyboardTarget focused;
     
+    /**
+     * A Queue containing all of the mouse events that have occurred since the
+     * last update (processing event), which will be either dispatched to their
+     * respective component or discarded if the target component isn't
+     * {@code Interactable}.
+     */
+    protected Queue<MouseEvent> mouseEvents;
+    
     // Temporary variable to indicate if we can paint yet.
     private boolean ready;
     
@@ -137,6 +149,14 @@ public class Terminal implements ResizeSubscriber,
         window = new JFrame(context.title);
         window.setResizable(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        mouseEvents = new LinkedList<>();
+        window.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                mouseEvents.add(me);
+            }
+        });
         
         FontMetrics fm = window.getFontMetrics(context.font);
         context.setCharDimensions(fm.charWidth('X'),
@@ -182,6 +202,9 @@ public class Terminal implements ResizeSubscriber,
         
         Thread poller = new Thread(this::poll);
         poller.start();
+        
+        /////// BAD - LEAKY REFERENCE ////////
+        root.registerListener(this);
     }
     
     public Context getContext() {
@@ -249,6 +272,35 @@ public class Terminal implements ResizeSubscriber,
                                           height);
                 }
 
+                /*
+                 * We need to make sure we dispatch all mouse events which
+                 * occurred since our last update. Here, we determine which
+                 * component the mouse event targets, and dispatch that event
+                 * if (and only if) that component is `Interactable`.
+                 */
+                while (!mouseEvents.isEmpty()) {
+                    MouseEvent event = mouseEvents.remove();
+                    int x = event.getX(),
+                        y = event.getY();
+                    
+                    // Determine the location that this event orginated from.
+                    Location loc = new Location(y / context.charSize.height,
+                                                x / context.charSize.width);
+                    
+                    for (Component component : root) {
+                        if (component instanceof Interactable
+                            && loc.inside(component.getBounds()))
+                        {
+                            Interactable inter = (Interactable)component;
+                            focused = inter.clicked(loc)
+                                      ? (KeyboardTarget)inter
+                                      : focused;
+                            
+                            break;
+                        }
+                    }
+                }
+                
                 lag -= msPerUpdate;
             }
         }

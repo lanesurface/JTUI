@@ -1,35 +1,55 @@
 package jtxt.emulator.tui;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.List;
 
-import jtxt.GlyphBuffer;
+import jtxt.emulator.Location;
+import jtxt.emulator.Region;
 import jtxt.emulator.util.Glyphs;
 
-public class Button extends DefaultComponent {
+public class Button extends Decorator implements Interactable {
     /**
-     * All buttons should have a clearly identifiable region in which they
-     * respond to input events.
+     * The actions to perform whenever this button receives a notification that
+     * it has been pressed by a client.
      */
-    private Border outline;
-    
-    /**
-     * The text that this button will display on the screen.
-     */
-    private TextBox text;
+    private List<Callback> clickCallbacks;
     
     public Button(String text,
                   Color textColor,
                   Object parameters) {
-        this.text = new TextBox(parameters,
-                                Glyphs.escape(textColor) + text,
-                                TextBox.Position.CENTER);
-        outline = new Border(Border.Type.DASHED,
-                             Color.WHITE,
-                             this.text);
+        component = new Border(Border.Type.DASHED,
+                               Color.WHITE,
+                               new TextBox(parameters,
+                                           Glyphs.escape(textColor) + text,
+                                           TextBox.Position.CENTER));
+        clickCallbacks = new ArrayList<>();
     }
     
     @Override
-    public void draw(GlyphBuffer buffer) {
-        outline.draw(buffer);
+    public void setBounds(Region bounds) {
+        component.setBounds(bounds);
+    }
+    
+    @Override
+    public Region getBounds() {
+        return component.getBounds();
+    }
+    
+    @Override
+    public void addCallback(Callback callback) {
+        clickCallbacks.add(callback);
+    }
+    
+    @Override
+    public boolean clicked(Location clickLocation) {
+        clickCallbacks.stream()
+                      .forEach(Callback::performAction);
+        
+        /*
+         * We can't do anything with keyboard input, so yield control of the
+         * input.
+         */
+        return false;
     }
 }

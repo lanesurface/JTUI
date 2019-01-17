@@ -149,6 +149,8 @@ public class Terminal implements ResizeSubscriber,
     // Temporary variable to indicate if we can paint yet.
     private boolean ready;
     
+    private final BufferedImage screen;
+    
     /**
      * Creates a new instance of {@code Terminal} based on the given 
      * {@code Configuration}'s properties. 
@@ -177,6 +179,19 @@ public class Terminal implements ResizeSubscriber,
         activeFrame = new BufferedFrame(context.getNumberOfLines(),
                                         context.getLineSize());
         rasterizer = new SWRasterizer(context);
+        
+        BufferedImage scr = null;
+        try {
+            Robot r = new Robot();
+            Toolkit tk = Toolkit.getDefaultToolkit();
+            Dimension bounds = tk.getScreenSize();
+            scr = r.createScreenCapture(new Rectangle(0,
+                                                         0,
+                                                         bounds.width,
+                                                         bounds.height));
+        } catch (AWTException awtex) { }
+        this.screen = scr;
+        
         painter = new JComponent() {
             private static final long serialVersionUID = 1L;
 
@@ -197,33 +212,21 @@ public class Terminal implements ResizeSubscriber,
                 int width = getWidth(),
                     height = getHeight();
 
-                try {
-                    Robot r = new Robot();
-                    Toolkit tk = Toolkit.getDefaultToolkit();
-                    Dimension bounds = tk.getScreenSize();
-                    BufferedImage scr =
-                        r.createScreenCapture(new Rectangle(0,
-                                                            0,
-                                                            bounds.width,
-                                                            bounds.height));
-                    
-                    Point location = getLocationOnScreen();
-                    int startX = location.x,
-                        startY = location.y,
-                        endX = startX + width,
-                        endY = startY + height;
-                    graphics.drawImage(scr,
-                                       0,
-                                       0,
-                                       width,
-                                       height,
-                                       startX + 100,
-                                       startY + 100,
-                                       endX + 100,
-                                       endY + 100,
-                                       null);
-                }
-                catch (AWTException awtex) { /* Do nothing. */ }
+                Point location = getLocationOnScreen();
+                int startX = location.x,
+                    startY = location.y,
+                    endX = startX + width,
+                    endY = startY + height;
+                graphics.drawImage(screen,
+                                   0,
+                                   0,
+                                   width,
+                                   height,
+                                   startX,
+                                   startY,
+                                   endX,
+                                   endY,
+                                   null);
                 
                 Composite comp = AlphaComposite.getInstance(
                     AlphaComposite.SRC_OVER,

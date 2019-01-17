@@ -15,14 +15,17 @@
  */
 package jtxt.emulator;
 
+import java.awt.Color;
+import java.awt.GradientPaint;
 import java.awt.Graphics2D;
+import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 
 import jtxt.GlyphBuffer;
 
-public class SWRasterizer implements GlyphRasterizer {
+class SWRasterizer implements GlyphRasterizer {
     protected Context context;
     
     public SWRasterizer(Context context) {
@@ -45,6 +48,16 @@ public class SWRasterizer implements GlyphRasterizer {
         int ascent = g.getFontMetrics().getAscent(),
             numLines = bounds.getHeight(),
             lineSize = bounds.getWidth();
+        
+        // Set a color here while I work out how to preserve color information.
+        Paint paint = new GradientPaint(0,
+                                        0,
+                                        Color.CYAN,
+                                        0,
+                                        50,
+                                        Color.PINK,
+                                        true);
+        g.setPaint(paint);
         
         for (int line = 0; line < numLines; line++)
             g.drawString(buffer.getString(line).getData(0, lineSize),

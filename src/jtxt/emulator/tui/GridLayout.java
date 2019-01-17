@@ -138,7 +138,7 @@ public class GridLayout implements Layout {
         }
     }
     
-    private void enableCells(GridParameters params) {
+    protected void enableCells(GridParameters params) {
         for (int row = params.startRow;
              row < cells.length && row < params.endRow;
              row++)
@@ -178,7 +178,7 @@ public class GridLayout implements Layout {
      * occupy, unless the {@code Cell} is already occupied by another
      * component.
      */
-    private static class Cell {
+    protected static class Cell {
         /**
          * The bounds within this layout's parent container that this cell
          * occupies.

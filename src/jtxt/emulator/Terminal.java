@@ -15,28 +15,16 @@
  */
 package jtxt.emulator;
 
-import java.awt.AWTException;
-import java.awt.AlphaComposite;
 import java.awt.Color;
-import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import jtxt.emulator.tui.Axis;
@@ -99,18 +87,10 @@ public class Terminal implements ResizeSubscriber,
     protected BufferedFrame activeFrame;
     
     /**
-     * Used for converting glyphs (character and color values) into a series
-     * of pixels that can be individually drawn to the screen. Java provides
-     * facilities to perform this process for us, but we may want to render
-     * using hardware acceleration.
-     */
-    protected GlyphRasterizer rasterizer;
-    
-    /**
      * The component which is used for rendering the rasterized image onto the
      * window.
      */
-    private JComponent painter;
+    private Renderer renderer;
     
     /**
      * The prompt handles all user-input in the terminal. Separate from the
@@ -146,11 +126,6 @@ public class Terminal implements ResizeSubscriber,
      */
     protected Queue<MouseEvent> mouseEvents;
     
-    // Temporary variable to indicate if we can paint yet.
-    private boolean ready;
-    
-    private final BufferedImage screen;
-    
     /**
      * Creates a new instance of {@code Terminal} based on the given 
      * {@code Configuration}'s properties. 
@@ -178,72 +153,12 @@ public class Terminal implements ResizeSubscriber,
         
         activeFrame = new BufferedFrame(context.getNumberOfLines(),
                                         context.getLineSize());
-        rasterizer = new SWRasterizer(context);
-        
-        BufferedImage scr = null;
-        try {
-            Robot r = new Robot();
-            Toolkit tk = Toolkit.getDefaultToolkit();
-            Dimension bounds = tk.getScreenSize();
-            scr = r.createScreenCapture(new Rectangle(0,
-                                                         0,
-                                                         bounds.width,
-                                                         bounds.height));
-        } catch (AWTException awtex) { }
-        this.screen = scr;
-        
-        painter = new JComponent() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public void paint(Graphics g) {
-                super.paint(g);
-                
-                if (!ready) return;
-                
-                /*
-                 * Rasterize the frame and paint it onto the screen. This
-                 * image may be resized slightly to avoid whitespace/gaps from
-                 * appearing at the edges of the terminal whenever it's resized
-                 * quickly.
-                 */
-                Graphics2D graphics = (Graphics2D)g;
-                
-                int width = getWidth(),
-                    height = getHeight();
-
-                Point location = getLocationOnScreen();
-                int startX = location.x,
-                    startY = location.y,
-                    endX = startX + width,
-                    endY = startY + height;
-                graphics.drawImage(screen,
-                                   0,
-                                   0,
-                                   width,
-                                   height,
-                                   startX,
-                                   startY,
-                                   endX,
-                                   endY,
-                                   null);
-                
-                Composite comp = AlphaComposite.getInstance(
-                    AlphaComposite.SRC_OVER,
-                    0.6f
-                );
-                graphics.setComposite(comp);
-                graphics.setColor(Color.BLACK);
-                graphics.fillRect(0,
-                                  0,
-                                  getWidth(),
-                                  getHeight());
-                graphics.drawRenderedImage(rasterizer.rasterize(activeFrame),
-                                           null);
-            }
-        };
-        painter.setPreferredSize(context.windowSize);
-        window.add(painter);
+        renderer = Renderer.getInstance(context,
+                                        Color.BLACK,
+                                        0.7f,
+                                        Renderer.RasterType.SOFTWARE);
+        renderer.setPreferredSize(context.windowSize);
+        window.add(renderer);
         
         root = new RootContainer(context.getBounds(),
                                  new SequentialLayout(Axis.X));
@@ -510,9 +425,8 @@ public class Terminal implements ResizeSubscriber,
     }
 
     @Override
-    public void update() {
+    public synchronized void update() {
         root.draw(activeFrame);
-        ready = true;
-        painter.repaint();
+        renderer.renderFrame(activeFrame);
     }
 }

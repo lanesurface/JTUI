@@ -19,7 +19,7 @@ import java.awt.image.RenderedImage;
 
 import jtxt.GlyphBuffer;
 
-public interface GlyphRasterizer {
+interface GlyphRasterizer {
     /**
      * For the given frame of {@code Glyphs}, this method will rasterize the
      * glyphs onto an image, according to the properties defined in the

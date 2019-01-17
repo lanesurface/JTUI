@@ -36,6 +36,6 @@ public interface Interactable {
     
     @FunctionalInterface
     public static interface Callback {
-        void performAction();
+        void dispatch();
     }
 }

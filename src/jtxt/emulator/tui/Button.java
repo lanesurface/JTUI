@@ -43,8 +43,9 @@ public class Button extends Decorator implements Interactable {
     
     @Override
     public boolean clicked(Location clickLocation) {
-        clickCallbacks.stream()
-                      .forEach(Callback::performAction);
+        System.out.format("Button clicked at %s.%n", clickLocation);
+        
+        for (Callback callback : clickCallbacks) callback.dispatch();
         
         /*
          * We can't do anything with keyboard input, so yield control of the

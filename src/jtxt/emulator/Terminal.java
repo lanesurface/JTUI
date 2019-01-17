@@ -15,12 +15,14 @@
  */
 package jtxt.emulator;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -173,13 +175,24 @@ public class Terminal implements ResizeSubscriber,
                 super.paint(g);
                 
                 if (!ready) return;
+                
                 /*
-                 * We convert the current `GlyphBuffer` to an image and paint
-                 * it to the screen.
+                 * Rasterize the frame and paint it onto the screen. This
+                 * image may be resized slightly to avoid whitespace/gaps from
+                 * appearing at the edges of the terminal whenever it's resized
+                 * quickly.
                  */
-                g.drawImage(rasterizer.rasterize(activeFrame),
+                BufferedImage image = rasterizer.rasterize(activeFrame);
+                g.drawImage(image,
                             0,
                             0,
+                            getWidth(),
+                            getHeight(),
+                            0,
+                            0,
+                            image.getWidth(),
+                            image.getHeight(),
+                            Color.BLACK,
                             null);
             }
         };
@@ -272,36 +285,34 @@ public class Terminal implements ResizeSubscriber,
                                           height);
                 }
 
-                /*
-                 * We need to make sure we dispatch all mouse events which
-                 * occurred since our last update. Here, we determine which
-                 * component the mouse event targets, and dispatch that event
-                 * if (and only if) that component is `Interactable`.
-                 */
-                while (!mouseEvents.isEmpty()) {
-                    MouseEvent event = mouseEvents.remove();
-                    int x = event.getX(),
-                        y = event.getY();
-                    
-                    // Determine the location that this event orginated from.
-                    Location loc = new Location(y / context.charSize.height,
-                                                x / context.charSize.width);
-                    
-                    for (Component component : root) {
-                        if (component instanceof Interactable
-                            && loc.inside(component.getBounds()))
-                        {
-                            Interactable inter = (Interactable)component;
-                            focused = inter.clicked(loc)
-                                      ? (KeyboardTarget)inter
-                                      : focused;
-                            
-                            break;
-                        }
-                    }
-                }
+                dispatchMouseEvents();
                 
                 lag -= msPerUpdate;
+            }
+        }
+    }
+    
+    protected void dispatchMouseEvents() {
+        while (!mouseEvents.isEmpty()) {
+            MouseEvent event = mouseEvents.remove();
+            int x = event.getX(),
+                y = event.getY();
+            
+            // Determine the location that this event orginated from.
+            Location loc = new Location(y / context.charSize.height,
+                                        x / context.charSize.width);
+            
+            for (Component component : root) {
+                if (component instanceof Interactable
+                    && loc.inside(component.getBounds()))
+                {
+                    Interactable inter = (Interactable)component;
+                    focused = inter.clicked(loc)
+                              ? (KeyboardTarget)inter
+                              : focused;
+                    
+                    break;
+                }
             }
         }
     }

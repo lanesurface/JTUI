@@ -15,7 +15,7 @@
  */
 package jtxt.emulator;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import jtxt.GlyphBuffer;
 
@@ -32,5 +32,5 @@ public interface GlyphRasterizer {
      *         has been constructed with, so that this image can be rendered
      *         directly to the window.
      */
-    Image rasterize(GlyphBuffer buffer);
+    BufferedImage rasterize(GlyphBuffer buffer);
 }

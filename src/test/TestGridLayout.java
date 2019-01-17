@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.Border;
+import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.GridLayout;
 import jtxt.emulator.tui.GridLayout.GridParameters;
@@ -73,16 +74,24 @@ public class TestGridLayout {
         GridParameters textParams = layout.getParametersForCellsInRange(2,
                                                                         0,
                                                                         2,
-                                                                        2);
+                                                                        1);
         Component text = new TextBox(textParams,
                                      "Hello, O Beautiful World!",
                                      TextBox.Position.CENTER);
+        
+        GridParameters buttonParams = layout.getParametersForCell(2, 2);
+        Button button = new Button("F**K THIS SHITTY PROGRAM",
+                                   Color.GREEN,
+                                   buttonParams);
+        button.addCallback(() -> System.out.println("pressed!"));
+            
         
         /*
          * Components can be added with a single method invocation, as long
          * as we are working with the container and not the terminal.
          */
         root.add(photo,
-                 text);
+                 text,
+                 button);
     }
 }

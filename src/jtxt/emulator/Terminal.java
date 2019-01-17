@@ -278,13 +278,12 @@ public class Terminal implements ResizeSubscriber,
                 if (numLines != context.getNumberOfLines()
                     || lineSize != context.getLineSize())
                 {
-                    // Don't cause us to redraw more that necessary.
                     context.setDimensions(numLines,
                                           lineSize,
                                           width,
                                           height);
                 }
-
+                
                 dispatchMouseEvents();
                 
                 lag -= msPerUpdate;
@@ -292,7 +291,21 @@ public class Terminal implements ResizeSubscriber,
         }
     }
     
-    protected void dispatchMouseEvents() {
+    /**
+     * <P>
+     * Removes all mouse events from the event queue, and notifies the
+     * respective {@code Component}s that should receive the events if they are
+     * {@code Interactable} (meaning they can receive, and respond to, mouse
+     * events). The order in which these events are dispatched is the same as
+     * the order in which they originally occurred.
+     * </P>
+     * <P>
+     * Additionally, this method may change the actively focused Component
+     * within the terminal if any of the Components which received a mouse
+     * event and were Interactable requested to be focused by the terminal.
+     * </P>
+     */
+    protected synchronized void dispatchMouseEvents() {
         while (!mouseEvents.isEmpty()) {
             MouseEvent event = mouseEvents.remove();
             int x = event.getX(),

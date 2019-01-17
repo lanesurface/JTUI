@@ -169,6 +169,29 @@ public class GString implements Iterable<Glyph> {
         return new GString(Arrays.copyOfRange(glyphs, start, end));
     }
     
+    public String getData(int start, int end) {
+        int[] data = Arrays.stream(Arrays.copyOfRange(glyphs,
+                                                      start,
+                                                      end))
+                                         .mapToInt(g -> (char)g.character)
+                                         .toArray();
+        
+        return getStringFromIntArray(data);
+    }
+    
+    private String getStringFromIntArray(int[] string) {
+        char[] chars = new char[string.length];
+        for(int i = 0; i < chars.length; i++) {
+            if (string[i] == '\0') {
+                chars[i] = ' ';
+                continue;
+            }
+            chars[i] = (char)string[i];
+        }
+        
+        return new String(chars);
+    }
+    
     /**
      * Creates a new string with blank glyphs. This string is guaranteed to not
      * appear in the terminal when rendered.
@@ -270,7 +293,7 @@ public class GString implements Iterable<Glyph> {
             
             while (delta > length) {
                 for (int i = index + length; i > index; i--) {
-                    if (glyphs[i].getCharacter() == ' ') {
+                    if (glyphs[i].character == ' ') {
                         lines.add(substring(index, i));
                         delta -= ++i - index;
                         index = i;

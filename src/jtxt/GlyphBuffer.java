@@ -99,6 +99,10 @@ public class GlyphBuffer {
                      .get(location.position);
     }
 
+    public GString getString(int line) {
+        return buffer.get(line);
+    }
+    
     /**
      * Given a region, this method will return all glyphs within that region as
      * an array of strings.

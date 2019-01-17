@@ -57,7 +57,7 @@ public class Images {
 
             Glyph[] glyphs = output[i];
             for (Glyph g : glyphs)
-                builder.append(g.getCharacter());
+                builder.append(g.character);
 
             lines[i] = builder.toString();
         }

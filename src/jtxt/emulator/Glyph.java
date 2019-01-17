@@ -6,12 +6,12 @@ public class Glyph {
     /**
      * The character that this glyph represents.
      */
-    private final char character;
+    public final char character;
     
     /**
      * The color of this glyph's character.
      */
-    private final Color color;
+    public final Color color;
     
     /**
      * A glyph that is guaranteed to not appear in the terminal, but will avoid
@@ -44,24 +44,6 @@ public class Glyph {
      */
     public Glyph(char character, int red, int green, int blue) {
         this(character, new Color(red, green, blue));
-    }
-    
-    /**
-     * Get the underlying character of this glyph.
-     * 
-     * @return The character of this glyph.
-     */
-    public char getCharacter() {
-        return character;
-    }
-    
-    /**
-     * Get the color of this glyph.
-     * 
-     * @return The color of this glyph.
-     */
-    public Color getColor() {
-        return color;
     }
     
     @Override

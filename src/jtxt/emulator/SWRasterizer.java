@@ -45,15 +45,10 @@ public class SWRasterizer implements GlyphRasterizer {
             numLines = bounds.getHeight(),
             lineSize = bounds.getWidth();
         
-        for (int i = 0; i < numLines; i++) {
-            for (int j = 0; j < lineSize; j++) {
-                Glyph glyph = buffer.getGlyph(new Location(i, j));
-                g.setColor(glyph.getColor());
-                g.drawString(glyph.getCharacter() + "",
-                             j * context.charSize.width,
-                             i * context.charSize.height + ascent);
-            }
-        }
+        for (int line = 0; line < numLines; line++)
+            g.drawString(buffer.getString(line).getData(0, lineSize),
+                         0,
+                         line * context.charSize.height + ascent);
         g.dispose();
         
         return image;

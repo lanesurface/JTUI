@@ -61,8 +61,8 @@ public class ASCIImage {
         int baseline = graphics.getFontMetrics(graphics.getFont()).getHeight();
         for (int row = 0; row < chars.length; row++) {
             for (int col = 0; col < chars[row].length; col++) {
-                graphics.setColor(chars[row][col].getColor());
-                graphics.drawString(chars[row][col].getCharacter()+"",
+                graphics.setColor(chars[row][col].color);
+                graphics.drawString(chars[row][col].character+"",
                                     (col)*cdim.width,
                                     (row)*cdim.height+baseline);
             }

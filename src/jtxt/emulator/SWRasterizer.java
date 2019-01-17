@@ -18,6 +18,7 @@ package jtxt.emulator;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 
 import jtxt.GlyphBuffer;
 
@@ -29,7 +30,7 @@ public class SWRasterizer implements GlyphRasterizer {
     }
     
     @Override
-    public BufferedImage rasterize(GlyphBuffer buffer) {
+    public RenderedImage rasterize(GlyphBuffer buffer) {
         Region bounds = buffer.getBounds();
         
         BufferedImage image = new BufferedImage(context.windowSize.width,

@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.Iterator;
  * 
  * @see Glyph
  */
-public class GString implements Iterable<Glyph> {
+public final class GString implements Iterable<Glyph> {
     /**
      * The glyphs that this string contains. As this class mimics String
      * itself, it's meant to be immutable; the size and values stored in this
@@ -176,10 +176,10 @@ public class GString implements Iterable<Glyph> {
                                          .mapToInt(g -> (char)g.character)
                                          .toArray();
         
-        return getStringFromIntArray(data);
+        return getStringFromArray(data);
     }
     
-    private String getStringFromIntArray(int[] string) {
+    private String getStringFromArray(int[] string) {
         char[] chars = new char[string.length];
         for(int i = 0; i < chars.length; i++) {
             if (string[i] == '\0') {

@@ -15,14 +15,24 @@
  */
 package jtxt.emulator;
 
+import java.awt.AWTException;
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -182,18 +192,51 @@ public class Terminal implements ResizeSubscriber,
                  * appearing at the edges of the terminal whenever it's resized
                  * quickly.
                  */
-                BufferedImage image = rasterizer.rasterize(activeFrame);
-                g.drawImage(image,
-                            0,
-                            0,
-                            getWidth(),
-                            getHeight(),
-                            0,
-                            0,
-                            image.getWidth(),
-                            image.getHeight(),
-                            Color.BLACK,
-                            null);
+                Graphics2D graphics = (Graphics2D)g;
+                
+                int width = getWidth(),
+                    height = getHeight();
+
+                try {
+                    Robot r = new Robot();
+                    Toolkit tk = Toolkit.getDefaultToolkit();
+                    Dimension bounds = tk.getScreenSize();
+                    BufferedImage scr =
+                        r.createScreenCapture(new Rectangle(0,
+                                                            0,
+                                                            bounds.width,
+                                                            bounds.height));
+                    
+                    Point location = getLocationOnScreen();
+                    int startX = location.x,
+                        startY = location.y,
+                        endX = startX + width,
+                        endY = startY + height;
+                    graphics.drawImage(scr,
+                                       0,
+                                       0,
+                                       width,
+                                       height,
+                                       startX + 100,
+                                       startY + 100,
+                                       endX + 100,
+                                       endY + 100,
+                                       null);
+                }
+                catch (AWTException awtex) { /* Do nothing. */ }
+                
+                Composite comp = AlphaComposite.getInstance(
+                    AlphaComposite.SRC_OVER,
+                    0.6f
+                );
+                graphics.setComposite(comp);
+                graphics.setColor(Color.BLACK);
+                graphics.fillRect(0,
+                                  0,
+                                  getWidth(),
+                                  getHeight());
+                graphics.drawRenderedImage(rasterizer.rasterize(activeFrame),
+                                           null);
             }
         };
         painter.setPreferredSize(context.windowSize);
@@ -285,6 +328,7 @@ public class Terminal implements ResizeSubscriber,
                 }
                 
                 dispatchMouseEvents();
+                update();
                 
                 lag -= msPerUpdate;
             }

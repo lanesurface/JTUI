@@ -26,14 +26,13 @@ import java.util.Queue;
 
 import javax.swing.JFrame;
 
-import jtxt.emulator.tui.Axis;
+import jtxt.emulator.Renderer.RasterType;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.Interactable;
 import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
-import jtxt.emulator.tui.SequentialLayout;
 
 /**
  * <p>
@@ -61,7 +60,7 @@ import jtxt.emulator.tui.SequentialLayout;
  * displayed can still use the OS terminal for logging.
  * </p>
  */
-public class Terminal {
+public class Terminal implements Container.ChangeListener {
     /**
      * Holds general information regarding the settings of this instance of the
      * terminal.
@@ -75,15 +74,6 @@ public class Terminal {
      * @see BufferedFrame
      */
     protected JFrame window;
-    
-    /**
-     * The next frame that needs to be rendered to the window. This frame could
-     * possibly change before it's rasterized, and so it's not guaranteed that
-     * all frames that are created will be rendered (especially in the case
-     * where the dimensions of the window change quickly, such as when it's
-     * resized).
-     */
-    protected BufferedFrame activeFrame;
     
     /**
      * The component which is used for rendering the rasterized image onto the
@@ -131,10 +121,14 @@ public class Terminal {
      * 
      * @param context The setting information for the terminal.
      */
-    public Terminal(Context context) {
+    public Terminal(Context context,
+                    String title,
+                    Color background,
+                    Renderer.RasterType rasterType,
+                    float transparency) {
         this.context = context;
         
-        window = new JFrame(context.title);
+        window = new JFrame(title);
         window.setResizable(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -151,9 +145,9 @@ public class Terminal {
                                   fm.getHeight());
         
         renderer = Renderer.getInstance(context,
-                                        Color.BLACK,
-                                        0.8f,
-                                        Renderer.RasterType.SOFTWARE);
+                                        background,
+                                        transparency,
+                                        rasterType);
         renderer.setPreferredSize(context.windowSize);
         window.add(renderer);
         
@@ -189,6 +183,7 @@ public class Terminal {
         context.remove(root);
         root = container;
         context.subscribe(container);
+        container.registerListener(this);
         
         /*
          * Create the thread which will listen for updates to state in the
@@ -210,9 +205,11 @@ public class Terminal {
         return root;
     }
     
-    public BufferedFrame createFrame() {
-        return new BufferedFrame(context.getNumberOfLines(),
-                                 context.getLineSize());
+    protected void createFrame() {
+        BufferedFrame frame = new BufferedFrame(context.getNumberOfLines(),
+                                                context.getLineSize());
+        root.draw(frame);
+        renderer.renderFrame(frame);
     }
     
     /**
@@ -224,6 +221,7 @@ public class Terminal {
         long last = System.currentTimeMillis(),
              msPerUpdate = 1000 / context.updatesPerSecond,
              lag = 0;
+        createFrame();
         
         while (true) {
             long now = System.currentTimeMillis(),
@@ -233,8 +231,8 @@ public class Terminal {
 
             while (lag >= msPerUpdate) {
                 // Make sure that the bounds of the window have not changed.
-                int width = window.getWidth(),
-                    height = window.getHeight(),
+                int width = renderer.getWidth(),
+                    height = renderer.getHeight(),
                     numLines = height / context.charSize.height,
                     lineSize = width / context.charSize.width;
                 
@@ -246,9 +244,7 @@ public class Terminal {
                                           width,
                                           height);
                     
-                    BufferedFrame frame = createFrame();
-                    root.draw(frame);
-                    renderer.renderFrame(frame);
+                    createFrame();
                 }
                 
                 dispatchMouseEvents();
@@ -337,20 +333,24 @@ public class Terminal {
     }
     
     /**
-     * Aids in the construction of terminal instances. The terminal constructor
-     * takes a context object as an argument to configure the properties that
-     * are subject to be changed; the constructor for the context is quite 
-     * complex, with many different signatures that are available. This builder
-     * is to assist in creating instances of a terminal without worrying about
-     * the underlying context's construction.
+     * Aids in the construction of new instance of a {@code Terminal}. Various
+     * properties can be passed into the methods of this builder, and the
+     * terminal will be constructed with a call to {@link Builder#build()}.
      */
     public static class Builder {
         private String title,
                        fontName;
+        
         private int lineSize,
                     numLines,
                     textSize,
                     updatesPerSecond;
+        
+        private Color background;
+        
+        private Renderer.RasterType rasterType;
+        
+        private float transparency;
         
         public Builder(String title) {
             this.title = title;
@@ -364,6 +364,9 @@ public class Terminal {
             lineSize = 80;
             numLines = 20;
             updatesPerSecond = 60;
+            background = Color.BLACK;
+            rasterType = RasterType.SOFTWARE;
+            transparency = 0.8f;
         }
         
         public Builder font(String fontName) {
@@ -391,13 +394,34 @@ public class Terminal {
             return this;
         }
         
+        public Builder background(Color background) {
+            this.background = background;
+            
+            return this;
+        }
+        
+        public Builder rasterType(Renderer.RasterType rasterType) {
+            this.rasterType = rasterType;
+            
+            return this;
+        }
+        
+        public Builder transparency(float transparency) {
+            this.transparency = transparency;
+            
+            return this;
+        }
+        
         public Terminal build() {
-            return new Terminal(new Context(title,
-                                            lineSize,
+            return new Terminal(new Context(lineSize,
                                             numLines,
                                             fontName,
                                             textSize,
-                                            updatesPerSecond));
+                                            updatesPerSecond),
+                                title,
+                                background,
+                                rasterType,
+                                transparency);
         }
     }
     
@@ -417,5 +441,9 @@ public class Terminal {
         prompt.repaint();
         
         return prompt.getInput();
+    }
+    
+    public void update() {
+        createFrame();
     }
 }

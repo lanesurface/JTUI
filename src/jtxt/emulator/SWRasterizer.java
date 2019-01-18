@@ -59,10 +59,12 @@ class SWRasterizer implements GlyphRasterizer {
                                         true);
         g.setPaint(paint);
         
-        for (int line = 0; line < numLines; line++)
+        for (int line = 0; line < numLines; line++) {
+            
             g.drawString(buffer.getString(line).getData(0, lineSize),
                          0,
                          line * context.charSize.height + ascent);
+        }
         g.dispose();
         
         return image;

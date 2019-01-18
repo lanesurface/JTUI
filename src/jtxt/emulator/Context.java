@@ -30,10 +30,6 @@ import jtxt.emulator.util.InitializationReader;
  * constructor.
  */
 public class Context implements ResizeSubject {
-    /**
-     * The title of the application window.
-     */
-    public final String title;
     
     /**
      * The number of characters per line in the text-pane.
@@ -76,6 +72,10 @@ public class Context implements ResizeSubject {
      */
     private Region bounds;
     
+    /**
+     * The number of times per second that the terminal should poll for updates
+     * to state in the window.
+     */
     final int updatesPerSecond;
 
     /**
@@ -85,8 +85,7 @@ public class Context implements ResizeSubject {
      * @param context The {@code Configuration} to replicate.
      */
     public Context(Context context) {
-        this(context.title,
-             context.lineSize,
+        this(context.lineSize,
              context.numLines,
              context.font.getName(),
              context.font.getSize(),
@@ -111,15 +110,12 @@ public class Context implements ResizeSubject {
      *                         should poll the window to see if any changes
      *                         need to be applied.
      */
-    public Context(String title,
-                   int lineSize,
+    public Context(int lineSize,
                    int numLines,
                    String fontName,
                    int fontSize,
                    int updatesPerSecond) {
-        this.title = title;
         font = new Font(fontName, Font.PLAIN, fontSize);
-        
         resizeSubscribers = new ArrayList<>();
         this.lineSize = lineSize;
         this.numLines = numLines;
@@ -141,7 +137,6 @@ public class Context implements ResizeSubject {
     public Context(String filename) {
         InitializationReader reader = new InitializationReader(filename);
         
-        title = reader.getRawValue("title");
         lineSize = reader.getValueAsInt("num_chars_x");
         numLines = reader.getValueAsInt("num_chars_y");
         

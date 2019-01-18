@@ -8,9 +8,11 @@ import javax.imageio.ImageIO;
 
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
+import jtxt.emulator.tui.Axis;
 import jtxt.emulator.tui.Border;
 import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
+import jtxt.emulator.tui.SequentialLayout;
 import jtxt.emulator.tui.SequentialLayout.SequentialParameters;
 import jtxt.emulator.tui.TextBox;
 
@@ -22,6 +24,7 @@ public class Main {
                                     .font("DejaVu Sans Mono")
                                     .textSize(11)
                                     .build();
+        term.createRootForLayout(new SequentialLayout(Axis.X));
         
         Component text = new TextBox(new SequentialParameters(15, 5),
                                      "Hello, O beautiful world!",

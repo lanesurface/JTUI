@@ -27,6 +27,7 @@ import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 
 import javax.swing.JComponent;
 
@@ -60,15 +61,14 @@ public class Renderer extends JComponent {
     private GlyphRasterizer rasterizer;
     
     /**
-     * The current frame of glyphs that is being rendered to the window.
+     * The frame that is being painted to the window, where the last call to
+     * this render generated this image. This rasterized image may be painted
+     * to the window as many times as necessary before the next frame is
+     * requested.
+     * 
+     * @see Renderer#renderFrame(BufferedFrame)
      */
-    private BufferedFrame currentFrame;
-    
-    /**
-     * Whether or not we can paint to the screen yet; this will be
-     * <code>false</code> if there are no active frames in the terminal.
-     */
-    private boolean ready;
+    private RenderedImage rasterizedFrame;
     
     /**
      * The kind of {@code GlyphRasterizer} that should be created when we
@@ -77,10 +77,9 @@ public class Renderer extends JComponent {
     public static enum RasterType { HARDWARE_ACCELERATED,
                                     SOFTWARE }
     
-    Renderer(Color background,
-             float transparency,
-             GlyphRasterizer rasterizer,
-             BufferedFrame frame) {
+    protected Renderer(Color background,
+                       float transparency,
+                       GlyphRasterizer rasterizer) {
         if (transparency != 1.0f) {
             BufferedImage scr = null;
             try {
@@ -99,7 +98,6 @@ public class Renderer extends JComponent {
         this.background = background;
         this.transparency = transparency;
         this.rasterizer = rasterizer;
-        currentFrame = frame;
     }
     
     public static Renderer getInstance(Context context,
@@ -115,8 +113,7 @@ public class Renderer extends JComponent {
         case SOFTWARE:
             return new Renderer(background,
                                 transparency,
-                                new SWRasterizer(context),
-                                null);
+                                new SWRasterizer(context));
         default:
             throw new IllegalArgumentException("The given raster type is " +
                                                "not recognized.");
@@ -124,29 +121,26 @@ public class Renderer extends JComponent {
     }
     
     public void renderFrame(BufferedFrame frame) {
-        if (!ready) ready = true;
-        currentFrame = frame;
-        repaint();
+        rasterizedFrame = rasterizer.rasterize(frame);
     }
     
     @Override
     public void paint(Graphics g) {
         super.paint(g);
         
-        if (!ready) return;
-        
         Graphics2D graphics = (Graphics2D)g;
-        /*
-         * Draw the screenshot within the bounds of this renderer. If this
-         * component is opaque, the image won't be visible anyway.
-         */
         int width = getWidth(),
             height = getHeight();
+        
         Point location = getLocationOnScreen();
         int startX = location.x,
             startY = location.y,
             endX = startX + width,
             endY = startY + height;
+        /*
+         * Draw the screenshot within the bounds of this renderer. If this
+         * component is opaque, the image won't be visible anyway.
+         */
         graphics.drawImage(screen,
                            0,
                            0,
@@ -166,7 +160,8 @@ public class Renderer extends JComponent {
                           0,
                           width,
                           height);
-        graphics.drawRenderedImage(rasterizer.rasterize(currentFrame),
-                                   null);
+        
+        if (rasterizedFrame == null) return;
+        graphics.drawRenderedImage(rasterizedFrame, null);
     }
 }

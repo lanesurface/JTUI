@@ -44,9 +44,7 @@ public class TestGridLayout {
         GridLayout layout = new GridLayout(new int[] { 1,
                                                        2,
                                                        3 });
-        RootContainer root = new RootContainer(terminal.getContext().getBounds(),
-                                               layout);
-        terminal.setRootContainer(root);
+        RootContainer root = terminal.createRootForLayout(layout);
         
         Component photo = null;
         try {

@@ -21,7 +21,6 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -32,6 +31,7 @@ import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.Interactable;
 import jtxt.emulator.tui.KeyboardTarget;
+import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
 import jtxt.emulator.tui.SequentialLayout;
 
@@ -61,8 +61,7 @@ import jtxt.emulator.tui.SequentialLayout;
  * displayed can still use the OS terminal for logging.
  * </p>
  */
-public class Terminal implements ResizeSubscriber,
-                                 Container.ChangeListener {
+public class Terminal {
     /**
      * Holds general information regarding the settings of this instance of the
      * terminal.
@@ -151,18 +150,12 @@ public class Terminal implements ResizeSubscriber,
         context.setCharDimensions(fm.charWidth('X'),
                                   fm.getHeight());
         
-        activeFrame = new BufferedFrame(context.getNumberOfLines(),
-                                        context.getLineSize());
         renderer = Renderer.getInstance(context,
                                         Color.BLACK,
-                                        0.7f,
+                                        0.8f,
                                         Renderer.RasterType.SOFTWARE);
         renderer.setPreferredSize(context.windowSize);
         window.add(renderer);
-        
-        root = new RootContainer(context.getBounds(),
-                                 new SequentialLayout(Axis.X));
-        context.subscribe(root);
         
         prompt = new Prompt();
         // The prompt spans a single line at the bottom of the window.
@@ -173,16 +166,38 @@ public class Terminal implements ResizeSubscriber,
         
         window.pack();
         window.setVisible(true);
-        
-        Thread poller = new Thread(this::poll);
-        poller.start();
-        
-        /////// BAD - LEAKY REFERENCE ////////
-        root.registerListener(this);
     }
     
     public Context getContext() {
         return new Context(context);
+    }
+    
+    /**
+     * Constructs and returns a new {@code RootContainer} using this terminal
+     * as the context, and the given layout as the super layout of all
+     * {@code Component}s within the terminal.
+     * 
+     * @param layout The layout to use for placing Components within this
+     *               terminal.
+     * 
+     * @return A new {@code RootContainer} which has been constructed for this
+     *         terminal with the given layout.
+     */
+    public RootContainer createRootForLayout(Layout layout) {
+        RootContainer container = new RootContainer(context.getBounds(),
+                                                    layout);
+        context.remove(root);
+        root = container;
+        context.subscribe(container);
+        
+        /*
+         * Create the thread which will listen for updates to state in the
+         * terminal.
+         */
+        Thread poller = new Thread(this::poll);
+        poller.start();
+        
+        return container;
     }
     
     /**
@@ -191,24 +206,13 @@ public class Terminal implements ResizeSubscriber,
      * 
      * @return The root container of this terminal.
      */
-    public Container getRootContainer() {
+    public RootContainer getRoot() {
         return root;
     }
     
-    /**
-     * This sets the root container of the terminal; however, do note that
-     * calling this method means that all components which have been added to
-     * the old root container will be discarded. (This is primarily because
-     * some information which these components are constructed with are not
-     * necessarily compatible with this object.)
-     * 
-     * @param root The new root container in the terminal.
-     */
-    public void setRootContainer(RootContainer root) {
-        context.remove(this.root);
-        context.subscribe(root);
-        root.registerListener(this);
-        this.root = root;
+    public BufferedFrame createFrame() {
+        return new BufferedFrame(context.getNumberOfLines(),
+                                 context.getLineSize());
     }
     
     /**
@@ -217,8 +221,6 @@ public class Terminal implements ResizeSubscriber,
      * mouse).
      */
     private void poll() {
-        context.subscribe(this);
-        
         long last = System.currentTimeMillis(),
              msPerUpdate = 1000 / context.updatesPerSecond,
              lag = 0;
@@ -243,13 +245,18 @@ public class Terminal implements ResizeSubscriber,
                                           lineSize,
                                           width,
                                           height);
+                    
+                    BufferedFrame frame = createFrame();
+                    root.draw(frame);
+                    renderer.renderFrame(frame);
                 }
                 
                 dispatchMouseEvents();
-                update();
                 
                 lag -= msPerUpdate;
             }
+            
+            renderer.repaint();
         }
     }
     
@@ -410,23 +417,5 @@ public class Terminal implements ResizeSubscriber,
         prompt.repaint();
         
         return prompt.getInput();
-    }
-
-    @Override
-    public void resize(int lines, int lineSize) {
-        activeFrame = new BufferedFrame(lines, lineSize);
-        
-        /* 
-         * We need to redraw all of the components now that the dimensions of
-         * the interface have changed, and notify the renderer that we are
-         * ready for an update.
-         */
-        update();
-    }
-
-    @Override
-    public synchronized void update() {
-        root.draw(activeFrame);
-        renderer.renderFrame(activeFrame);
     }
 }

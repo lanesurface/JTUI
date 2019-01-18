@@ -78,10 +78,20 @@ public class Location {
         add(other.line, other.position);
     }
     
+    /**
+     * Increases the line of this {@code Location} by the given amount.
+     * 
+     * @param amount The number of lines to advance downward.
+     */
     public void advanceDown(int amount) {
         add(amount, 0);
     }
     
+    /**
+     * Increases the position of this {@code Location} by the given amount.
+     * 
+     * @param amount The number of spaces to advance forward.
+     */
     public void advanceForward(int amount) {
         add(0, amount);
     }

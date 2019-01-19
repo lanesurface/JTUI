@@ -24,7 +24,7 @@ public class Main {
                                     .font("DejaVu Sans Mono")
                                     .textSize(11)
                                     .build();
-        term.createRootForLayout(new SequentialLayout(Axis.X));
+        term.createRootContainer(new SequentialLayout(Axis.X));
         
         Component text = new TextBox(new SequentialParameters(15, 5),
                                      "Hello, O beautiful world!",

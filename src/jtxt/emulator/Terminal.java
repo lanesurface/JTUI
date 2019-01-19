@@ -99,6 +99,8 @@ public class Terminal implements Container.ChangeListener {
      */
     protected RootContainer root;
     
+    private EventDispatcher dispatcher;
+    
     /**
      * The current component receiving key events.
      * 
@@ -106,14 +108,6 @@ public class Terminal implements Container.ChangeListener {
      * @see #focusAt(Location)
      */
     protected KeyboardTarget focused;
-    
-    /**
-     * A Queue containing all of the mouse events that have occurred since the
-     * last update (processing event), which will be either dispatched to their
-     * respective component or discarded if the target component isn't
-     * {@code Interactable}.
-     */
-    protected Queue<MouseEvent> mouseEvents;
     
     /**
      * Creates a new instance of {@code Terminal} based on the given 
@@ -124,21 +118,13 @@ public class Terminal implements Container.ChangeListener {
     public Terminal(Context context,
                     String title,
                     Color background,
-                    Renderer.RasterType rasterType,
-                    float transparency) {
+                    float transparency,
+                    Renderer.RasterType rasterType) {
         this.context = context;
         
         window = new JFrame(title);
         window.setResizable(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        mouseEvents = new LinkedList<>();
-        window.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent me) {
-                mouseEvents.add(me);
-            }
-        });
         
         FontMetrics fm = window.getFontMetrics(context.font);
         context.setCharDimensions(fm.charWidth('X'),
@@ -150,6 +136,11 @@ public class Terminal implements Container.ChangeListener {
                                         rasterType);
         renderer.setPreferredSize(context.windowSize);
         window.add(renderer);
+        
+        dispatcher = new EventDispatcher(this,
+                                         context,
+                                         renderer);
+        window.addMouseListener(dispatcher);
         
         prompt = new Prompt();
         // The prompt spans a single line at the bottom of the window.
@@ -177,7 +168,7 @@ public class Terminal implements Container.ChangeListener {
      * @return A new {@code RootContainer} which has been constructed for this
      *         terminal with the given layout.
      */
-    public RootContainer createRootForLayout(Layout layout) {
+    public RootContainer createRootContainer(Layout layout) {
         RootContainer container = new RootContainer(context.getBounds(),
                                                     layout);
         context.remove(root);
@@ -189,7 +180,7 @@ public class Terminal implements Container.ChangeListener {
          * Create the thread which will listen for updates to state in the
          * terminal.
          */
-        Thread poller = new Thread(this::poll);
+        Thread poller = new Thread(dispatcher);
         poller.start();
         
         return container;
@@ -203,96 +194,6 @@ public class Terminal implements Container.ChangeListener {
      */
     public RootContainer getRoot() {
         return root;
-    }
-    
-    protected void createFrame() {
-        BufferedFrame frame = new BufferedFrame(context.getNumberOfLines(),
-                                                context.getLineSize());
-        root.draw(frame);
-        renderer.renderFrame(frame);
-    }
-    
-    /**
-     * Polls for changes that can occur frequently and at random times (such
-     * as changes to window dimensions, and input events from the keyboard and
-     * mouse).
-     */
-    private void poll() {
-        long last = System.currentTimeMillis(),
-             msPerUpdate = 1000 / context.updatesPerSecond,
-             lag = 0;
-        createFrame();
-        
-        while (true) {
-            long now = System.currentTimeMillis(),
-                 elapsed = now - last;
-            last = now;
-            lag += elapsed;
-
-            while (lag >= msPerUpdate) {
-                // Make sure that the bounds of the window have not changed.
-                int width = renderer.getWidth(),
-                    height = renderer.getHeight(),
-                    numLines = height / context.charSize.height,
-                    lineSize = width / context.charSize.width;
-                
-                if (numLines != context.getNumberOfLines()
-                    || lineSize != context.getLineSize())
-                {
-                    context.setDimensions(numLines,
-                                          lineSize,
-                                          width,
-                                          height);
-                    
-                    createFrame();
-                }
-                
-                dispatchMouseEvents();
-                
-                lag -= msPerUpdate;
-            }
-            
-            renderer.repaint();
-        }
-    }
-    
-    /**
-     * <P>
-     * Removes all mouse events from the event queue, and notifies the
-     * respective {@code Component}s that should receive the events if they are
-     * {@code Interactable} (meaning they can receive, and respond to, mouse
-     * events). The order in which these events are dispatched is the same as
-     * the order in which they originally occurred.
-     * </P>
-     * <P>
-     * Additionally, this method may change the actively focused Component
-     * within the terminal if any of the Components which received a mouse
-     * event and were Interactable requested to be focused by the terminal.
-     * </P>
-     */
-    protected synchronized void dispatchMouseEvents() {
-        while (!mouseEvents.isEmpty()) {
-            MouseEvent event = mouseEvents.remove();
-            int x = event.getX(),
-                y = event.getY();
-            
-            // Determine the location that this event orginated from.
-            Location loc = new Location(y / context.charSize.height,
-                                        x / context.charSize.width);
-            
-            for (Component component : root) {
-                if (component instanceof Interactable
-                    && loc.inside(component.getBounds()))
-                {
-                    Interactable inter = (Interactable)component;
-                    focused = inter.clicked(loc)
-                              ? (KeyboardTarget)inter
-                              : focused;
-                    
-                    break;
-                }
-            }
-        }
     }
     
     /**
@@ -330,6 +231,25 @@ public class Terminal implements Container.ChangeListener {
             }
         }
         
+    }
+    
+    public KeyboardTarget getFocusedComponent() {
+        return focused;
+    }
+    
+    protected void clickComponent(Location location) {
+        for (Component component : root) {
+            if (component instanceof Interactable
+                && location.inside(component.getBounds()))
+            {
+                Interactable icomp = (Interactable)component;
+                focused = icomp.clicked(location)
+                          ? (KeyboardTarget)icomp
+                          : focused;
+                
+                break;
+            }
+        }
     }
     
     /**
@@ -413,15 +333,16 @@ public class Terminal implements Container.ChangeListener {
         }
         
         public Terminal build() {
-            return new Terminal(new Context(lineSize,
-                                            numLines,
-                                            fontName,
-                                            textSize,
-                                            updatesPerSecond),
+            Context context = new Context(lineSize,
+                                          numLines,
+                                          fontName,
+                                          textSize,
+                                          updatesPerSecond);
+            return new Terminal(context,
                                 title,
                                 background,
-                                rasterType,
-                                transparency);
+                                transparency,
+                                rasterType);
         }
     }
     
@@ -435,7 +356,7 @@ public class Terminal implements Container.ChangeListener {
      * 
      * @return A string containing the inputed text.
      */
-    public String requestInput(String msg) { 
+    public String requestInput(String msg) {
         prompt.requestFocus();
         prompt.setMessage(msg);
         prompt.repaint();
@@ -444,6 +365,10 @@ public class Terminal implements Container.ChangeListener {
     }
     
     public void update() {
-        createFrame();
+        BufferedFrame frame = new BufferedFrame(context.getBounds());
+        root.draw(frame);
+        renderer.renderFrame(frame,
+                             context.getWidth(),
+                             context.getHeight());
     }
 }

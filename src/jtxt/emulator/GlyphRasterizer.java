@@ -32,5 +32,7 @@ interface GlyphRasterizer {
      *         has been constructed with, so that this image can be rendered
      *         directly to the window.
      */
-    RenderedImage rasterize(GlyphBuffer buffer);
+    RenderedImage rasterize(GlyphBuffer buffer,
+                            int width,
+                            int height);
 }

@@ -190,6 +190,14 @@ public class Context implements ResizeSubject {
     public Region getBounds() {
         return bounds;
     }
+
+    public int getWidth() {
+        return windowSize.width;
+    }
+    
+    public int getHeight() {
+        return windowSize.height;
+    }
     
     @Override
     public void subscribe(ResizeSubscriber subscriber) {

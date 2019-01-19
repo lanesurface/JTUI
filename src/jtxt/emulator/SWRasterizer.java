@@ -33,11 +33,13 @@ class SWRasterizer implements GlyphRasterizer {
     }
     
     @Override
-    public RenderedImage rasterize(GlyphBuffer buffer) {
+    public RenderedImage rasterize(GlyphBuffer buffer,
+                                   int width,
+                                   int height) {
         Region bounds = buffer.getBounds();
         
-        BufferedImage image = new BufferedImage(context.windowSize.width,
-                                                context.windowSize.height,
+        BufferedImage image = new BufferedImage(width,
+                                                height,
                                                 BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
         
@@ -59,12 +61,10 @@ class SWRasterizer implements GlyphRasterizer {
                                         true);
         g.setPaint(paint);
         
-        for (int line = 0; line < numLines; line++) {
-            
+        for (int line = 0; line < numLines; line++)
             g.drawString(buffer.getString(line).getData(0, lineSize),
                          0,
                          line * context.charSize.height + ascent);
-        }
         g.dispose();
         
         return image;

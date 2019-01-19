@@ -17,7 +17,6 @@ package jtxt.emulator.tui;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -97,12 +96,11 @@ public class Container implements Component,
      * @param child The component to add to this container.
      */
     public void add(Component... children) {
-        Arrays.stream(children)
-        .forEach(child -> {
+        for (Component child : children) {
             this.children.add(child);
             Region bounds = layout.getBounds(child.getLayoutParameters());
             child.setBounds(bounds);
-        });
+        }
         
         notifyChangeListeners();
     }

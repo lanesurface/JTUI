@@ -22,7 +22,6 @@ public class TestGridLayout {
                                         .dimensions(80, 20)
                                         .font("DejaVu Sans Mono")
                                         .textSize(11)
-                                        .ups(60)
                                         .build();
         /* 
          * This layout takes an array of integers, where each element in the
@@ -44,7 +43,7 @@ public class TestGridLayout {
         GridLayout layout = new GridLayout(new int[] { 1,
                                                        2,
                                                        3 });
-        RootContainer root = terminal.createRootForLayout(layout);
+        RootContainer root = terminal.createRootContainer(layout);
         
         Component photo = null;
         try {

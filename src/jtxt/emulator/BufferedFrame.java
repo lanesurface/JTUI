@@ -37,14 +37,16 @@ public class BufferedFrame extends GlyphBuffer implements Serializable {
     /**
      * Creates a new frame.
      * 
-     * @param context The properties used for rendering the text.
+     * @param bounds The region that should be allocated within this frame for
+     *               {@code Glyph}s to be rendered in. (That is to say, Glyphs 
+     *               may be rendered anywhere within the given bounds.)
      */
-    public BufferedFrame(int numLines, int lineSize) {
-        bounds = new Region(0,
-                            0,
-                            numLines,
-                            lineSize);
+    public BufferedFrame(Region bounds) {
+        this.bounds = bounds;
         buffer = new ArrayList<>();
+        
+        int numLines = bounds.getHeight(),
+            lineSize = bounds.getWidth();
         for (int line = 0; line < numLines; line++)
             buffer.add(GString.blank(lineSize));
     }

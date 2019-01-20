@@ -31,7 +31,7 @@ import java.awt.image.RenderedImage;
 
 import javax.swing.JComponent;
 
-public class Renderer extends JComponent {
+public final class Renderer extends JComponent {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -55,8 +55,8 @@ public class Renderer extends JComponent {
     private float transparency;
     
     /**
-     * The {@code GlyphRasterizer} that is used to convert the {@code Glyphs}
-     * in the {@code currentFrame} into an image.
+     * The {@code GlyphRasterizer} that is used to convert the frames passed to
+     * this renderer into an image suitable for drawing to the screen.
      */
     private GlyphRasterizer rasterizer;
     

@@ -13,7 +13,6 @@ import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.GridLayout;
 import jtxt.emulator.tui.GridLayout.GridParameters;
-import jtxt.emulator.tui.RootContainer;
 import jtxt.emulator.tui.TextBox;
 
 public class TestGridLayout {
@@ -43,12 +42,12 @@ public class TestGridLayout {
         GridLayout layout = new GridLayout(new int[] { 1,
                                                        2,
                                                        3 });
-        RootContainer root = terminal.createRootContainer(layout);
+        terminal.createRootContainer(layout);
         
         Component photo = null;
         try {
             BufferedImage source = ImageIO.read(
-                ClassLoader.getSystemResource("app.jpg")
+                ClassLoader.getSystemResource("coke.jpg")
             );
             
             GridParameters picParams = layout.getParametersForCellsInRange(0,
@@ -77,18 +76,13 @@ public class TestGridLayout {
                                      TextBox.Position.CENTER);
         
         GridParameters buttonParams = layout.getParametersForCell(2, 2);
-        Button button = new Button("F**K THIS SHITTY PROGRAM",
+        Button button = new Button("PRESS ME TO SEE CONSOLE OUTPUT...",
                                    Color.GREEN,
                                    buttonParams);
         button.addCallback(() -> System.out.println("pressed!"));
-            
         
-        /*
-         * Components can be added with a single method invocation, as long
-         * as we are working with the container and not the terminal.
-         */
-        root.add(photo,
-                 text,
-                 button);
+        terminal.add(photo,
+                     text,
+                     button);
     }
 }

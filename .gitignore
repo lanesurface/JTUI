@@ -6,7 +6,7 @@ res/*
 doc/
 
 # Include the demo picture.
-!res/app.jpg
+!res/coke.jpg
 
 # Junk that has been used to verify various tools.
 # Resources are needed to create these files.

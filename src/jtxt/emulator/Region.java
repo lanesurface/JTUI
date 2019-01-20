@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 package jtxt.emulator;
 
 /**
- * Defines a region within the terminal which can be passed to drawing methods
- * to give the bounds where text should be drawn. This allows for us to wrap 
- * text more easily in places where we wish for wrapping to be performed before
- * the edge of the terminal itself.
+ * Defines a region within the terminal in terms of a start and end location.
+ * This class encapsulates these {@code Location}s, as well as providing
+ * utilities for constructing, testing, and modifying these regions.
+ * 
+ * @see Location
  */
 public class Region { 
     /**

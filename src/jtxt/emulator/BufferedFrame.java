@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,11 @@ import jtxt.GlyphBuffer;
  * 
  * TODO: Make this class serializable so that it may be passed over a network
  *       connection, making way for an RFB implementation.
+ * 
+ * @see Terminal#update()
+ * @see Renderer#renderFrame(BufferedFrame,
+ *                           int,
+ *                           int)
  */
 @SuppressWarnings("serial")
 public class BufferedFrame extends GlyphBuffer implements Serializable {

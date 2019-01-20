@@ -19,10 +19,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import javax.swing.JFrame;
 
@@ -35,30 +31,47 @@ import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
 
 /**
- * <p>
- * Allows for applications that rely on console IO facilities to control the
- * appearance of their text on the screen, as well as providing the ability
- * to dynamically update this text and control the location in which it is
- * placed.
- * </p>
+ * <P>
+ * A class for displaying TUI {@code Component}s on the screen. Components
+ * which are interactive may use this class to receive input from the mouse
+ * and keyboard.
+ * </P>
  * 
- * <p>
- * It is important to note that this class does not create an instance of an 
- * operating system's underlying console interface, but rather abstracts 
- * console IO over a Java2D application. Running an application created with
- * this API in an OS terminal will not display it in the terminal, but rather
- * create a new window in which the text of the application will be displayed.
- * </p>
+ * <P>
+ * This is not a real terminal, and does not expose the underlying system's
+ * command interface. The aim of this class is to present Components as if they
+ * are being displayed in a terminal. It should be noted then that an 
+ * application started from the system command line will open a new window in
+ * which it will be displayed.
+ * </P>
  * 
- * <p>
- * IO should be directed through the methods provided by this class instead 
- * of {@code System.in} and {@code System.out}, as these will display in the
- * underlying terminal rather than the application window. The methods in this
- * class have additional parameters for specifying the location of the text in 
- * the window, as well as special ways of dealing with user-input. Error
- * messages and similar output that is not relevant to the application being
- * displayed can still use the OS terminal for logging.
- * </p>
+ * <P>
+ * Before Components can be added to an instance of this class, the terminal
+ * must be initialized with a {@code Layout} for the {@code RootContainer}.
+ * This RootContainer is a Container at the top of the Component hierarchy in
+ * the terminal (meaning that all Components displayed in a terminal window are
+ * an ancestor of this Container in the Component tree). A typical
+ * instantiation of a terminal might look something like this:
+ * 
+ * <PRE>
+ *  Terminal terminal = new Terminal.Builder()
+ *                                  // ...
+ *                                  .dimensions(40, 40)
+ *                                  .build();
+ *  terminal.createRootContainer(new ALayoutOfSomeKind());
+ *  // Create some Components here...
+ *  terminal.add(component1,
+ *               component2,
+ *               component3);
+ * </PRE>
+ * 
+ * Note that Components (including other Containers) can be added at any time
+ * to the interface, and this interface will update automatically. Nothing
+ * needs to be done on the client-side, aside from initializing the terminal,
+ * creating the Components, and adding them to the terminal (where they will
+ * be direct children of the RootContainer) or adding them to another Container
+ * which has been added to the terminal.
+ * </P>
  */
 public class Terminal implements Container.ChangeListener {
     /**
@@ -76,7 +89,7 @@ public class Terminal implements Container.ChangeListener {
     protected JFrame window;
     
     /**
-     * The component which is used for rendering the rasterized image onto the
+     * Uses the given render settings to rasterize and display frames in the
      * window.
      */
     private Renderer renderer;
@@ -95,10 +108,14 @@ public class Terminal implements Container.ChangeListener {
      * belong to. Components that are not added to another container will be
      * direct ancestors of this container.
      * 
-     * @see #add(Component)
+     * @see #add(Component[])
      */
     protected RootContainer root;
     
+    /**
+     * Handles all events that may occur at random (and unpredictable) times
+     * within the terminal. These events are usually user-generated.
+     */
     private EventDispatcher dispatcher;
     
     /**
@@ -114,6 +131,16 @@ public class Terminal implements Container.ChangeListener {
      * {@code Configuration}'s properties. 
      * 
      * @param context The setting information for the terminal.
+     * @param title The title of the terminal window.
+     * @param background The color of the background (the background that
+     *                   appears behind the text).
+     * @param transparency A normalized value between zero and one, which will
+     *                     determine how much of the screen is visible behind
+     *                     the window, as well as the visibility of the text.
+     * @param rasterType The type of rasterizer to use for rendering text to
+     *                   the window. This should not make much noticeable
+     *                   difference in appearance, though it may impact
+     *                   performance of an application.
      */
     public Terminal(Context context,
                     String title,
@@ -197,12 +224,12 @@ public class Terminal implements Container.ChangeListener {
     }
     
     /**
-     * Adds the component to the root container.
+     * Adds the components to the root container.
      * 
-     * @param component The component to add to the root container.
+     * @param components The components to add to the root container.
      */
-    public void add(Component component) {
-        root.add(component);
+    public void add(Component... components) {
+        root.add(components);
     }
     
     /**
@@ -230,7 +257,6 @@ public class Terminal implements Container.ChangeListener {
                 break;
             }
         }
-        
     }
     
     public KeyboardTarget getFocusedComponent() {
@@ -364,6 +390,11 @@ public class Terminal implements Container.ChangeListener {
         return prompt.getInput();
     }
     
+    /**
+     * Redraws all {@code Component}s within the root container to a new frame,
+     * and then renders that frame to the screen.
+     */
+    @Override
     public void update() {
         BufferedFrame frame = new BufferedFrame(context.getBounds());
         root.draw(frame);

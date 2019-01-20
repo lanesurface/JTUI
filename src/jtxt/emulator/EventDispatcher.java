@@ -1,3 +1,19 @@
+/* 
+ * Copyright (C) 2019 Lane W. Surface
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package jtxt.emulator;
 
 import java.awt.event.MouseAdapter;
@@ -5,11 +21,34 @@ import java.awt.event.MouseEvent;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * Handles events which are propagated by a user, and which must be polled for
+ * over the lifetime of the program. This class serves as the foundation for
+ * asynchronous notifications within the terminal, and the bridge between Swing
+ * events and terminal user-interface Components.
+ */
 class EventDispatcher extends MouseAdapter implements Runnable {
+    /**
+     * The instance of the terminal that this dispatcher is listening for. Keep
+     * a reference here, as we may need to notify it whenever some relavent
+     * state changes.
+     */
     private Terminal terminal;
     
+    /**
+     * The instance of the {@code Renderer} that the terminal constructed. 
+     * May need to be notified whenever the window is resized, or the screen
+     * needs to be refreshed. (The amount of times that this Renderer will be
+     * notified depends on the number of updates per second that the client
+     * has requested.)
+     */
     private Renderer renderer;
     
+    /**
+     * The environment context, which we may need to update if the dimensions
+     * of the window change, or if we need to determine certain properties that
+     * influence how we dispatch events to the terminal.
+     */
     private Context context;
     
     /**
@@ -18,7 +57,9 @@ class EventDispatcher extends MouseAdapter implements Runnable {
      * respective component or discarded if the target component isn't
      * {@code Interactable}.
      */
-    protected Queue<MouseEvent> mouseEvents;
+    private Queue<MouseEvent> mouseEvents;
+    
+    private boolean running = true;
     
     public EventDispatcher(Terminal terminal,
                            Context context,
@@ -40,7 +81,7 @@ class EventDispatcher extends MouseAdapter implements Runnable {
              lag = 0;
         terminal.update();
         
-        while (true) {
+        while (running) {
             long now = System.currentTimeMillis(),
                  elapsed = now - last;
             last = now;
@@ -104,6 +145,10 @@ class EventDispatcher extends MouseAdapter implements Runnable {
             
             terminal.clickComponent(loc);
         }
+    }
+    
+    public void stop() {
+        running = false;
     }
     
     @Override

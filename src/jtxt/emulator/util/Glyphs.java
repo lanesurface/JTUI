@@ -14,12 +14,4 @@ public class Glyphs {
         
         return escape;
     }
-    
-//    public static String colorize(String text, Color color) {
-//        String colorized = escapeColor(color);
-//        colorized += text;
-//        colorized += escapeColor(Color.WHITE);
-//        
-//        return colorized;
-//    }
 }

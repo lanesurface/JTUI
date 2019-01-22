@@ -18,7 +18,10 @@ package jtxt.emulator.tui;
 import jtxt.emulator.Region;
 import jtxt.emulator.ResizeSubscriber;
 
-public class RootContainer extends Container implements ResizeSubscriber {
+public class RootContainer
+    extends Container<Component>
+    implements ResizeSubscriber
+{
     /**
      * Creates a new container which occupies the entire area which was given
      * when the context was created. The size of this container will match the

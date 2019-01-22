@@ -34,8 +34,8 @@ import jtxt.emulator.Region;
  * 
  * @see RootContainer
  */
-public class Container implements Component,
-                                  Iterable<Component> {
+public class Container<T extends Component> implements Component,
+                                                       Iterable<Component> {
     /**
      * Objects which want to be notified when new {@code Component}s are added
      * to this container should implement this interface and register with the
@@ -53,7 +53,7 @@ public class Container implements Component,
      * by this container inherit certain properties of it. This container may
      * also dictate the way that components added to it appear on the screen.
      */
-    protected List<Component> children;
+    protected List<T> children;
     
     /**
      * The layout that determines how the children of this container will be
@@ -78,9 +78,10 @@ public class Container implements Component,
      */
     protected Color background;
     
+    @SafeVarargs
     public Container(Object parameters,
                      Layout layout,
-                     Component... children) {
+                     T... children) {
         this.parameters = parameters;
         this.layout = layout;
         this.listeners = new ArrayList<>();
@@ -95,8 +96,9 @@ public class Container implements Component,
      * 
      * @param child The component to add to this container.
      */
-    public void add(Component... children) {
-        for (Component child : children) {
+    @SuppressWarnings("unchecked")
+    public void add(T... children) {
+        for (T child : children) {
             this.children.add(child);
             Region bounds = layout.getBounds(child.getLayoutParameters());
             child.setBounds(bounds);
@@ -127,10 +129,18 @@ public class Container implements Component,
     
     @Override
     public Iterator<Component> iterator() {
-        return new ContainerIterator(this);
+        return new ContainerIterator();
     }
     
-    private static class ContainerIterator implements Iterator<Component> {
+    /* FIXME: 1. Is this thread safe? (Using an inner class as the iterator for
+     *           this Conatainer? Is there any way for us to iterate over a
+     *           Container in different threads?)
+     *        2. This Iterator returns objects of type Component, as it is too
+     *           much hassle at the moment to modify this to return objects of
+     *           the parameterized type. (It would involve creating a new
+     *           array of that type.)
+     */
+    private class ContainerIterator implements Iterator<Component> {
         /**
          * All of the children that are owned by the root container, including
          * any sub-containers that root may contain.
@@ -148,8 +158,8 @@ public class Container implements Component,
          * 
          * @param root The container to iterate over.
          */
-        public ContainerIterator(Container root) {
-            this.children = root.getChildren();
+        public ContainerIterator() {
+            this.children = getChildren();
         }
         
         @Override
@@ -161,7 +171,7 @@ public class Container implements Component,
         public Component next() {
             Component current = children[index++];
             if (current instanceof Container) {
-                Container container = (Container)current;
+                Container<?> container = (Container<?>)current;
                 for (Component component : container)
                     return component;
             }

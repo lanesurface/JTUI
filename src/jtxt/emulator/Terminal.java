@@ -24,10 +24,10 @@ import javax.swing.JFrame;
 
 import jtxt.emulator.Renderer.RasterType;
 import jtxt.emulator.tui.Component;
-import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.Interactable;
 import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.Layout;
+import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.RootContainer;
 
 /**

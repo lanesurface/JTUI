@@ -15,6 +15,8 @@
  */
 package jtxt.emulator.tui;
 
+import java.util.Arrays;
+
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
@@ -171,6 +173,14 @@ public class GridLayout implements Layout {
         
         return new Region(first.bounds.start,
                           last.bounds.end);
+    }
+    
+    public static GridLayout initializeForDimensions(int rows,
+                                                     int columns) {
+        int[] dimensions = new int[rows];
+        Arrays.fill(dimensions, columns);
+        
+        return new GridLayout(dimensions);
     }
     
     /**

@@ -64,4 +64,10 @@ public interface Layout {
      * @param parentBounds The bounds of the parent container.
      */
     void setParentBounds(Region parentBounds);
+    
+    default void setComponentBounds(Component child) {
+        child.setBounds(
+            getBounds(child.getLayoutParameters())
+        );
+    }
 }

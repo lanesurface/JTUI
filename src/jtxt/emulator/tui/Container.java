@@ -100,16 +100,14 @@ public class Container<T extends Component> implements Component,
     public void add(T... children) {
         for (T child : children) {
             this.children.add(child);
-            Region bounds = layout.getBounds(child.getLayoutParameters());
-            child.setBounds(bounds);
+            layout.setComponentBounds(child);
         }
-        
         notifyChangeListeners();
     }
     
     private void notifyChangeListeners() {
-        listeners.stream()
-                 .forEach(ChangeListener::update);
+        for (ChangeListener listener : listeners)
+            listener.update();
     }
     
     public void registerListener(ChangeListener listener) {
@@ -132,18 +130,10 @@ public class Container<T extends Component> implements Component,
         return new ContainerIterator();
     }
     
-    /* FIXME: 1. Is this thread safe? (Using an inner class as the iterator for
-     *           this Conatainer? Is there any way for us to iterate over a
-     *           Container in different threads?)
-     *        2. This Iterator returns objects of type Component, as it is too
-     *           much hassle at the moment to modify this to return objects of
-     *           the parameterized type. (It would involve creating a new
-     *           array of that type.)
-     */
     private class ContainerIterator implements Iterator<Component> {
         /**
-         * All of the children that are owned by the root container, including
-         * any sub-containers that root may contain.
+         * All of the children that are owned by this container, including
+         * any sub-containers that it may contain.
          */
         private final Component[] children;
         
@@ -153,10 +143,8 @@ public class Container<T extends Component> implements Component,
         private int index;
         
         /**
-         * Construct an iterator for the container, where that container is
+         * Construct an iterator for this container, where that container is
          * the parent of all components returned by this iterator.
-         * 
-         * @param root The container to iterate over.
          */
         public ContainerIterator() {
             this.children = getChildren();
@@ -169,6 +157,12 @@ public class Container<T extends Component> implements Component,
 
         @Override
         public Component next() {
+            /*
+             * NOTE: This iterator returns Objects of type `Component`, not the
+             *       parameterized type. This is because subcontainers may
+             *       contain Components which are incompatible with the
+             *       parameterized one.
+             */
             Component current = children[index++];
             if (current instanceof Container) {
                 Container<?> container = (Container<?>)current;
@@ -195,14 +189,7 @@ public class Container<T extends Component> implements Component,
     public void setBounds(Region bounds) {
         this.bounds = bounds;
         layout.setParentBounds(bounds);
-        /*
-         * Now we need to make sure each of our children has been adjusted
-         * for these new bounds.
-         */
-        for (Component child : children) {
-            Object params = child.getLayoutParameters();
-            child.setBounds(layout.getBounds(params));
-        }
+        children.stream().forEach(layout::setComponentBounds);
     }
     
     @Override

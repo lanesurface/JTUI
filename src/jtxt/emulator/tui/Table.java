@@ -15,14 +15,27 @@
  */
 package jtxt.emulator.tui;
 
-import jtxt.GlyphBuffer;
+import java.util.Arrays;
 
+import jtxt.GlyphBuffer;
+import jtxt.emulator.Location;
+import jtxt.emulator.Region;
+import jtxt.emulator.tui.GridLayout.GridParameters;
+
+/**
+ * A {@code Container} which organizes its children into rows and columns. This
+ * Container can be used to easily align a collection of Components on both of
+ * their axes. (Components which have the same row or column number will be
+ * aligned along an axis.)
+ * 
+ * @see Container
+ * @see GridLayout
+ */
 public class Table extends Container<Table.Column> {
     /**
-     * The Layout used for this table. Since tables have much in common with the
-     * GridLayout, yet we wish for them to appear as Components in the window,
-     * we use an appropriate instance of a GridLayout to manage their bounds
-     * instead.
+     * The Layout used for this table. Since tables are very closely related to
+     * the {@code GridLayout}, we use much of the functionality already written
+     * for this layout manager when drawing the Components of this Container.
      */
     protected GridLayout grid;
     
@@ -37,37 +50,75 @@ public class Table extends Container<Table.Column> {
         grid = (GridLayout)layout;
         this.rows = rows;
         this.columns = columns;
+        
+        Column[] cols = new Column[columns];
+        for (int column = 0; column < columns; column++) {
+            GridParameters params = grid.getParametersForCellsInRange(0,
+                                                                      column,
+                                                                      rows - 1,
+                                                                      column);
+            cols[column] = new Column(params, rows);
+        }
+        
+        children = Arrays.asList(cols);
     }
     
     public void insert(int row,
                        int column,
                        Component... components) {
-        if (row >= rows
-            || column + components.length >= columns)
-        {
+        if (column >= columns || row + components.length >= rows)
             throw new IllegalArgumentException("The given indices are out " +
                                                "of bounds");
-        }
         
         addFrom(components, row, column);
     }
     
     protected void addFrom(Component[] components,
                            int startRow,
-                           int column) {
-        // TODO
+                           int columnNumber) {
+        Column column = children.get(columnNumber);
+        for (int row = startRow; 
+             row < startRow + components.length;
+             row++) column.components[row] = components[row - startRow];
     }
     
     protected static class Column extends DefaultComponent {
         protected Component[] components;
         
-        protected Column(int size) {
+        protected int rowHeight;
+        
+        protected Column(Object parameters, int size) {
             components = new Component[size];
+            this.parameters = parameters;
         }
-
+        
+        @Override
+        public void setBounds(Region bounds) {
+            super.setBounds(bounds);
+            rowHeight = height / components.length;
+            
+            for (int row = 0; row < components.length; row++) {
+                Component component = components[row];
+                if (component == null) continue;
+                
+                Location start = new Location(row * rowHeight, width);
+                component.setBounds(Region.fromLocation(start,
+                                                        width,
+                                                        rowHeight));
+            }
+            
+            GridParameters params = (GridParameters)parameters;
+            System.out.format("start=%s,%nend=%s%n",
+                              params.first.bounds.start,
+                              params.last.bounds.end);
+        }
+        
         @Override
         public void draw(GlyphBuffer buffer) {
-            // TODO
+            for (Component component : components) {
+                if (component == null) continue;
+                component.draw(buffer);
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ public class TestTable {
         BufferedImage source = ImageIO.read(
             ClassLoader.getSystemResource("coke.jpg")
         );
-        table.insert(0, 0, new ASCIImage(null, source));
+        table.insert(0, 1, new ASCIImage(null, source));
         
         terminal.add(table);
     }

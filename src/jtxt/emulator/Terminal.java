@@ -128,12 +128,12 @@ public class Terminal implements Container.ChangeListener {
     
     /**
      * Creates a new instance of {@code Terminal} based on the given 
-     * {@code Configuration}'s properties. 
+     * {@code Context}'s properties. 
      * 
      * @param context The setting information for the terminal.
      * @param title The title of the terminal window.
-     * @param background The color of the background (the background that
-     *                   appears behind the text).
+     * @param background The color of the background which appears being the
+     *                   text.
      * @param transparency A normalized value between zero and one, which will
      *                     determine how much of the screen is visible behind
      *                     the window, as well as the visibility of the text.

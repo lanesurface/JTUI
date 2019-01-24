@@ -18,42 +18,25 @@ package jtxt.emulator.tui;
 import jtxt.emulator.Region;
 
 /**
- * Allocates the bounds that a component will occupy within its parent 
- * container, using the width and height of a component to determine the
- * respective space that it may occupy. If these space requirements cannot be
- * met (because there is not enough space within the parent), the Layout will
- * return the largest amount of space that can be allocated within the parent.
+ * Allocates the bounds of a {@code Container}'s children, using objects passed
+ * to these children to determine the location in which they will be placed.
  */
 public interface Layout {
     /**
-     * Calculates the size of the region that the given component can fit in
-     * within the parent container. As this method will often be called by
-     * a component trying to resize itself, it may not know the location in
-     * which it was requested to be placed within the container; therefore,
-     * this method serves two purposes:
-     * <OL>
-     * <LI>
-     *     Determine the region within the parent container that the requesting
-     *     component will be placed, based on the positioning argument and the
-     *     location of other components within that container.
-     * </LI>
-     * <LI>
-     *     Calculate the maximum size less than or equal to the given width and
-     *     height that the component will fit into.
-     * </LI>
-     * Overflowing this bounding information can lead to parts of the component
-     * being discarded when added to the frame. A component should always make
-     * sure that it passes in only the pre-calculated bounding information when
-     * it updates and only passes in more characters than can fit within these
-     * bounds if it intends for them to be discarded.
+     * Calculates the size of the {@code Region} that a {@code Component} may
+     * be placed within, using the given parameters object to make this
+     * calculation. The type of this object, as well as the way that it affects
+     * the determination of the bounds, is implementation-dependent. This
+     * method may throw an error if the type of this parameter is incorrect
+     * (because a client passed an incorrect parameter when constructing a
+     * Component).
      * 
-     * @param width The requested width of the component.
-     * @param height The requested height for the component.
-     * @param parameter An optional argument to use when determining where the
-     *                  bounds should be allocated within the parent.
+     * @param parameters An object which describes the positioning information
+     *                   that will be used to calculate these bounds. This is
+     *                   implementation dependent, and the type of this object
+     *                   is likely to change between different {@code Layout}s.
      * 
-     * @return The bounds within the container that the given component can 
-     *         occupy.
+     * @return The bounds that the <code>parameters</code> object represents.
      */
     Region getBounds(Object parameters);
     
@@ -61,10 +44,17 @@ public interface Layout {
      * Sets the bounds of the parent container that this {@code Layout}
      * manages.
      * 
-     * @param parentBounds The bounds of the parent container.
+     * @param parentBounds The bounds of the Container that this Layout
+     *                     manages.
      */
     void setParentBounds(Region parentBounds);
     
+    /**
+     * Sets the bounds of a Component, using the parameter object that the
+     * component has defined.
+     * 
+     * @param child The Component to allocate bounds to.
+     */
     default void setComponentBounds(Component child) {
         child.setBounds(
             getBounds(child.getLayoutParameters())

@@ -77,7 +77,7 @@ public class Table extends Container<Table.Column> {
                            int startRow,
                            int columnNumber) {
         Column column = children.get(columnNumber);
-        for (int row = startRow; 
+        for (int row = startRow;
              row < startRow + components.length;
              row++) column.components[row] = components[row - startRow];
     }
@@ -101,16 +101,14 @@ public class Table extends Container<Table.Column> {
                 Component component = components[row];
                 if (component == null) continue;
                 
-                Location start = new Location(row * rowHeight, width);
+                Location start = new Location(row * rowHeight,
+                                              bounds.start.position);
                 component.setBounds(Region.fromLocation(start,
                                                         width,
                                                         rowHeight));
+                System.out.format("component=%s%n",
+                                  component.getBounds());
             }
-            
-            GridParameters params = (GridParameters)parameters;
-            System.out.format("start=%s,%nend=%s%n",
-                              params.first.bounds.start,
-                              params.last.bounds.end);
         }
         
         @Override

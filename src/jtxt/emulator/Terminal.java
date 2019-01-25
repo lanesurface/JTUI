@@ -99,7 +99,7 @@ public class Terminal implements Container.ChangeListener {
      * text-area, this object fetches and parses input. There should only be
      * one prompt per instance of a {@code Terminal}.
      * 
-     * @see requestInput(String)
+     * @see #requestInput(String)
      */
     private Prompt prompt;
     
@@ -121,7 +121,7 @@ public class Terminal implements Container.ChangeListener {
     /**
      * The current component receiving key events.
      * 
-     * @see #focus(Component)
+     * @see #focus(KeyboardTarget)
      * @see #focusAt(Location)
      */
     protected KeyboardTarget focused;

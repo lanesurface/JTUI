@@ -71,8 +71,6 @@ public class Location {
      * Adds the line and position of this location to the specified location.
      * 
      * @param other The location to add to this one.
-     * 
-     * @return A new location that is the sum of these two locations.
      */
     public void add(Location other) {
         add(other.line, other.position);

@@ -25,7 +25,9 @@ interface GlyphRasterizer {
      * glyphs onto an image, according to the properties defined in the
      * {@code Context} which was used to construct this instance.
      * 
-     * @param frame The frame of glyphs to rasterize to the image.
+     * @param buffer The buffer of glyphs to rasterize to the image.
+     * @param width The width of the image to create (in pixels).
+     * @param height The height of the image to create.
      * 
      * @return An image which contains the appropriately rasterized glyphs, and
      *         which is the same width and height set in the context the frame

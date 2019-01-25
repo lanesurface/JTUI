@@ -37,7 +37,7 @@ public final class Renderer extends JComponent {
     /**
      * This is a screenshot of the screen before we began rendering. When the
      * transparency of the window is less than <code>1.0f</code>, the pixels of
-     * this image are combined with those of the terminal, to give an illusion
+     * this image are combined with those of the terminal to give an illusion
      * of a transparent window.
      */
     private final BufferedImage screen;
@@ -66,7 +66,7 @@ public final class Renderer extends JComponent {
      * to the window as many times as necessary before the next frame is
      * requested.
      * 
-     * @see Renderer#renderFrame(BufferedFrame)
+     * @see Renderer#renderFrame(BufferedFrame, int, int)
      */
     private RenderedImage rasterizedFrame;
     

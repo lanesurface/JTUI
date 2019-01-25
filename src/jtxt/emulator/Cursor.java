@@ -27,7 +27,7 @@ public class Cursor {
     
     /**
      * Initializes a new {@code Cursor} with the line and position set to
-     * (0,&nbsp0).
+     * (0,&nbsp;0).
      */
     public Cursor() {
         this(0, 0);

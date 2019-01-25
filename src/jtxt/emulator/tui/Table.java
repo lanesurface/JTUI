@@ -63,14 +63,45 @@ public class Table extends Container<Table.Column> {
         children = Arrays.asList(cols);
     }
     
-    public void insert(int row,
-                       int column,
-                       Component... components) {
+    public void add(int row,
+                    int column,
+                    Component... components) {
         if (column >= columns || row + components.length >= rows)
             throw new IllegalArgumentException("The given indices are out " +
                                                "of bounds");
         
         addFrom(components, row, column);
+    }
+    
+    /**
+     * Inserts the given Components into this table at the specified row and
+     * column, shifting any elements within that column downward to accommodate
+     * these new elements.
+     * 
+     * @param row The row that the Components should be inserted before.
+     * @param column The column that the Components should be inserted in.
+     * @param after Whether to insert the Components into the column before or
+     *              after the given indices. (If <code>false</code>, then the
+     *              Components will occupy the position specified; otherwise,
+     *              the Component which was at that position before will be
+     *              retained, while all Components that followed it will have
+     *              been shifted.)
+     * @param components The Components to insert before the row and column.
+     */
+    public void insertIntoColumn(int row,
+                                 int column,
+                                 boolean after,
+                                 Component... components) {
+        Column col = children.get(column);
+        col.insert(components, after
+                               ? row + 1
+                               : row);
+    }
+    
+    public void insertColumn(int row,
+                             int column,
+                             Component... components) {
+        // TODO
     }
     
     protected void addFrom(Component[] components,
@@ -85,17 +116,40 @@ public class Table extends Container<Table.Column> {
     protected static class Column extends DefaultComponent {
         protected Component[] components;
         
-        protected int rowHeight;
+        protected int size,
+                      rowHeight;
         
         protected Column(Object parameters, int size) {
             components = new Component[size];
+            this.size = size;
             this.parameters = parameters;
+        }
+        
+        public void insert(Component[] components, int row) {
+            int end = row + components.length;
+            if (end > size) resize(end);
+            
+            for (int r = size - 1; r >= 1 && r >= row; r--)
+                this.components[r] = this.components[r - 1];
+            
+            for (int r = row; r < components.length; r++)
+                this.components[r] = components[r - row];
+        }
+        
+        protected void resize(int size) {
+            Component[] components = new Component[size];
+            System.arraycopy(this.components,
+                             0,
+                             components,
+                             0,
+                             size);
+            this.size = size;
         }
         
         @Override
         public void setBounds(Region bounds) {
             super.setBounds(bounds);
-            rowHeight = height / components.length;
+            rowHeight = height / size;
             
             for (int row = 0; row < components.length; row++) {
                 Component component = components[row];
@@ -106,8 +160,6 @@ public class Table extends Container<Table.Column> {
                 component.setBounds(Region.fromLocation(start,
                                                         width,
                                                         rowHeight));
-                System.out.format("component=%s%n",
-                                  component.getBounds());
             }
         }
         

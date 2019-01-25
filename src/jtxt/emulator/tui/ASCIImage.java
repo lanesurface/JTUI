@@ -60,6 +60,8 @@ public class ASCIImage extends DefaultComponent {
     /**
      * Create a new ASCII image from given source image.
      * 
+     * @param parameters The Layout parameters to use for positioning this
+     *                   image.
      * @param source The image to use for creating this ASCII image.
      */
     public ASCIImage(Object parameters,
@@ -71,9 +73,8 @@ public class ASCIImage extends DefaultComponent {
     }
     
     /**
-     * Resize the source image to the width and height given by the
-     * {@link #setSize(int, int)} method. Each of the pixels in the returned
-     * image represent a single glyph.
+     * Resize the source image to the width and height allocated by the layout.
+     * Each of the pixels in the returned image represent a single Glyph.
      * 
      * @return An appropriately scaled image for the size of this component.
      */

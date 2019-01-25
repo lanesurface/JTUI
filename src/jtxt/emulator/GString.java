@@ -107,6 +107,7 @@ public final class GString implements Iterable<Glyph> {
      * 
      * @param index The index at which to insert the given glyph into the 
      *              string.
+     * @param glyph The glyph to insert.
      * 
      * @return A new string containing the glyph inserted at the index. The
      *         glyph at the index, as well as all glyphs after it will have

@@ -24,7 +24,7 @@ import jtxt.emulator.Location;
  * rather that they will be able to receive key presses when this input is
  * directed toward them.
  * 
- * @see jtxt.emulator.Terminal#focus(Component)
+ * @see jtxt.emulator.Terminal#focus(KeyboardTarget)
  * @see jtxt.emulator.Terminal#focusAt(Location)
  */
 public interface KeyboardTarget {

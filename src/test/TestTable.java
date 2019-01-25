@@ -20,9 +20,7 @@ public class TestTable {
                                         .font("DejaVu Sans Mono")
                                         .build();
         
-        // Should be a better way to create a dynamic layout?
-        int[] dimensions = new int[] { 1 };
-        GridLayout layout = new GridLayout(dimensions);
+        GridLayout layout = GridLayout.initializeForDimensions(1, 1);
         terminal.createRootContainer(layout);
         
         Table table = new Table(layout.getParametersForCell(0, 0),

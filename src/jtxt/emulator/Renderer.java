@@ -77,9 +77,9 @@ public final class Renderer extends JComponent {
     public static enum RasterType { HARDWARE_ACCELERATED,
                                     SOFTWARE }
     
-    protected Renderer(Color background,
-                       float transparency,
-                       GlyphRasterizer rasterizer) {
+    Renderer(Color background,
+             float transparency,
+             GlyphRasterizer rasterizer) {
         if (transparency != 1.0f) {
             BufferedImage scr = null;
             try {

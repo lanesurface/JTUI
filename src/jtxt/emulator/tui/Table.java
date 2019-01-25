@@ -63,14 +63,16 @@ public class Table extends Container<Table.Column> {
         children = Arrays.asList(cols);
     }
     
-    public void add(int row,
-                    int column,
+    public void add(int rowNumber,
+                    int columnNumber,
                     Component... components) {
-        if (column >= columns || row + components.length >= rows)
+        if (columnNumber >= columns || rowNumber + components.length >= rows)
             throw new IllegalArgumentException("The given indices are out " +
                                                "of bounds");
         
-        addFrom(components, row, column);
+        addFrom(components,
+                rowNumber,
+                columnNumber);
     }
     
     /**
@@ -78,8 +80,8 @@ public class Table extends Container<Table.Column> {
      * column, shifting any elements within that column downward to accommodate
      * these new elements.
      * 
-     * @param row The row that the Components should be inserted before.
-     * @param column The column that the Components should be inserted in.
+     * @param rowNumber The row that the Components should be inserted before.
+     * @param columnNumber The column that the Components should be inserted in.
      * @param after Whether to insert the Components into the column before or
      *              after the given indices. (If <code>false</code>, then the
      *              Components will occupy the position specified; otherwise,
@@ -88,14 +90,18 @@ public class Table extends Container<Table.Column> {
      *              been shifted.)
      * @param components The Components to insert before the row and column.
      */
-    public void insertIntoColumn(int row,
-                                 int column,
+    public void insertIntoColumn(int rowNumber,
+                                 int columnNumber,
                                  boolean after,
                                  Component... components) {
-        Column col = children.get(column);
-        col.insert(components, after
-                               ? row + 1
-                               : row);
+        rows += components.length;
+        for (int column = 0; column < columns; column++)
+            children.get(column).shiftRows(rowNumber,
+                                           components.length);
+        
+        addFrom(components,
+                rowNumber,
+                columnNumber);
     }
     
     public void insertColumn(int row,
@@ -113,6 +119,13 @@ public class Table extends Container<Table.Column> {
              row++) column.components[row] = components[row - startRow];
     }
     
+    /**
+     * A column of components within the Container. As the Table has been set
+     * up to only be able to hold children of this type, Components which are
+     * added to the Table must be added to a Column in the correct position
+     * (determined by the row number given when that Component is added). Each
+     * Component within a Column will have the same column number.
+     */
     protected static class Column extends DefaultComponent {
         protected Component[] components;
         
@@ -125,24 +138,51 @@ public class Table extends Container<Table.Column> {
             this.parameters = parameters;
         }
         
-        public void insert(Component[] components, int row) {
-            int end = row + components.length;
-            if (end > size) resize(end);
+        /**
+         * Shifts all of the rows in this Column, starting at
+         * <code>startRow</code> and continuing to the end of this Column, to
+         * an index shifted by the <code>amount</code> specified. (Therefore,
+         * the new index of a Component will be at the position <code>oldIndex
+         * + amount</code>.)
+         * 
+         * <P><I>
+         * Do note that shifting the rows causes this Column's size to be
+         * increased by the amount. Calls to this method should usually reside
+         * in a loop, where each of the rows within a Table will be shifted
+         * appropriately.
+         * </I></P>
+         * 
+         * @param startRow The first row which should be shifted.
+         * @param amount The amount of indices that each row should be shifted
+         *               by.
+         */
+        public void shiftRows(int startRow, int amount) {
+            resize(size + amount);
             
-            for (int r = size - 1; r >= 1 && r >= row; r--)
-                this.components[r] = this.components[r - 1];
-            
-            for (int r = row; r < components.length; r++)
-                this.components[r] = components[r - row];
+            for (int row = size - 1;
+                 row >= amount && row >= startRow;
+                 row--) components[row] = components[row - amount];
         }
         
+        /**
+         * Adjusts the number of rows within this Column, growing or shrinking
+         * as necessary. If the given size is less than the current size of
+         * this Column, the Components which fall outside the new range of the
+         * Column will be discarded. If the size indicates that the Column
+         * needs to grow, the new rows within the Column will contain
+         * <code>null</code> elements.
+         * 
+         * @param size The number of rows that this Column should contain 
+         *             after resizing occurs.
+         */
         protected void resize(int size) {
             Component[] components = new Component[size];
             System.arraycopy(this.components,
                              0,
                              components,
                              0,
-                             size);
+                             this.size);
+            this.components = components;
             this.size = size;
         }
         

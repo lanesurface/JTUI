@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,29 +19,26 @@ import jtxt.GlyphBuffer;
 import jtxt.emulator.Region;
 
 /**
- * <p>
- * The root of all elements that appear or are used for rendering information
- * within the terminal. Each component should be able to draw itself (including
- * any child components that make up a parent component) and each should handle 
- * all user-specified input directed toward themselves, whether that comes from
- * a keyboard event or mouse input. 
- * </p>
+ * The root of all TUI components. A {@code Component} may draw itself within
+ * the bounds that it has been allocated by a {@code Layout}, and may be added
+ * to a special kind of Component, which is called a {@code Container}.
+ * Components should be lightweight and able to draw themselves fairly quickly,
+ * as it may be asked to do so many times per second. A Component does not
+ * necessarily belong to a terminal, and may be rendered to any object which
+ * implements the {@code GlyphBuffer} interface. This could be a document, PDF,
+ * the terminal emulator, or any number of extensions.
  * 
- * <p>
- * Parent components (or those which are capable of containing sub-components)
- * should delegate drawing to their children after appropriately rendering
- * themselves. Input which is received by a parent component should determine
- * which child the input was received by (if any) and let the child handle the
- * action. A parent should only concern itself with the arrangement of its 
- * children, and should not perform any task which could be reused in another
- * context.
- * </p>
+ * @see Terminal
+ * @see Container
+ * @see Document
+ * @see Layout
+ * @see GlyphBuffer
  */
 public interface Component {
     /**
      * Renders the component within the bounds of that this component has been
-     * inflated to. A component which updates glyphs within the bounds that
-     * have been allocated by the layout can be sure that the characters will
+     * inflated to. A component which updates Glyphs within the bounds that
+     * have been allocated by the Layout can be sure that the characters will
      * be updated appropriately; the behavior for a component which does not is
      * undefined.
      * 

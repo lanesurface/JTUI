@@ -24,15 +24,17 @@ import jtxt.GlyphBuffer;
 import jtxt.emulator.Region;
 
 /**
- * A {@code Container} is a component which owns other components. Containers
- * handle the placement of their children (the components which they own)
- * inside the bounds that the container that owns themselves has allocated. A
- * container that does not have a parent is called a {@code RootContainer} and
- * lies at the top of the component hierarchy. Each container can decide which
- * {@code Layout} it would like to use whenever it's constructed, and
- * subcontainers don't necessarily have the same layout as their parents.
+ * A {@code Container} is a Component which owns and manages other Components.
+ * The Components which a Container manages are said to be <i>children</i> of
+ * that Container. Various elements of a Container may be specified when it's
+ * created, including the {@code Layout} which defines how these children will
+ * be allocated bounds within their parent.
  * 
- * @see RootContainer
+ * @param <T> The type of {@code Components} this Container should hold. In
+ *            general, a Container may be instantiated with {@code Component},
+ *            but instantiation of subclass of {@code Component} is necessary
+ *            if you wish for methods such as {@link #getChild(int)} to return
+ *            Components of that type.
  */
 public class Container<T extends Component> implements Component,
                                                        Iterable<Component> {
@@ -103,6 +105,10 @@ public class Container<T extends Component> implements Component,
             layout.setComponentBounds(child);
         }
         notifyChangeListeners();
+    }
+    
+    public T getChild(int index) {
+        return children.get(index);
     }
     
     private void notifyChangeListeners() {

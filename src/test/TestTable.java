@@ -1,5 +1,6 @@
 package test;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -7,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
+import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.GridLayout;
 import jtxt.emulator.tui.Table;
@@ -41,15 +43,25 @@ public class TestTable {
          */
 //        table.add(0, 2, new Border(Border.Type.DASHED,
 //                                   Color.GREEN,
-//                                   text));               
+//                                   text));
         table.add(0, 1, text);
         
+        Component inText = new TextBox(null,
+                                       "This is an inserted string!",
+                                       TextBox.Position.LEFT),
+                  inButton = new Button("Inserted button!",
+                                        Color.CYAN,
+                                        null);
+        
+        /*
+         * FIXME: Buttons don't respond to input events (because of the way we
+         *        are iterating over the Container).
+         */
         table.insertIntoColumn(0,
                                0,
                                false,
-                               new TextBox(null,
-                                           "This is an inserted string!",
-                                           TextBox.Position.LEFT));
+                               inText,
+                               inButton);
         
         terminal.add(table);
     }

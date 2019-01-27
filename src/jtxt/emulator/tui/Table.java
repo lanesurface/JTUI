@@ -42,6 +42,16 @@ public class Table extends Container<Table.Column> {
     protected int rows,
                   columns;
     
+    /**
+     * Creates a new {@code Table} which organizes it's children into a grid
+     * of rows and columns. A Table is similar to the {@code GridLayout}, but
+     * allows for insertion of rows and columns at runtime, and which makes it
+     * more convenient to group related children in a structured fashion.
+     * 
+     * @param parameters The layout parameters for this Container.
+     * @param rows The initial number of rows in this Table.
+     * @param columns The initial number of columns in this Table.
+     */
     public Table(Object parameters,
                  int rows,
                  int columns) {
@@ -52,17 +62,46 @@ public class Table extends Container<Table.Column> {
         this.columns = columns;
         
         Column[] cols = new Column[columns];
-        for (int column = 0; column < columns; column++) {
-            GridParameters params = grid.getParametersForCellsInRange(0,
-                                                                      column,
-                                                                      rows - 1,
-                                                                      column);
-            cols[column] = new Column(params, rows);
-        }
+        for (int column = 0; column < columns; column++)
+            cols[column] = createColumn(column);
         
         children = Arrays.asList(cols);
     }
     
+    /**
+     * Creates a new Column which can be inserted into the Table for the given
+     * column number, using the number of rows to determine the number of
+     * components it can hold.
+     * 
+     * @param columnNumber The position within the Table that this column will
+     *                     occupy.
+     * 
+     * @return A new Column for the given <code>columnNumber</code>.
+     */
+    protected Column createColumn(int columnNumber) {
+        GridParameters params = grid.getParametersForCellsInRange(0,
+                                                                  columnNumber,
+                                                                  rows - 1,
+                                                                  columnNumber);
+        return new Column(params, rows);
+    }
+    
+    /**
+     * Adds the given Components to this Table, where the row and column number
+     * determine where the first Component will appear, and all subsequent
+     * Components will follow the first in the column. If the number of
+     * Components passed into this method are greater than the number of rows
+     * allocated within that column, an exception will be thrown.
+     * 
+     * @param rowNumber The row number of the first Component to add.
+     * @param columnNumber The column number of the first Component to add.
+     * @param components The Components to add to this Table.
+     * 
+     * @see #insertIntoColumn(int,
+     *                        int,
+     *                        boolean,
+     *                        Component...)
+     */
     public void add(int rowNumber,
                     int columnNumber,
                     Component... components) {
@@ -70,9 +109,8 @@ public class Table extends Container<Table.Column> {
             throw new IllegalArgumentException("The given indices are out " +
                                                "of bounds");
         
-        addFrom(components,
-                rowNumber,
-                columnNumber);
+        children.get(columnNumber).add(rowNumber,
+                                       components);
     }
     
     /**
@@ -95,28 +133,23 @@ public class Table extends Container<Table.Column> {
                                  boolean after,
                                  Component... components) {
         rows += components.length;
+        int row = after
+                  ? rowNumber + 1
+                  : rowNumber;
         for (int column = 0; column < columns; column++)
-            children.get(column).shiftRows(rowNumber,
+            children.get(column).shiftRows(row,
                                            components.length);
         
-        addFrom(components,
-                rowNumber,
-                columnNumber);
+        children.get(rowNumber).add(rowNumber,
+                                    components);
     }
     
-    public void insertColumn(int row,
-                             int column,
+    public void insertColumn(int columnNumber,
                              Component... components) {
-        // TODO
-    }
-    
-    protected void addFrom(Component[] components,
-                           int startRow,
-                           int columnNumber) {
-        Column column = children.get(columnNumber);
-        for (int row = startRow;
-             row < startRow + components.length;
-             row++) column.components[row] = components[row - startRow];
+        Column col = createColumn(columnNumber);
+        col.add(0, components);
+        children.add(columnNumber, col);
+        columns += 1;
     }
     
     /**
@@ -138,6 +171,12 @@ public class Table extends Container<Table.Column> {
             this.parameters = parameters;
         }
         
+        public void add(int startRow, Component... components) {
+            for (int row = startRow;
+                row < startRow + components.length;
+                row++) this.components[row] = components[row - startRow];
+        }
+        
         /**
          * Shifts all of the rows in this Column, starting at
          * <code>startRow</code> and continuing to the end of this Column, to
@@ -156,7 +195,7 @@ public class Table extends Container<Table.Column> {
          * @param amount The amount of indices that each row should be shifted
          *               by.
          */
-        public void shiftRows(int startRow, int amount) {
+        protected void shiftRows(int startRow, int amount) {
             resize(size + amount);
             
             for (int row = size - 1;

@@ -80,8 +80,8 @@ public final class Renderer extends JComponent {
     Renderer(Color background,
              float transparency,
              GlyphRasterizer rasterizer) {
+        BufferedImage scr = null;
         if (transparency != 1.0f) {
-            BufferedImage scr = null;
             try {
                 Robot r = new Robot();
                 Toolkit tk = Toolkit.getDefaultToolkit();
@@ -90,10 +90,10 @@ public final class Renderer extends JComponent {
                                                           0,
                                                           bounds.width,
                                                           bounds.height));
-            } catch (AWTException awtex) { }
-            this.screen = scr;
+            }
+            catch (AWTException awtex) { }
         }
-        else screen = null;
+        this.screen = scr;
         
         this.background = background;
         this.transparency = transparency;

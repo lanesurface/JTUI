@@ -25,17 +25,4 @@ public interface Interactable {
      *         terminal.)
      */
     boolean clicked(Location clickLocation);
-    
-    /**
-     * Add a {@code Callback} that this interactive component will dispatch
-     * new events to whenever they occur.
-     * 
-     * @param callback The callback to add to this component.
-     */
-    void addCallback(Callback callback);
-    
-    @FunctionalInterface
-    public static interface Callback {
-        void dispatch();
-    }
 }

@@ -9,7 +9,7 @@ import jtxt.GlyphBuffer;
  * 
  * @see Border
  */
-public abstract class Decorator extends DefaultComponent {
+public abstract class Decorator extends Component {
     /**
      * The {@code Component} which this decorator is applied to.
      */

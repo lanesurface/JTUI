@@ -15,6 +15,9 @@
  */
 package jtxt.emulator.tui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jtxt.GlyphBuffer;
 import jtxt.emulator.Region;
 
@@ -34,7 +37,29 @@ import jtxt.emulator.Region;
  * @see Layout
  * @see GlyphBuffer
  */
-public interface Component {
+public abstract class Component {
+    /**
+     * The bounds that this {@code Component} is allowed to draw itself within.
+     */
+    protected Region bounds;
+    
+    /**
+     * The parameters that are passed to the layout that this
+     * {@code Component}'s parent container has been initialized with. Do note
+     * that an incorrect parameter type (or a type that isn't a parameter) will
+     * cause an exception to be thrown at runtime.
+     */
+    protected Object parameters;
+    
+    protected int width,
+                  height;
+    
+    protected List<ComponentObserver> observers;
+    
+    protected Component() {
+        observers = new ArrayList<>();
+    }
+    
     /**
      * Renders the component within the bounds of that this component has been
      * inflated to. A component which updates Glyphs within the bounds that
@@ -46,7 +71,7 @@ public interface Component {
      *               makes certain guarantees about conforming to the bounds
      *               which are allocated by a {@code Container}'s layout.
      */
-    void draw(GlyphBuffer buffer);
+    public abstract void draw(GlyphBuffer buffer);
     
     /**
      * Gets the bounds that this component has been allocated within its parent
@@ -54,7 +79,9 @@ public interface Component {
      * 
      * @return The bounds that this component occupies within its container.
      */
-    Region getBounds();
+    public Region getBounds() {
+        return bounds;
+    }
     
     /**
      * Sets the bounds of this component to the given {@code Region}.
@@ -62,8 +89,12 @@ public interface Component {
      * @param region The new bounds that this component may use to render
      *               itself within.
      */
-    void setBounds(Region region);
-    
+    public void setBounds(Region bounds) {
+        this.bounds = bounds;
+        width = bounds.getWidth();
+        height = bounds.getHeight();
+    }
+
     /**
      * Gets the parameters that define how this component should be placed
      * within its parent container.
@@ -71,5 +102,16 @@ public interface Component {
      * @return The parameters which define how this component should be placed
      *         within its parent.
      */
-    Object getLayoutParameters();
+    public Object getLayoutParameters() {
+        return parameters;
+    }
+    
+    public void registerObserver(ComponentObserver observer) {
+        observers.add(observer);
+    }
+    
+    protected void update() {
+        for (ComponentObserver co : observers)
+            co.update();
+    }
 }

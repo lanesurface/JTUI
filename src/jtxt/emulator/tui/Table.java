@@ -159,7 +159,7 @@ public class Table extends Container<Table.Column> {
      * (determined by the row number given when that Component is added). Each
      * Component within a Column will have the same column number.
      */
-    protected static class Column extends DefaultComponent {
+    protected static class Column extends Component {
         protected Component[] components;
         
         protected int size,

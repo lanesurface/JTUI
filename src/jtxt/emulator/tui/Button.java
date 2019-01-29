@@ -13,7 +13,7 @@ public class Button extends Decorator implements Interactable {
      * The actions to perform whenever this button receives a notification that
      * it has been pressed by a client.
      */
-    private List<Callback> clickCallbacks;
+    private List<Callable> clickCallbacks;
     
     public Button(String text,
                   Color textColor,
@@ -24,6 +24,10 @@ public class Button extends Decorator implements Interactable {
                                            Glyphs.escape(textColor) + text,
                                            TextBox.Position.CENTER));
         clickCallbacks = new ArrayList<>();
+    }
+    
+    public void addCallback(Callable callback) {
+        clickCallbacks.add(callback);
     }
     
     @Override
@@ -37,15 +41,9 @@ public class Button extends Decorator implements Interactable {
     }
     
     @Override
-    public void addCallback(Callback callback) {
-        clickCallbacks.add(callback);
-    }
-    
-    @Override
     public boolean clicked(Location clickLocation) {
-        System.out.format("Button clicked at %s.%n", clickLocation);
-        
-        for (Callback callback : clickCallbacks) callback.dispatch();
+        for (Callable callback : clickCallbacks)
+            callback.dispatch();
         
         /*
          * We can't do anything with keyboard input, so yield control of the

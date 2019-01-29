@@ -24,6 +24,7 @@ import javax.swing.JFrame;
 
 import jtxt.emulator.Renderer.RasterType;
 import jtxt.emulator.tui.Component;
+import jtxt.emulator.tui.ComponentObserver;
 import jtxt.emulator.tui.Interactable;
 import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.Layout;
@@ -73,7 +74,7 @@ import jtxt.emulator.tui.RootContainer;
  * which has been added to the terminal.
  * </P>
  */
-public class Terminal implements Container.ChangeListener {
+public class Terminal implements ComponentObserver {
     /**
      * Holds general information regarding the settings of this instance of the
      * terminal.
@@ -201,7 +202,7 @@ public class Terminal implements Container.ChangeListener {
         context.remove(root);
         root = container;
         context.subscribe(container);
-        container.registerListener(this);
+        container.registerObserver(this);
         
         /*
          * Create the thread which will listen for updates to state in the

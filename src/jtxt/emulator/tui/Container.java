@@ -36,19 +36,9 @@ import jtxt.emulator.Region;
  *            if you wish for methods such as {@link #getChild(int)} to return
  *            Components of that type.
  */
-public class Container<T extends Component> implements Component,
-                                                       Iterable<Component> {
-    /**
-     * Objects which want to be notified when new {@code Component}s are added
-     * to this container should implement this interface and register with the
-     * respective container's
-     * {@link Container#registerListener(ChangeListener)}.
-     */
-    public static interface ChangeListener {
-        public void update();
-    }
-    
-    protected List<ChangeListener> listeners;
+public class Container<T extends Component> extends Component
+                                            implements Iterable<Component> {
+    protected List<ComponentObserver> listeners;
     
     /**
      * A collection of all the children this container owns. Components owned
@@ -103,21 +93,16 @@ public class Container<T extends Component> implements Component,
         for (T child : children) {
             this.children.add(child);
             layout.setComponentBounds(child);
+            
+            for (ComponentObserver co : observers)
+                child.registerObserver(co);
         }
-        notifyChangeListeners();
+        
+        update();
     }
     
     public T getChild(int index) {
         return children.get(index);
-    }
-    
-    private void notifyChangeListeners() {
-        for (ChangeListener listener : listeners)
-            listener.update();
-    }
-    
-    public void registerListener(ChangeListener listener) {
-        listeners.add(listener);
     }
     
     /**
@@ -187,19 +172,9 @@ public class Container<T extends Component> implements Component,
     }
     
     @Override
-    public Region getBounds() {
-        return bounds;
-    }
-    
-    @Override
     public void setBounds(Region bounds) {
         this.bounds = bounds;
         layout.setParentBounds(bounds);
         children.stream().forEach(layout::setComponentBounds);
-    }
-    
-    @Override
-    public Object getLayoutParameters() {
-        return parameters;
     }
 }

@@ -19,7 +19,7 @@ import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
 import jtxt.emulator.Location;
 
-public class TextBox extends DefaultComponent {
+public class TextBox extends Component {
     /**
      * The text to draw onto the screen.
      */

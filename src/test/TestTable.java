@@ -8,6 +8,7 @@ import javax.imageio.ImageIO;
 
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
+import jtxt.emulator.tui.Border;
 import jtxt.emulator.tui.Button;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.GridLayout;
@@ -37,14 +38,9 @@ public class TestTable {
         Component text = new TextBox(null,
                                      "Hello, O Beautiful World!",
                                      TextBox.Position.CENTER);
-        /* 
-         * FIXME: For some reason, inserting Components wrapped in a Border
-         *        causes the entire Container to disappear in the terminal.
-         */
-//        table.add(0, 2, new Border(Border.Type.DASHED,
-//                                   Color.GREEN,
-//                                   text));
-        table.add(0, 1, text);
+        table.add(0, 2, new Border(Border.Type.DASHED,
+                                   Color.GREEN,
+                                   text));
         
         Component inText = new TextBox(null,
                                        "This is an inserted string!",
@@ -59,7 +55,6 @@ public class TestTable {
          */
         table.insertIntoColumn(0,
                                0,
-                               false,
                                inText,
                                inButton);
         

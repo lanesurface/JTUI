@@ -209,6 +209,7 @@ public class Terminal implements ComponentObserver {
          * terminal.
          */
         Thread poller = new Thread(dispatcher);
+        poller.setDaemon(true);
         poller.start();
         
         return container;

@@ -130,14 +130,10 @@ public class Table extends Container<Table.Column> {
      */
     public void insertIntoColumn(int rowNumber,
                                  int columnNumber,
-                                 boolean after,
                                  Component... components) {
         rows += components.length;
-        int row = after
-                  ? rowNumber + 1
-                  : rowNumber;
         for (int column = 0; column < columns; column++)
-            children.get(column).shiftRows(row,
+            children.get(column).shiftRows(rowNumber,
                                            components.length);
         
         children.get(rowNumber).add(rowNumber,

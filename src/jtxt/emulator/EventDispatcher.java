@@ -76,41 +76,36 @@ class EventDispatcher extends MouseAdapter implements Runnable {
      * mouse).
      */
     private void poll() {
-        long last = System.currentTimeMillis(),
-             msPerUpdate = 1000 / context.updatesPerSecond,
-             lag = 0;
-        terminal.update();
-        
         while (running) {
-            long now = System.currentTimeMillis(),
-                 elapsed = now - last;
-            last = now;
-            lag += elapsed;
-
-            while (lag >= msPerUpdate) {
-                // Make sure that the bounds of the window have not changed.
-                int width = renderer.getWidth(),
-                    height = renderer.getHeight(),
-                    numLines = height / context.charSize.height,
-                    lineSize = width / context.charSize.width;
+            long start = System.currentTimeMillis(),
+                 msPerUpdate = 1000 / context.updatesPerSecond;
+            
+            int width = renderer.getWidth(),
+                height = renderer.getHeight(),
+                numLines = height / context.charSize.height,
+                lineSize = width / context.charSize.width;
+            
+            if (numLines != context.getNumberOfLines()
+                || lineSize != context.getLineSize())
+            {
+                context.setDimensions(numLines,
+                                      lineSize,
+                                      width,
+                                      height);
                 
-                if (numLines != context.getNumberOfLines()
-                    || lineSize != context.getLineSize())
-                {
-                    context.setDimensions(numLines,
-                                          lineSize,
-                                          width,
-                                          height);
-                    
-                    terminal.update();
-                }
-                
-                dispatchMouseEvents();
-                
-                lag -= msPerUpdate;
+                terminal.update();
             }
             
+            dispatchMouseEvents();
             renderer.repaint();
+            
+            try {
+                long sleepTime = start
+                                 + msPerUpdate
+                                 - System.currentTimeMillis();
+                if (sleepTime > 0) Thread.sleep(sleepTime);
+            }
+            catch (InterruptedException ie) { return; }
         }
     }
     
@@ -133,7 +128,7 @@ class EventDispatcher extends MouseAdapter implements Runnable {
      * event and were Interactable requested to be focused by the terminal.
      * </P>
      */
-    protected synchronized void dispatchMouseEvents() {
+    private void dispatchMouseEvents() {
         while (!mouseEvents.isEmpty()) {
             MouseEvent event = mouseEvents.remove();
             int x = event.getX(),
@@ -147,7 +142,7 @@ class EventDispatcher extends MouseAdapter implements Runnable {
         }
     }
     
-    public void stop() {
+    public synchronized void stop() {
         running = false;
     }
     

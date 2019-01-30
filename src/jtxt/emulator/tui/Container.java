@@ -54,17 +54,6 @@ public class Container<T extends Component> extends Component
     protected Layout layout;
     
     /**
-     * The object which describes where this {@code Component} should be placed
-     * within it's parent container.
-     */
-    protected Object parameters;
-    
-    /**
-     * The bounds that this container occupies.
-     */
-    protected Region bounds;
-    
-    /**
      * The color that will appear behind the text in this container and it's
      * children (unless a child defines another color itself).
      */

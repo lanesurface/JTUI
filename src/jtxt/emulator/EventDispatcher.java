@@ -27,13 +27,13 @@ import java.util.Queue;
  * asynchronous notifications within the terminal, and the bridge between Swing
  * events and terminal user-interface Components.
  */
-class EventDispatcher extends MouseAdapter implements Runnable {
+public class EventDispatcher extends MouseAdapter implements Runnable {
     /**
-     * The instance of the terminal that this dispatcher is listening for. Keep
+     * The instance of the terminal that this dispatcher is listening to. Keep
      * a reference here, as we may need to notify it whenever some relavent
      * state changes.
      */
-    private Terminal terminal;
+    protected final Terminal terminal;
     
     /**
      * The instance of the {@code Renderer} that the terminal constructed. 
@@ -42,14 +42,7 @@ class EventDispatcher extends MouseAdapter implements Runnable {
      * notified depends on the number of updates per second that the client
      * has requested.)
      */
-    private Renderer renderer;
-    
-    /**
-     * The environment context, which we may need to update if the dimensions
-     * of the window change, or if we need to determine certain properties that
-     * influence how we dispatch events to the terminal.
-     */
-    private Context context;
+    private final Renderer renderer;
     
     /**
      * A Queue containing all of the mouse events that have occurred since the
@@ -62,11 +55,9 @@ class EventDispatcher extends MouseAdapter implements Runnable {
     private boolean running = true;
     
     public EventDispatcher(Terminal terminal,
-                           Context context,
                            Renderer renderer) {
         this.terminal = terminal;
         this.renderer = renderer;
-        this.context = context;
         mouseEvents = new LinkedList<>();
     }
     
@@ -74,43 +65,37 @@ class EventDispatcher extends MouseAdapter implements Runnable {
      * Polls for changes that can occur frequently and at random times (such
      * as changes to window dimensions, and input events from the keyboard and
      * mouse).
+     * 
+     * <P><STRONG>
+     *  Whenever adding additional events which must be checked before
+     *  updating the terminal, override this method&mdash;this class will call
+     *  it every time that the terminal needs to update (determined by the
+     *  ups given by the client).
+     * </STRONG></P>
      */
-    private void poll() {
-        while (running) {
-            long start = System.currentTimeMillis(),
-                 msPerUpdate = 1000 / context.updatesPerSecond;
-            
-            int width = renderer.getWidth(),
-                height = renderer.getHeight(),
-                numLines = height / context.charSize.height,
-                lineSize = width / context.charSize.width;
-            
-            if (numLines != context.getNumberOfLines()
-                || lineSize != context.getLineSize())
-            {
-                context.setDimensions(numLines,
-                                      lineSize,
-                                      width,
-                                      height);
-                
-                terminal.update();
-            }
-            
-            dispatchMouseEvents();
-            renderer.repaint();
-            
-            try {
-                long sleepTime = start
-                                 + msPerUpdate
-                                 - System.currentTimeMillis();
-                if (sleepTime > 0) Thread.sleep(sleepTime);
-            }
-            catch (InterruptedException ie) { return; }
+    protected void poll() {
+        int width = renderer.getWidth(),
+            height = renderer.getHeight(),
+            numLines = height / terminal.getCharHeight(),
+            lineSize = width / terminal.getCharWidth();
+
+        if (numLines != terminal.context.getNumberOfLines()
+            || lineSize != terminal.context.getLineSize())
+        {
+            terminal.context.setDimensions(numLines,
+                                           lineSize,
+                                           width,
+                                           height);
+
+            terminal.update();
         }
+
+        dispatchMouseEvents();
+        renderer.repaint();
     }
     
     @Override
-    public void mouseClicked(MouseEvent event) {
+    public synchronized void mouseClicked(MouseEvent event) {
         mouseEvents.add(event);
     }
     
@@ -128,26 +113,40 @@ class EventDispatcher extends MouseAdapter implements Runnable {
      * event and were Interactable requested to be focused by the terminal.
      * </P>
      */
-    private void dispatchMouseEvents() {
+    protected synchronized void dispatchMouseEvents() {
         while (!mouseEvents.isEmpty()) {
             MouseEvent event = mouseEvents.remove();
             int x = event.getX(),
                 y = event.getY();
             
-            // Determine the location that this event orginated from.
-            Location loc = new Location(y / context.charSize.height,
-                                        x / context.charSize.width);
+            // Determine the location that this event originated from.
+            Location loc = new Location(y / terminal.getCharHeight(),
+                                        x / terminal.getCharWidth());
             
             terminal.clickComponent(loc);
         }
     }
     
-    public synchronized void stop() {
+    public void stop() {
         running = false;
     }
     
     @Override
     public void run() {
-        poll();
+        long msPerUpdate = 1000 / terminal.context.updatesPerSecond,
+             start;
+       
+       while (running) {
+           start = System.currentTimeMillis();
+           poll();
+           
+           try {
+               long sleepTime = start
+                                + msPerUpdate
+                                - System.currentTimeMillis();
+               if (sleepTime > 0) Thread.sleep(sleepTime);
+           }
+           catch (InterruptedException ie) { return; }
+       }
     }
 }

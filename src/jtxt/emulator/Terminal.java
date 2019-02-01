@@ -28,7 +28,6 @@ import jtxt.emulator.tui.ComponentObserver;
 import jtxt.emulator.tui.Interactable;
 import jtxt.emulator.tui.KeyboardTarget;
 import jtxt.emulator.tui.Layout;
-import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.RootContainer;
 
 /**
@@ -166,7 +165,6 @@ public class Terminal implements ComponentObserver {
         window.add(renderer);
         
         dispatcher = new EventDispatcher(this,
-                                         context,
                                          renderer);
         window.addMouseListener(dispatcher);
         
@@ -224,6 +222,10 @@ public class Terminal implements ComponentObserver {
     public RootContainer getRoot() {
         return root;
     }
+    
+    int getCharWidth() { return context.charSize.width; }
+    
+    int getCharHeight() { return context.charSize.height; }
     
     /**
      * Adds the components to the root container.

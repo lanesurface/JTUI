@@ -16,8 +16,10 @@
 package jtxt.emulator.tui;
 
 import java.util.Arrays;
+import java.util.List;
 
 import jtxt.GlyphBuffer;
+import jtxt.emulator.GString;
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 import jtxt.emulator.tui.GridLayout.GridParameters;
@@ -66,6 +68,7 @@ public class Table extends Container<Table.Column> {
             cols[column] = createColumn(column);
         
         children = Arrays.asList(cols);
+//        add(cols);
     }
     
     /**
@@ -79,10 +82,12 @@ public class Table extends Container<Table.Column> {
      * @return A new Column for the given <code>columnNumber</code>.
      */
     protected Column createColumn(int columnNumber) {
-        GridParameters params = grid.getParametersForCellsInRange(0,
-                                                                  columnNumber,
-                                                                  rows - 1,
-                                                                  columnNumber);
+        GridParameters params =
+            grid.getParametersForCellsInRange(0,
+                                              columnNumber,
+                                              rows - 1,
+                                              columnNumber);
+        
         return new Column(params, rows);
     }
     
@@ -241,6 +246,10 @@ public class Table extends Container<Table.Column> {
         @Override
         public void draw(GlyphBuffer buffer) {
             for (Component component : components) {
+                for (int line = 0; line < height; line++)
+                    buffer.update(GString.of("|"),
+                                  new Location(line, bounds.start.position));
+                
                 if (component == null) continue;
                 component.draw(buffer);
             }

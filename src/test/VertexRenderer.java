@@ -23,7 +23,6 @@ import jtxt.emulator.tui.Component;
  *
  */
 public class VertexRenderer extends Component {
-    
     void render(int[] vertices) { /* ... */ }
     
     int[] generateCube(int x,

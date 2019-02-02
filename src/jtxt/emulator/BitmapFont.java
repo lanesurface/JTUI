@@ -15,9 +15,12 @@
  */
 package jtxt.emulator;
 
+import java.awt.Color;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
@@ -44,6 +47,8 @@ public class BitmapFont {
     
     private ColorModel cm;
     
+    private Color maskColor = Color.WHITE;
+    
     protected BitmapFont(Path fontPath,
                          int charWidth,
                          int charHeight,
@@ -53,7 +58,7 @@ public class BitmapFont {
         this.charWidth = charWidth;
         this.charHeight = charHeight;
         this.minCodePoint = minCodePoint;
-        this.maxCodePoint = minCodePoint + numPoints;
+        maxCodePoint = minCodePoint + numPoints;
         glyphs = new WritableRaster[numPoints];
         
         ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
@@ -85,8 +90,9 @@ public class BitmapFont {
         catch (IOException ie) { /* TODO */ }
     }
     
-    public Image getCharacterAsImage(char character) {
-        character = Character.toTitleCase(character);
+    public Image getCharacterAsImage(Glyph glyph) {
+        char character = Character.toTitleCase(glyph.character);
+        
         if (character == '\0') return null;
         if (character < minCodePoint || character > maxCodePoint) {
             String msg = String.format("The given character %c is outside the "
@@ -99,9 +105,40 @@ public class BitmapFont {
             throw new IllegalArgumentException(msg);
         }
         
+        WritableRaster raster =
+            transformGlyphToColor(glyphs[character - minCodePoint],
+                                  glyph.color);
+        
         return new BufferedImage(cm,
-                                 glyphs[character - minCodePoint],
+                                 raster,
                                  cm.isAlphaPremultiplied(),
                                  null);
+    }
+    
+    protected WritableRaster transformGlyphToColor(WritableRaster raster,
+                                                   Color color) {
+        Rectangle dims = new Rectangle(raster.getMinX(),
+                                       raster.getMinY(),
+                                       32,
+                                       32);
+        WritableRaster modified = raster.createCompatibleWritableRaster(dims);
+        
+        for (int y = dims.y; y < dims.height; y++) {
+            for (int x = dims.x; x < dims.width; x++) {
+                int pix = cm.getRGB(raster.getDataElements(x,
+                                                           y,
+                                                           null));
+                pix &= color.getRGB();
+                
+                byte[] samples = new byte[cm.getNumComponents()];
+                cm.getDataElements(pix, samples);
+                modified.setDataElements(x,
+                                         y,
+                                         samples);
+            }
+        }
+        
+        
+        return modified;
     }
 }

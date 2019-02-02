@@ -16,10 +16,8 @@
 package jtxt.emulator.tui;
 
 import java.util.Arrays;
-import java.util.List;
 
 import jtxt.GlyphBuffer;
-import jtxt.emulator.GString;
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 import jtxt.emulator.tui.GridLayout.GridParameters;
@@ -68,7 +66,6 @@ public class Table extends Container<Table.Column> {
             cols[column] = createColumn(column);
         
         children = Arrays.asList(cols);
-//        add(cols);
     }
     
     /**

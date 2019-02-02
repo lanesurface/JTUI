@@ -57,7 +57,7 @@ public class ChunkingRasterizer implements GlyphRasterizer {
                 
                 int x = position * context.charSize.width,
                     y = line * context.charSize.height;
-                g.drawImage(font.getCharacterAsImage(glyph.character),
+                g.drawImage(font.getCharacterAsImage(glyph),
                             x,
                             y,
                             null);

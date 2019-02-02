@@ -17,14 +17,15 @@ package jtxt.emulator;
 
 import java.awt.Color;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -43,11 +44,15 @@ public class BitmapFont {
     protected int charWidth,
                   charHeight;
     
+    private int cellOffsetX,
+                cellOffsetY;
+    
     private WritableRaster[] glyphs;
     
-    private ColorModel cm;
+    private ColorModel cm,
+                       out;
     
-    private Color maskColor = Color.WHITE;
+    private int colorMask = 0x000000;
     
     protected BitmapFont(Path fontPath,
                          int charWidth,
@@ -69,18 +74,30 @@ public class BitmapFont {
                                      false, /* isAlphaPremultiplied */
                                      Transparency.OPAQUE,
                                      DataBuffer.TYPE_BYTE);
+        out = new ComponentColorModel(cs,
+                                      new int[] { 8, 8, 8, 8 },
+                                      true,
+                                      false,
+                                      Transparency.BITMASK,
+                                      DataBuffer.TYPE_BYTE);
         
         try {
             BufferedImage fontImage = ImageIO.read(fontPath.toFile());
             WritableRaster fontRaster = fontImage.getRaster();
             
-            int cols = fontRaster.getWidth() / charWidth,
-                rows = fontRaster.getHeight() / charHeight;
-            for (int r = 0; r < rows; r++)
-                for (int c = 0; c < cols; c++)
-                    glyphs[r * rows + c] =
-                        fontRaster.createWritableChild(c * charWidth,
-                                                       r * charHeight,
+            int cells = (int)Math.sqrt(numPoints);
+            cellOffsetX = fontImage.getWidth() / cells - charWidth;
+            cellOffsetY = fontImage.getHeight() / cells - charHeight;
+            
+            System.out.format("cellOffsetX=%d,%ncellOffsetY=%d,%n",
+                              cellOffsetX,
+                              cellOffsetY);
+            
+            for (int r = 0; r < cells; r++)
+                for (int c = 0; c < cells; c++)
+                    glyphs[r * cells + c] =
+                        fontRaster.createWritableChild((charWidth + cellOffsetX) * c,
+                                                       (charHeight + cellOffsetY) * r,
                                                        charWidth,
                                                        charHeight,
                                                        0,
@@ -109,29 +126,32 @@ public class BitmapFont {
             transformGlyphToColor(glyphs[character - minCodePoint],
                                   glyph.color);
         
-        return new BufferedImage(cm,
+        return new BufferedImage(out,
                                  raster,
-                                 cm.isAlphaPremultiplied(),
+                                 out.isAlphaPremultiplied(),
                                  null);
     }
     
     protected WritableRaster transformGlyphToColor(WritableRaster raster,
                                                    Color color) {
-        Rectangle dims = new Rectangle(raster.getMinX(),
-                                       raster.getMinY(),
-                                       32,
-                                       32);
-        WritableRaster modified = raster.createCompatibleWritableRaster(dims);
+        WritableRaster modified = 
+            out.createCompatibleWritableRaster(raster.getWidth(),
+                                               raster.getHeight());
         
-        for (int y = dims.y; y < dims.height; y++) {
-            for (int x = dims.x; x < dims.width; x++) {
+        for (int y = 0; y < charHeight; y++) {
+            for (int x = 0; x < charWidth; x++) {
                 int pix = cm.getRGB(raster.getDataElements(x,
-                                                           y,
-                                                           null));
+                                                            y,
+                                                            null));
+                boolean transparent = (pix << 8 | colorMask) == colorMask;
                 pix &= color.getRGB();
                 
-                byte[] samples = new byte[cm.getNumComponents()];
+                byte[] samples = new byte[out.getNumComponents()];
                 cm.getDataElements(pix, samples);
+                samples[samples.length - 1] = transparent
+                                              ? (byte)0
+                                              : (byte)255;
+                
                 modified.setDataElements(x,
                                          y,
                                          samples);

@@ -119,15 +119,15 @@ public final class Renderer extends JComponent {
                                .toURI()
                 );
                 BitmapFont font = new BitmapFont(path,
-                                                 32,
-                                                 32,
+                                                 15,
+                                                 15,
                                                  32,
                                                  256);
                 rasterizer = new ChunkingRasterizer(context,
                                                     font,
                                                     16);
                 
-                context.setCharDimensions(32, 32);
+                context.setCharDimensions(15, 15);
             }
             catch (URISyntaxException ex) { /* TODO */ }
             

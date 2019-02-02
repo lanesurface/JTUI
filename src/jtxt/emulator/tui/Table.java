@@ -246,9 +246,9 @@ public class Table extends Container<Table.Column> {
         @Override
         public void draw(GlyphBuffer buffer) {
             for (Component component : components) {
-                for (int line = 0; line < height; line++)
-                    buffer.update(GString.of("|"),
-                                  new Location(line, bounds.start.position));
+//                for (int line = 0; line < height; line++)
+//                    buffer.update(GString.of("|"),
+//                                  new Location(line, bounds.start.position));
                 
                 if (component == null) continue;
                 component.draw(buffer);

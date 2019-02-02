@@ -1,8 +1,8 @@
 
 bin/
 build/
-consolas-bold.bmp
 res/*
+!res/dejavu-sans-mono-256.bmp
 doc/
 
 # Include the demo picture.

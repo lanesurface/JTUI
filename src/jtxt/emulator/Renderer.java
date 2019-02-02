@@ -28,6 +28,11 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 
 import javax.swing.JComponent;
 
@@ -104,20 +109,41 @@ public final class Renderer extends JComponent {
                                        Color background,
                                        float transparency,
                                        RasterType rasterType) {
+        GlyphRasterizer rasterizer = null;
+        
         switch (rasterType) {
         case HARDWARE_ACCELERATED:
-            /*
-             * TODO: This is planned in the future; for now, use the software
-             *       rasterizer instead.
-             */
+            try {
+                Path path = Paths.get(
+                    ClassLoader.getSystemResource("dejavu-sans-mono-256.bmp")
+                               .toURI()
+                );
+                BitmapFont font = new BitmapFont(path,
+                                                 32,
+                                                 32,
+                                                 32,
+                                                 256);
+                rasterizer = new ChunkingRasterizer(context,
+                                                    font,
+                                                    16);
+                
+                context.setCharDimensions(32, 32);
+            }
+            catch (URISyntaxException ex) { /* TODO */ }
+            
+            break;
         case SOFTWARE:
-            return new Renderer(background,
-                                transparency,
-                                new SWRasterizer(context));
+            rasterizer = new SWRasterizer(context);
+            
+            break;
         default:
             throw new IllegalArgumentException("The given raster type is " +
                                                "not recognized.");
         }
+        
+        return new Renderer(background,
+                            transparency,
+                            rasterizer);
     }
     
     public void renderFrame(BufferedFrame frame,

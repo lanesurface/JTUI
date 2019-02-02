@@ -109,6 +109,10 @@ public class Location {
                && position < bounds.end.position;
     }
     
+    public static Location at(int line, int position) {
+        return new Location(line, position);
+    }
+    
     @Override
     public boolean equals(Object other) {
         if (other instanceof Location) {

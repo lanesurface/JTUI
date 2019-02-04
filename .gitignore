@@ -9,7 +9,6 @@ res/*
 
 # Junk that has been used to verify various tools.
 # Resources are needed to create these files.
-*.html
 output.txt
 /out/*.png
 

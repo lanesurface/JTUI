@@ -106,6 +106,17 @@ table tr td dt code {
     padding-top: 4px;
 }
 
+dd {
+  font-family: Calibri,
+               Roboto,
+               'DejaVu Serif',
+                Georgia,
+               'Times New Roman',
+               Times,
+               serif;
+  font-size: 14px;
+}
+
 sup {
     font-size:8px;
 }
@@ -309,9 +320,32 @@ Heading styles
 div.details ul.blockList ul.blockList ul.blockList li.blockList h4,
 div.details ul.blockList ul.blockList ul.blockListLast li.blockList h4 {
     background-color:#dee3e9;
+    color: #383838;
     border:1px solid #d0d9e0;
     margin:0 0 6px -8px;
     padding:7px 5px;
+}
+
+div.details ul.blockList ul.blockList ul.blockList li.blockList,
+div.details ul.blockList ul.blockList ul.blockListLast li.blockList {
+  background-color: #6a7d8a;
+  color: white;
+}
+
+div.details ul.blockList ul.blockList ul.blockList li.blockList div.block,
+div.details ul.blockList ul.blockList ul.blockListLast li.blockList div.block {
+  color: white;
+}
+
+div.details ul.blockList ul.blockList ul.blockList li.blockList a,
+div.details ul.blockList ul.blockList ul.blockListLast li.blockList a {
+  color: white;
+  text-decoration: underline;
+}
+
+.paramLabel,
+.returnLabel {
+  color: #CCC;
 }
 
 ul.blockList ul.blockList ul.blockList li.blockList h3 {
@@ -378,6 +412,7 @@ Page layout container styles
     margin: 5px 0 10px 0px;
     font-size: 14px;
     font-family: Calibri,
+                 Roboto,
                 'DejaVu Sans',
                  monospace;
 }
@@ -746,6 +781,7 @@ ul.blockList ul.blockList ul.blockList li.blockList h3 {
 div.block {
     font-size: 14px;
     font-family: Calibri,
+                 Roboto,
                  'DejaVu Serif',
                  Georgia,
                  'Times New Roman',
@@ -821,8 +857,9 @@ table {
 }
 
 table,
-tr {
-  border: 1px solid #8d8d8d;
+tr,
+td {
+  border: 1px solid #8D8D8D;
 }
 
 tr {
@@ -835,7 +872,6 @@ tr {
 
 td {
   padding-right: 1em;
-  border: 1px solid #8D8D8D;
 }
 
 .contentContainer {

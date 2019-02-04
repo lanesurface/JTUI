@@ -17,15 +17,12 @@ package jtxt.emulator;
 
 import java.awt.Color;
 import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
 import java.awt.image.DataBuffer;
-import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -33,25 +30,46 @@ import java.nio.file.Path;
 import javax.imageio.ImageIO;
 
 /**
+ * A font which has been rasterized and saved in an appropriate image format.
+ * This kind of font does not need to be rasterized but, rather, only needs to
+ * serve a matching glyph from the image when requested to do so.
  * 
+ * @see #getCharacterAsImage(Glyph)
  */
 public class BitmapFont {
-    public final int minCodePoint,
-                     maxCodePoint;
+    /**
+     * The ASCII code for the first character in the bitmap font. This defines
+     * the starting point for the range of character values that this font
+     * supports.
+     */
+    public final int minCodePoint;
     
-    private Path fontPath;
+    /**
+     * The ASCII code for the last character in the bitmap font. This defines
+     * the ending point for the range of character values that this font
+     * supports.
+     */
+    public final int maxCodePoint;
     
     protected int charWidth,
                   charHeight;
     
-    private int cellOffsetX,
-                cellOffsetY;
+    private int xOffset,
+                yOffset;
     
+    /**
+     * The raw glyph values within this font. (Each of these rasters must
+     * be processed before it can be appropriately rendered.)
+     */
     private WritableRaster[] glyphs;
     
-    private ColorModel cm,
-                       out;
+    private ColorModel inCM,
+                       outCM;
     
+    /**
+     * The color that will be filtered out of the bitmap. All pixels of this
+     * color will be turned transparent.
+     */
     private int colorMask = 0x000000;
     
     protected BitmapFont(Path fontPath,
@@ -59,7 +77,6 @@ public class BitmapFont {
                          int charHeight,
                          int minCodePoint,
                          int numPoints) {
-        this.fontPath = fontPath;
         this.charWidth = charWidth;
         this.charHeight = charHeight;
         this.minCodePoint = minCodePoint;
@@ -68,13 +85,13 @@ public class BitmapFont {
         
         ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         int[] nbits = { 8, 8, 8 };
-        cm = new ComponentColorModel(cs,
+        inCM = new ComponentColorModel(cs,
                                      nbits,
                                      false, /* hasAlpha */
                                      false, /* isAlphaPremultiplied */
                                      Transparency.OPAQUE,
                                      DataBuffer.TYPE_BYTE);
-        out = new ComponentColorModel(cs,
+        outCM = new ComponentColorModel(cs,
                                       new int[] { 8, 8, 8, 8 },
                                       true,
                                       false,
@@ -86,29 +103,29 @@ public class BitmapFont {
             WritableRaster fontRaster = fontImage.getRaster();
             
             int cells = (int)Math.sqrt(numPoints);
-            cellOffsetX = fontImage.getWidth() / cells - charWidth;
-            cellOffsetY = fontImage.getHeight() / cells - charHeight;
+            xOffset = fontImage.getWidth() / cells - charWidth;
+            yOffset = fontImage.getHeight() / cells - charHeight;
             
-            System.out.format("cellOffsetX=%d,%ncellOffsetY=%d,%n",
-                              cellOffsetX,
-                              cellOffsetY);
-            
-            for (int r = 0; r < cells; r++)
-                for (int c = 0; c < cells; c++)
+            for (int r = 0; r < cells; r++) {
+                for (int c = 0; c < cells; c++) {
+                    int x = (charWidth + xOffset) * c,
+                        y = (charHeight + yOffset) * r;
                     glyphs[r * cells + c] =
-                        fontRaster.createWritableChild((charWidth + cellOffsetX) * c,
-                                                       (charHeight + cellOffsetY) * r,
+                        fontRaster.createWritableChild(x,
+                                                       y,
                                                        charWidth,
                                                        charHeight,
                                                        0,
                                                        0,
                                                        null);
+                }
+            }
         }
         catch (IOException ie) { /* TODO */ }
     }
     
     public Image getCharacterAsImage(Glyph glyph) {
-        char character = Character.toTitleCase(glyph.character);
+        char character = glyph.character;
         
         if (character == '\0') return null;
         if (character < minCodePoint || character > maxCodePoint) {
@@ -122,32 +139,32 @@ public class BitmapFont {
             throw new IllegalArgumentException(msg);
         }
         
-        WritableRaster raster =
+        WritableRaster raster = 
             transformGlyphToColor(glyphs[character - minCodePoint],
                                   glyph.color);
         
-        return new BufferedImage(out,
+        return new BufferedImage(outCM,
                                  raster,
-                                 out.isAlphaPremultiplied(),
+                                 outCM.isAlphaPremultiplied(),
                                  null);
     }
     
     protected WritableRaster transformGlyphToColor(WritableRaster raster,
                                                    Color color) {
         WritableRaster modified = 
-            out.createCompatibleWritableRaster(raster.getWidth(),
+            outCM.createCompatibleWritableRaster(raster.getWidth(),
                                                raster.getHeight());
         
         for (int y = 0; y < charHeight; y++) {
             for (int x = 0; x < charWidth; x++) {
-                int pix = cm.getRGB(raster.getDataElements(x,
-                                                            y,
-                                                            null));
+                int pix = inCM.getRGB(raster.getDataElements(x,
+                                                             y,
+                                                             null));
                 boolean transparent = (pix << 8 | colorMask) == colorMask;
                 pix &= color.getRGB();
                 
-                byte[] samples = new byte[out.getNumComponents()];
-                cm.getDataElements(pix, samples);
+                byte[] samples = new byte[outCM.getNumComponents()];
+                inCM.getDataElements(pix, samples);
                 samples[samples.length - 1] = transparent
                                               ? (byte)0
                                               : (byte)255;

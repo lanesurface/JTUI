@@ -28,8 +28,6 @@ import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.nio.file.Path;
@@ -113,13 +111,17 @@ public final class Renderer extends JComponent {
         
         switch (rasterType) {
         case HARDWARE_ACCELERATED:
+            rasterizer = new SwingRasterizer(context);
+            
+            break;
+        case SOFTWARE:
             try {
                 Path path = Paths.get(
                     ClassLoader.getSystemResource("dejavu-sans-mono-256.bmp")
                                .toURI()
                 );
                 BitmapFont font = new BitmapFont(path,
-                                                 15,
+                                                 8,
                                                  15,
                                                  32,
                                                  256);
@@ -127,13 +129,9 @@ public final class Renderer extends JComponent {
                                                     font,
                                                     16);
                 
-                context.setCharDimensions(15, 15);
+                context.setCharDimensions(8, 15);
             }
             catch (URISyntaxException ex) { /* TODO */ }
-            
-            break;
-        case SOFTWARE:
-            rasterizer = new SWRasterizer(context);
             
             break;
         default:

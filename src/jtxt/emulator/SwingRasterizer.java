@@ -25,10 +25,10 @@ import java.awt.image.RenderedImage;
 
 import jtxt.GlyphBuffer;
 
-class SWRasterizer implements GlyphRasterizer {
+class SwingRasterizer implements GlyphRasterizer {
     protected Context context;
     
-    public SWRasterizer(Context context) {
+    public SwingRasterizer(Context context) {
         this.context = context;
     }
     

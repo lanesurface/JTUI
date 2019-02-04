@@ -23,7 +23,6 @@ public class TestTable {
         Terminal terminal =
             new Terminal.Builder("Table Test")
                         .font("DejaVu Sans Mono")
-                        .rasterType(Renderer.RasterType.HARDWARE_ACCELERATED)
                         .build();
         
         GridLayout layout = GridLayout.initializeForDimensions(1, 1);
@@ -46,7 +45,8 @@ public class TestTable {
                                    text));
         
         Component inText = new TextBox(null,
-                                       "This is an inserted string!",
+                                       "\\e[255;000;150mint" +
+                                       "\\e[255;255;255m x = y;",
                                        TextBox.Position.LEFT),
                   inButton = new Button("Inserted button!",
                                         Color.CYAN,

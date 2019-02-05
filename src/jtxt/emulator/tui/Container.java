@@ -38,8 +38,6 @@ import jtxt.emulator.Region;
  */
 public class Container<T extends Component> extends Component
                                             implements Iterable<Component> {
-    protected List<ComponentObserver> listeners;
-    
     /**
      * A collection of all the children this container owns. Components owned
      * by this container inherit certain properties of it. This container may
@@ -65,7 +63,6 @@ public class Container<T extends Component> extends Component
                      T... children) {
         this.parameters = parameters;
         this.layout = layout;
-        this.listeners = new ArrayList<>();
         this.children = new ArrayList<>();
         add(children);
     }
@@ -75,7 +72,7 @@ public class Container<T extends Component> extends Component
      * of that component to determine the bounds it may occupy within this
      * container.
      * 
-     * @param child The component to add to this container.
+     * @param children The components to add to this container.
      */
     @SuppressWarnings("unchecked")
     public void add(T... children) {

@@ -197,6 +197,9 @@ public final class GString implements Iterable<Glyph> {
      * Creates a new string with blank glyphs. This string is guaranteed to not
      * appear in the terminal when rendered.
      * 
+     * @param length The number of null characters that the string should
+     *               contain.
+     * 
      * @see Glyph#BLANK
      */
     public static GString blank(int length) {

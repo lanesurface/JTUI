@@ -31,21 +31,19 @@ import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
 
 /**
- * <P>
  * A class for displaying TUI {@code Component}s on the screen. Components
  * which are interactive may use this class to receive input from the mouse
  * and keyboard.
- * </P>
  * 
- * <P>
+ * <p>
  * This is not a real terminal, and does not expose the underlying system's
  * command interface. The aim of this class is to present Components as if they
  * are being displayed in a terminal. It should be noted then that an 
  * application started from the system command line will open a new window in
  * which it will be displayed.
- * </P>
+ * </p>
  * 
- * <P>
+ * <p>
  * Before Components can be added to an instance of this class, the terminal
  * must be initialized with a {@code Layout} for the {@code RootContainer}.
  * This RootContainer is a Container at the top of the Component hierarchy in
@@ -53,7 +51,7 @@ import jtxt.emulator.tui.RootContainer;
  * an ancestor of this Container in the Component tree). A typical
  * instantiation of a terminal might look something like this:
  * 
- * <PRE>
+ * <pre>
  *  Terminal terminal = new Terminal.Builder()
  *                                  // ...
  *                                  .dimensions(40, 40)
@@ -63,7 +61,7 @@ import jtxt.emulator.tui.RootContainer;
  *  terminal.add(component1,
  *               component2,
  *               component3);
- * </PRE>
+ * </pre>
  * 
  * Note that Components (including other Containers) can be added at any time
  * to the interface, and this interface will update automatically. Nothing
@@ -71,7 +69,7 @@ import jtxt.emulator.tui.RootContainer;
  * creating the Components, and adding them to the terminal (where they will
  * be direct children of the RootContainer) or adding them to another Container
  * which has been added to the terminal.
- * </P>
+ * </p>
  */
 public class Terminal implements ComponentObserver {
     /**

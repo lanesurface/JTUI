@@ -192,4 +192,13 @@ public final class Renderer extends JComponent {
         if (rasterizedFrame == null) return;
         graphics.drawRenderedImage(rasterizedFrame, null);
     }
+    
+    @Override
+    public String toString() {
+        return String.format("Renderer@" + hashCode() + "[rasterizer=%s, "
+                             + "%n\tbg=%s, %n\ttransparency=%.1f]",
+                             rasterizer,
+                             background,
+                             transparency);
+    }
 }

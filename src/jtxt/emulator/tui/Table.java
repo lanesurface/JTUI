@@ -99,10 +99,9 @@ public class Table extends Container<Table.Column> {
      * @param columnNumber The column number of the first Component to add.
      * @param components The Components to add to this Table.
      * 
-     * @see #insertIntoColumn(int,
-     *                        int,
-     *                        boolean,
-     *                        Component...)
+     * @see Table#insertIntoColumn(int,
+     *                             int,
+     *                             Component...)
      */
     public void add(int rowNumber,
                     int columnNumber,
@@ -122,12 +121,6 @@ public class Table extends Container<Table.Column> {
      * 
      * @param rowNumber The row that the Components should be inserted before.
      * @param columnNumber The column that the Components should be inserted in.
-     * @param after Whether to insert the Components into the column before or
-     *              after the given indices. (If <code>false</code>, then the
-     *              Components will occupy the position specified; otherwise,
-     *              the Component which was at that position before will be
-     *              retained, while all Components that followed it will have
-     *              been shifted.)
      * @param components The Components to insert before the row and column.
      */
     public void insertIntoColumn(int rowNumber,
@@ -182,12 +175,12 @@ public class Table extends Container<Table.Column> {
          * the new index of a Component will be at the position <code>oldIndex
          * + amount</code>.)
          * 
-         * <P><I>
-         * Do note that shifting the rows causes this Column's size to be
-         * increased by the amount. Calls to this method should usually reside
-         * in a loop, where each of the rows within a Table will be shifted
-         * appropriately.
-         * </I></P>
+         * <p><i>
+         *  Do note that shifting the rows causes this Column's size to be
+         *  increased by the amount. Calls to this method should usually reside
+         *  in a loop, where each of the rows within a Table will be shifted
+         *  appropriately.
+         * </i></p>
          * 
          * @param startRow The first row which should be shifted.
          * @param amount The amount of indices that each row should be shifted

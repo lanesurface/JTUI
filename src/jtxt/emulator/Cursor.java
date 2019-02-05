@@ -95,7 +95,7 @@ public class Cursor {
     /**
      * Advances the cursor forward in the current line.
      * 
-     * @param spaces
+     * @param spaces The number of spaces to move forward.
      */
     public void goForward(int spaces) {
         location.position += spaces;

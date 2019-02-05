@@ -110,7 +110,7 @@ dd {
   font-family: Calibri,
                Roboto,
                'DejaVu Serif',
-                Georgia,
+               Georgia,
                'Times New Roman',
                Times,
                serif;
@@ -326,6 +326,10 @@ div.details ul.blockList ul.blockList ul.blockListLast li.blockList h4 {
     padding:7px 5px;
 }
 
+/*
+ * Make the detail boxes a blue-gray color, and modify text and labels within
+ * the detail section to reflect these changes.
+ */
 div.details ul.blockList ul.blockList ul.blockList li.blockList,
 div.details ul.blockList ul.blockList ul.blockListLast li.blockList {
   background-color: #6a7d8a;
@@ -343,10 +347,21 @@ div.details ul.blockList ul.blockList ul.blockListLast li.blockList a {
   text-decoration: underline;
 }
 
-.paramLabel,
-.returnLabel {
+div.details .paramLabel,
+div.details .seeLabel,
+.deprecatedLabel,
+.descfrmTypeLabel,
+.memberNameLabel,
+.memberNameLink,
+.overrideSpecifyLabel,
+.returnLabel,
+.simpleTagLabel,
+.throwsLabel {
   color: #CCC;
 }
+/*
+ * End of modifications to detail section.
+ */
 
 ul.blockList ul.blockList ul.blockList li.blockList h3 {
     background-color:#dee3e9;
@@ -850,7 +865,7 @@ div.contentContainer ul.blockList li.blockList h2 {
 }
 
 /*
- *Modifications to elements that this stylesheet had not already defined.
+ * Modifications to elements that this stylesheet had not already defined.
  */
 table {
   border-collapse: collapse;

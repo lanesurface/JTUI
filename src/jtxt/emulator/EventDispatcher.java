@@ -66,12 +66,12 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
      * as changes to window dimensions, and input events from the keyboard and
      * mouse).
      * 
-     * <P><STRONG>
+     * <p><strong>
      *  Whenever adding additional events which must be checked before
      *  updating the terminal, override this method&mdash;this class will call
      *  it every time that the terminal needs to update (determined by the
      *  ups given by the client).
-     * </STRONG></P>
+     * </strong></p>
      */
     protected void poll() {
         int width = renderer.getWidth(),

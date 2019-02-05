@@ -31,11 +31,11 @@ import jtxt.emulator.Region;
  * implements the {@code GlyphBuffer} interface. This could be a document, PDF,
  * the terminal emulator, or any number of extensions.
  * 
- * @see Terminal
+ * @see jtxt.emulator.Terminal
  * @see Container
- * @see Document
+ * @see jtxt.Document
  * @see Layout
- * @see GlyphBuffer
+ * @see jtxt.GlyphBuffer
  */
 public abstract class Component {
     /**
@@ -86,7 +86,7 @@ public abstract class Component {
     /**
      * Sets the bounds of this component to the given {@code Region}.
      * 
-     * @param region The new bounds that this component may use to render
+     * @param bounds The new bounds that this component may use to render
      *               itself within.
      */
     public void setBounds(Region bounds) {

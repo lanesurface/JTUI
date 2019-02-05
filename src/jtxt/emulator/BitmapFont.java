@@ -86,18 +86,18 @@ public class BitmapFont {
         ColorSpace cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
         int[] nbits = { 8, 8, 8 };
         inCM = new ComponentColorModel(cs,
-                                     nbits,
-                                     false, /* hasAlpha */
-                                     false, /* isAlphaPremultiplied */
-                                     Transparency.OPAQUE,
-                                     DataBuffer.TYPE_BYTE);
+                                       nbits,
+                                       false, /* hasAlpha */
+                                       false, /* isAlphaPremultiplied */
+                                       Transparency.OPAQUE,
+                                       DataBuffer.TYPE_BYTE);
         outCM = new ComponentColorModel(cs,
-                                      new int[] { 8, 8, 8, 8 },
-                                      true,
-                                      false,
-                                      Transparency.BITMASK,
-                                      DataBuffer.TYPE_BYTE);
-        
+                                        new int[] { 8, 8, 8, 8 },
+                                        true,
+                                        false,
+                                        Transparency.BITMASK,
+                                        DataBuffer.TYPE_BYTE);
+
         try {
             BufferedImage fontImage = ImageIO.read(fontPath.toFile());
             WritableRaster fontRaster = fontImage.getRaster();
@@ -153,7 +153,7 @@ public class BitmapFont {
                                                    Color color) {
         WritableRaster modified = 
             outCM.createCompatibleWritableRaster(raster.getWidth(),
-                                               raster.getHeight());
+                                                 raster.getHeight());
         
         for (int y = 0; y < charHeight; y++) {
             for (int x = 0; x < charWidth; x++) {

@@ -57,10 +57,13 @@ public class Border extends Decorator {
                   edge;
     
     /**
-     * Initializes a border for the given component using the specified glyph.
+     * Initializes a border for the given component using the specified Glyph.
      * 
+     * @param span The Glyph to use when drawing the top and bottom sides of
+     *             the border.
+     * @param edge The Glyph to use when drawing the left and right sides of
+     *             the border.
      * @param component The component to draw this border around.
-     * @param border The glyph to use when drawing the border.
      */
     public Border(Glyph span,
                   Optional<Glyph> edge,

@@ -42,8 +42,9 @@ public class GlyphBuffer {
     public void update(Glyph glyph, Location location) {
         if (!location.inside(bounds)) return;
         
-        buffer.set(location.line, buffer.get(location.line)
-                                        .set(location.position, glyph));
+        buffer.set(location.line,
+                   buffer.get(location.line).set(location.position,
+                                                 glyph));
     }
 
     /**
@@ -60,12 +61,11 @@ public class GlyphBuffer {
         GString line = buffer.get(start.line);
         for (int c = 0;
              c + start.position < bounds.getWidth() && c < glyphs.length();
-             c++)
-        {
-            line = line.set(c + start.position, glyphs.get(c));
-        }
+             c++) line = line.set(c + start.position,
+                                  glyphs.get(c));
         
-        buffer.set(start.line, line.substring(0, bounds.getWidth()));
+        buffer.set(start.line,
+                   line.substring(0, bounds.getWidth()));
     }
 
     /**
@@ -80,8 +80,8 @@ public class GlyphBuffer {
      */
     public void update(GString[] lines, Location start) {
         for (int line = 0; line < lines.length; line++)
-            update(lines[line], new Location(start.line + line,
-                                             start.position));
+            update(lines[line], Location.at(start.line + line,
+                                            start.position));
     }
     
     /**
@@ -117,7 +117,7 @@ public class GlyphBuffer {
         if (!region.inside(bounds))
             throw new LocationOutOfBoundsException("The given region is " +
                                                    "outside the bounds of " +
-                                                   "the frame.");
+                                                   "this buffer.");
         
         int height = region.getHeight();
         GString[] glyphs = new GString[height];
@@ -134,7 +134,8 @@ public class GlyphBuffer {
      */
     public void clear() {
         for (int line = 0; line < bounds.getHeight(); line++)
-            buffer.set(line, GString.blank(bounds.getWidth()));
+            buffer.set(line,
+                       GString.blank(bounds.getWidth()));
     }
     
     public Region getBounds() {

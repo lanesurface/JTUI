@@ -31,49 +31,34 @@ public class Border extends Decorator {
      * will use when being rendered.
      */
     public static enum Type {
-        SOLID('\u2501', '\u2503'),
-        DASHED('-', '|'),
+        DASHED('-', '|', '+'),
         DOTTED('.'),
         CROSS('+');
         
-        private final char spanCharacter,
-                           edgeCharacter;
+        private final char span,
+                           edge,
+                           corner;
         
         Type(char character) {
             /*
              * If only one character is specified for this border, use it for
              * drawing the span and edges.
              */
-            this(character, character);
+            this(character,
+                 character,
+                 character);
         }
         
-        Type(char spanCharacter, char edgeCharacter) {
-            this.spanCharacter = spanCharacter;
-            this.edgeCharacter = edgeCharacter;
+        Type(char span, char edge, char corner) {
+            this.span = span;
+            this.edge = edge;
+            this.corner = corner;
         }
     }
     
-    private Glyph span,
-                  edge;
+    private Type type;
     
-    /**
-     * Initializes a border for the given component using the specified Glyph.
-     * 
-     * @param span The Glyph to use when drawing the top and bottom sides of
-     *             the border.
-     * @param edge The Glyph to use when drawing the left and right sides of
-     *             the border.
-     * @param component The component to draw this border around.
-     */
-    public Border(Glyph span,
-                  Optional<Glyph> edge,
-                  Component component) {
-        this.component = component;
-        this.span = span;
-        this.edge = edge.isPresent()
-                    ? edge.get()
-                    : span;
-    }
+    private Color color;
     
     /**
      * Initializes a border for the given component, using the character
@@ -86,9 +71,9 @@ public class Border extends Decorator {
     public Border(Type type,
                   Color color,
                   Component component) {
-        this(new Glyph(type.spanCharacter, color),
-             Optional.of(new Glyph(type.edgeCharacter, color)),
-             component);
+        this.type = type;
+        this.color = color;
+        this.component = component;
     }
     
     @Override
@@ -116,7 +101,10 @@ public class Border extends Decorator {
                      position++)
                 {
                     Glyph[] glyphs = new Glyph[width];
-                    Arrays.fill(glyphs, span);
+                    Arrays.fill(glyphs, new Glyph(type.span,
+                                                  color));
+                    glyphs[0] = glyphs[width - 1] = new Glyph(type.corner,
+                                                              color);
                     GString border = new GString(glyphs);
                     
                     buffer.update(border, new Location(line,
@@ -126,8 +114,9 @@ public class Border extends Decorator {
                 continue;
             }
             
-            buffer.update(edge, new Location(line, bounds.start.position));
-            buffer.update(edge, new Location(line, bounds.end.position - 1));
+            Glyph edge = new Glyph(type.edge, color);
+            buffer.update(edge, Location.at(line, bounds.start.position));
+            buffer.update(edge, Location.at(line, bounds.end.position - 1));
         }
     }
 }

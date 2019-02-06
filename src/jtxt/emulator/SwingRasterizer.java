@@ -61,10 +61,22 @@ class SwingRasterizer implements GlyphRasterizer {
                                         true);
         g.setPaint(paint);
         
-        for (int line = 0; line < numLines; line++)
-            g.drawString(buffer.getString(line).getData(0, lineSize),
-                         0,
-                         line * context.charSize.height + ascent);
+//        for (int line = 0; line < numLines; line++)
+//            g.drawString(buffer.getString(line).getData(0, lineSize),
+//                         0,
+//                         line * context.charSize.height + ascent);
+        for (int line = 0; line < numLines; line++) {
+            for (int position = 0; position < lineSize; position++) {
+                Glyph glyph = buffer.getGlyph(Location.at(bounds,
+                                                          line,
+                                                          position));
+                g.setColor(glyph.color);
+                g.drawString(glyph.character + "",
+                             position * context.charSize.width,
+                             line * context.charSize.height + ascent);
+            }
+        }
+        
         g.dispose();
         
         return image;

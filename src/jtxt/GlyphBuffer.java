@@ -80,8 +80,8 @@ public class GlyphBuffer {
      */
     public void update(GString[] lines, Location start) {
         for (int line = 0; line < lines.length; line++)
-            update(lines[line], Location.at(start.line + line,
-                                            start.position));
+            update(lines[line], new Location(start.line + line,
+                                             start.position));
     }
     
     /**

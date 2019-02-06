@@ -109,8 +109,27 @@ public class Location {
                && position < bounds.end.position;
     }
     
-    public static Location at(int line, int position) {
-        return new Location(line, position);
+    /**
+     * Creates and returns a new {@code Location}, verifying that the indices
+     * are valid coordinates for the <code>bounds</code> which has been given.
+     * 
+     * @param bounds The bounds to verify against the coordinates for the
+     *               new {@code Location}.
+     * @param line The line of the new Location.
+     * @param position The position of the new Location.
+     * 
+     * @return A new Location if the coordinates are within the bounds.
+     */
+    public static Location at(Region bounds,
+                              int line,
+                              int position) {
+        Location location = new Location(line,
+                                         position);
+        if (!location.inside(bounds))
+            throw new IllegalArgumentException("The given " + location
+                                               + " is outside valid bounds.");
+        
+        return location;
     }
     
     @Override

@@ -107,16 +107,21 @@ public class Border extends Decorator {
                                                               color);
                     GString border = new GString(glyphs);
                     
-                    buffer.update(border, new Location(line,
-                                                       bounds.start.position));
+                    buffer.update(border, Location.at(bounds,
+                                                      line,
+                                                      bounds.start.position));
                 }
                 
                 continue;
             }
             
             Glyph edge = new Glyph(type.edge, color);
-            buffer.update(edge, Location.at(line, bounds.start.position));
-            buffer.update(edge, Location.at(line, bounds.end.position - 1));
+            buffer.update(edge, Location.at(bounds,
+                                            line,
+                                            bounds.start.position));
+            buffer.update(edge, Location.at(bounds,
+                                            line,
+                                            bounds.end.position - 1));
         }
     }
 }

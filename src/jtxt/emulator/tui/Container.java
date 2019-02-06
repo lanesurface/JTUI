@@ -17,10 +17,14 @@ package jtxt.emulator.tui;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import jtxt.GlyphBuffer;
+import jtxt.emulator.GString;
+import jtxt.emulator.Glyph;
+import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 
 /**
@@ -64,7 +68,19 @@ public class Container<T extends Component> extends Component
         this.parameters = parameters;
         this.layout = layout;
         this.children = new ArrayList<>();
+        this.background = Color.BLACK;
         add(children);
+    }
+    
+    @SafeVarargs
+    public Container(Object parameters,
+                     Layout layout,
+                     Color background,
+                     T... children) {
+        this(parameters,
+             layout,
+             children);
+        this.background = background;
     }
     
     /**
@@ -152,14 +168,31 @@ public class Container<T extends Component> extends Component
     }
     
     @Override
-    public void draw(GlyphBuffer frame) {
+    public void draw(GlyphBuffer buffer) {
+        /*
+         * Fill the background with block characters of the same color as the
+         * background. (The children will draw over some of these, and that is
+         * okay.)
+         */
+        Glyph background = new Glyph('\u2588',
+                                     this.background);
+        Glyph[] glyphs = new Glyph[width];
+        Arrays.fill(glyphs, background);
+        GString string = new GString(glyphs);
+        
+        for (int line = 0; line < height; line++)
+            buffer.update(string, Location.at(bounds,
+                                              line,
+                                              bounds.start.position));
+        
         for (Component child : children)
-            child.draw(frame);
+            child.draw(buffer);
     }
     
     @Override
     public void setBounds(Region bounds) {
-        this.bounds = bounds;
+        super.setBounds(bounds);
+        
         layout.setParentBounds(bounds);
         children.stream().forEach(layout::setComponentBounds);
     }

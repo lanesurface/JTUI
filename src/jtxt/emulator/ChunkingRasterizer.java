@@ -52,7 +52,8 @@ public class ChunkingRasterizer implements GlyphRasterizer {
         
         for (int line = 0; line < numLines; line++) {
             for (int position = 0; position < lineSize; position++) {
-                Glyph glyph = buffer.getGlyph(Location.at(line,
+                Glyph glyph = buffer.getGlyph(Location.at(bounds,
+                                                          line,
                                                           position));
                 
                 int x = position * context.charSize.width,

@@ -59,7 +59,7 @@ public class Container<T extends Component> extends Component
      * The color that will appear behind the text in this container and it's
      * children (unless a child defines another color itself).
      */
-    protected Color background;
+    private Color background;
     
     @SafeVarargs
     public Container(Object parameters,
@@ -69,6 +69,7 @@ public class Container<T extends Component> extends Component
         this.layout = layout;
         this.children = new ArrayList<>();
         this.background = Color.BLACK;
+        
         add(children);
     }
     
@@ -170,7 +171,7 @@ public class Container<T extends Component> extends Component
     @Override
     public void draw(GlyphBuffer buffer) {
         /*
-         * Fill the background with block characters of the same color as the
+         * Fill the Container with block characters of the same color as the
          * background. (The children will draw over some of these, and that is
          * okay.)
          */

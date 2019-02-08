@@ -90,6 +90,13 @@ public class Border extends Decorator {
     public void draw(GlyphBuffer buffer) {
         super.draw(buffer);
         
+        Glyph[] glyphs = new Glyph[width];
+        Arrays.fill(glyphs, new Glyph(type.span,
+                                      color));
+        glyphs[0] = glyphs[width - 1] = new Glyph(type.corner,
+                                                  color);
+        GString border = new GString(glyphs);
+        
         for (int line = bounds.start.line; line < bounds.end.line; line++) {
             /* 
              * Only fill the line when this is the top or bottom edge; 
@@ -100,13 +107,6 @@ public class Border extends Decorator {
                      position < bounds.end.position;
                      position++)
                 {
-                    Glyph[] glyphs = new Glyph[width];
-                    Arrays.fill(glyphs, new Glyph(type.span,
-                                                  color));
-                    glyphs[0] = glyphs[width - 1] = new Glyph(type.corner,
-                                                              color);
-                    GString border = new GString(glyphs);
-                    
                     buffer.update(border, Location.at(bounds,
                                                       line,
                                                       bounds.start.position));

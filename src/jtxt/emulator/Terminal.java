@@ -152,8 +152,8 @@ public class Terminal implements ComponentObserver {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         FontMetrics fm = window.getFontMetrics(context.font);
-        context.setCharDimensions(fm.charWidth('X'),
-                                  fm.getHeight());
+        context.setCharDimensions(fm.getMaxAdvance(),
+                                  fm.getHeight() - fm.getLeading());
         
         renderer = Renderer.getInstance(context,
                                         background,

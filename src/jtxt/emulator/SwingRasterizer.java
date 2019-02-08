@@ -73,7 +73,7 @@ class SwingRasterizer implements GlyphRasterizer {
                 g.setColor(glyph.color);
                 g.drawString(glyph.character + "",
                              position * context.charSize.width,
-                             line * context.charSize.height + ascent);
+                             line * context.charSize.height  + ascent);
             }
         }
         

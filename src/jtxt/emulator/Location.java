@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ public class Location {
     
     /**
      * Creates and returns a new {@code Location}, verifying that the indices
-     * are valid coordinates for the <code>bounds</code> which has been given.
+     * are valid coordinates for the <code>bounds</code> which have been given.
      * 
      * @param bounds The bounds to verify against the coordinates for the
      *               new {@code Location}.
@@ -136,7 +136,9 @@ public class Location {
     public boolean equals(Object other) {
         if (other instanceof Location) {
             Location location = (Location)other;
-            return line == location.line && position == location.position;
+            
+            return line == location.line
+                   && position == location.position;
         }
         
         return false;

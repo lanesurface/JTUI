@@ -30,8 +30,10 @@ public class RootContainer
     public RootContainer(Region bounds,
                          Layout layout,
                          Component... children) {
-        super(null, layout, children);
+        super(null, layout);
+        
         setBounds(bounds);
+        add(children);
     }
 
     @Override

@@ -171,27 +171,41 @@ public final class GString implements Iterable<Glyph> {
     }
     
     public String getData(int start, int end) {
-        int[] data = Arrays.stream(Arrays.copyOfRange(glyphs,
-                                                      start,
-                                                      end))
-                                         .mapToInt(g -> (char)g.character)
-                                         .toArray();
+//        int[] data = Arrays.stream(Arrays.copyOfRange(glyphs,
+//                                                      start,
+//                                                      end))
+//                                         .mapToInt(g -> (char)g.character)
+//                                         .toArray();
+//        
+//        return getStringFromArray(data);
         
-        return getStringFromArray(data);
-    }
-    
-    private String getStringFromArray(int[] string) {
-        char[] chars = new char[string.length];
-        for(int i = 0; i < chars.length; i++) {
-            if (string[i] == '\0') {
-                chars[i] = ' ';
-                continue;
-            }
-            chars[i] = (char)string[i];
+        StringBuilder data = new StringBuilder();
+        
+        for (int i = start; i < end; i++) {
+            Glyph glyph = glyphs[i];
+            data.append("\u001B[38;2;"
+                        + glyph.color.getRed() + ";"
+                        + glyph.color.getGreen() + ";"
+                        + glyph.color.getBlue() + "m");
+            data.append(glyph.character
+                        + "\u001B[0m");
         }
         
-        return new String(chars);
+        return data.toString();
     }
+    
+//    private String getStringFromArray(int[] string) {
+//        char[] chars = new char[string.length];
+//        for(int i = 0; i < chars.length; i++) {
+//            if (string[i] == '\0') {
+//                chars[i] = ' ';
+//                continue;
+//            }
+//            chars[i] = (char)string[i];
+//        }
+//        
+//        return new String(chars);
+//    }
     
     /**
      * Creates a new string with blank glyphs. This string is guaranteed to not

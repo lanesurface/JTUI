@@ -91,7 +91,7 @@ public class PlainTextWriter {
         Region bounds = buffer.getBounds();
         int width = bounds.getWidth(),
             height = bounds.getHeight();
-         
+        
         for (int line = 0; line < height; line++)
             output.println(buffer.getString(line).getData(0,
                                                           width));

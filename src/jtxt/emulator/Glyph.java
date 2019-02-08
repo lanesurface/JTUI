@@ -59,7 +59,9 @@ public class Glyph {
      * @param blue The blue value of this character.
      */
     public Glyph(char character, int red, int green, int blue) {
-        this(character, new Color(red, green, blue));
+        this(character, new Color(red,
+                                  green,
+                                  blue));
     }
     
     @Override

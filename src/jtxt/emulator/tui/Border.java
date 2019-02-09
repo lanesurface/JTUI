@@ -92,9 +92,11 @@ public class Border extends Decorator {
         
         Glyph[] glyphs = new Glyph[width];
         Arrays.fill(glyphs, new Glyph(type.span,
-                                      color));
+                                      color,
+                                      background));
         glyphs[0] = glyphs[width - 1] = new Glyph(type.corner,
-                                                  color);
+                                                  color,
+                                                  background);
         GString border = new GString(glyphs);
         
         for (int line = bounds.start.line; line < bounds.end.line; line++) {
@@ -115,7 +117,7 @@ public class Border extends Decorator {
                 continue;
             }
             
-            Glyph edge = new Glyph(type.edge, color);
+            Glyph edge = new Glyph(type.edge, color, background);
             buffer.update(edge, Location.at(bounds,
                                             line,
                                             bounds.start.position));

@@ -15,6 +15,8 @@
  */
 package jtxt.emulator.tui;
 
+import java.awt.Color;
+
 import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
 import jtxt.emulator.Location;
@@ -55,8 +57,16 @@ public class TextBox extends Component {
                    String text,
                    Position justification) {
         this.parameters = parameters;
-        this.text = GString.of(text);
+        this.text = GString.of(text,
+                               background);
         this.justification = justification;
+    }
+    
+    @Override
+    public void setBackground(Color background) {
+        super.setBackground(background);
+        text = GString.of(text.toString(),
+                          background);
     }
     
     @Override

@@ -15,6 +15,7 @@
  */
 package jtxt.emulator.tui;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,18 @@ public abstract class Component {
     
     protected List<ComponentObserver> observers;
     
+    protected Color foreground,
+                    background;
+    
     protected Component() {
+        this(Color.BLACK,
+             Color.WHITE);
+    }
+    
+    protected Component(Color foreground,
+                        Color background) {
+        this.foreground = foreground;
+        this.background = background;
         observers = new ArrayList<>();
     }
     
@@ -95,6 +107,17 @@ public abstract class Component {
         height = bounds.getHeight();
     }
 
+    public void setBackground(int red, int green, int blue, int alpha) {
+        setBackground(new Color(red,
+                                green,
+                                blue,
+                                alpha));
+    }
+    
+    public void setBackground(Color background) {
+        this.background = background;
+    }
+    
     /**
      * Gets the parameters that define how this component should be placed
      * within its parent container.

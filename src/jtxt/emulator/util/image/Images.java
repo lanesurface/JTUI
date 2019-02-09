@@ -161,7 +161,8 @@ public class Images {
                  */
                 char out = ASCII_CHARS[ASCII_CHARS.length - index - 1];
                 characters[yIndex][xIndex++] = new Glyph(out,
-                                                         new Color(color));
+                                                         new Color(color),
+                                                         null);
             }
             yIndex++;
         }

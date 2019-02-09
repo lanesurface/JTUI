@@ -98,7 +98,7 @@ public class ASCIImage extends Component {
         cached = new GString[height];
 
         for (int y = 0; y < height; y++) {
-            GString line = GString.of("");
+            GString line = GString.blank(0);
             for (int x = 0; x < width; x++) {
                 int rgb = image.getRGB(x, y),
                     lum = ((rgb >> 16 & 0xFF) +
@@ -108,7 +108,9 @@ public class ASCIImage extends Component {
                 int index = (int)Math.min(Math.round(lum / range), 
                                           ASCII_CHARS.length - 1);
                 char out = ASCII_CHARS[ASCII_CHARS.length - index - 1];
-                line = line.append(new Glyph(out, new Color(rgb)));
+                line = line.append(new Glyph(out,
+                                             new Color(rgb),
+                                             background));
             }
             
             cached[y] = line;

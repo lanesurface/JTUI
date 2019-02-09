@@ -59,7 +59,7 @@ public class Container<T extends Component> extends Component
      * The color that will appear behind the text in this container and it's
      * children (unless a child defines another color itself).
      */
-    private Color background;
+//    private Color background;
     
     @SafeVarargs
     public Container(Object parameters,
@@ -96,6 +96,7 @@ public class Container<T extends Component> extends Component
         for (T child : children) {
             this.children.add(child);
             layout.setComponentBounds(child);
+            child.setBackground(background);
             
             for (ComponentObserver co : observers)
                 child.registerObserver(co);
@@ -176,7 +177,8 @@ public class Container<T extends Component> extends Component
          * okay.)
          */
         Glyph background = new Glyph('\u2588',
-                                     this.background);
+                                     this.background,
+                                     this.background); // ??
         Glyph[] glyphs = new Glyph[width];
         Arrays.fill(glyphs, background);
         GString string = new GString(glyphs);

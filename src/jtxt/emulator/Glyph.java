@@ -27,7 +27,13 @@ public class Glyph {
     /**
      * The color of this Glyph's character.
      */
-    public final Color color;
+    public final Color color,
+                       background;
+    
+    private static final Color TRANSPARENT = new Color(0,
+                                                       0,
+                                                       0,
+                                                       0);
     
     /**
      * A Glyph that is guaranteed to not appear in the terminal, but will avoid
@@ -35,8 +41,9 @@ public class Glyph {
      * Glyph has an alpha of <tt>0.0</tt> and is represented by the underlying
      * Unicode null character <tt>\0</tt>.
      */
-    public static final Glyph BLANK = new Glyph(new Character('\0'),
-                                                new Color(0, 0, 0, 0));
+    public static final Glyph BLANK = new Glyph('\0',
+                                                TRANSPARENT,
+                                                TRANSPARENT);
     
     /**
      * Constructs a new Glyph with the given character; the character will be
@@ -45,9 +52,10 @@ public class Glyph {
      * @param character The character that this Glyph represents.
      * @param color The color of this character.
      */
-    public Glyph(char character, Color color) {
+    public Glyph(char character, Color color, Color background) {
         this.character = character;
         this.color = color;
+        this.background = background;
     }
     
     /**
@@ -59,9 +67,9 @@ public class Glyph {
      * @param blue The blue value of this character.
      */
     public Glyph(char character, int red, int green, int blue) {
-        this(character, new Color(red,
-                                  green,
-                                  blue));
+        this(character,
+             new Color(red, green, blue),
+             Color.BLACK);
     }
     
     @Override

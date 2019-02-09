@@ -167,26 +167,28 @@ public final class GString implements Iterable<Glyph> {
     }
     
     public GString substring(int start, int end) {
-        return new GString(Arrays.copyOfRange(glyphs, start, end));
+        return new GString(Arrays.copyOfRange(glyphs,
+                                              start,
+                                              end));
     }
     
-    public String getData(int start, int end) {
-//        int[] data = Arrays.stream(Arrays.copyOfRange(glyphs,
-//                                                      start,
-//                                                      end))
-//                                         .mapToInt(g -> (char)g.character)
-//                                         .toArray();
-//        
-//        return getStringFromArray(data);
-        
+    public String getData(int start, int end) {        
         StringBuilder data = new StringBuilder();
         
         for (int i = start; i < end; i++) {
             Glyph glyph = glyphs[i];
-            data.append("\u001B[38;2;"
-                        + glyph.color.getRed() + ";"
-                        + glyph.color.getGreen() + ";"
-                        + glyph.color.getBlue() + "m");
+            Color foreground = glyph.color,
+                  background = glyph.background;
+            
+            data.append(String.format("\u001B[38;2;%d;%d;%dm"
+                                      + "\u001B[48;2;%d;%d;%dm",
+                                      foreground.getRed(),
+                                      foreground.getGreen(),
+                                      foreground.getBlue(),
+                                      /* Background components: */
+                                      background.getRed(),
+                                      background.getGreen(),
+                                      background.getBlue()));
             data.append(glyph.character
                         + "\u001B[0m");
         }
@@ -194,18 +196,27 @@ public final class GString implements Iterable<Glyph> {
         return data.toString();
     }
     
-//    private String getStringFromArray(int[] string) {
-//        char[] chars = new char[string.length];
-//        for(int i = 0; i < chars.length; i++) {
-//            if (string[i] == '\0') {
-//                chars[i] = ' ';
-//                continue;
-//            }
-//            chars[i] = (char)string[i];
-//        }
-//        
-//        return new String(chars);
-//    }
+    @Override
+    public String toString() {
+        int[] data = Arrays.stream(glyphs)
+            .mapToInt(g -> (char)g.character)
+            .toArray();
+
+        return getStringFromArray(data);
+    }
+    
+    private String getStringFromArray(int[] string) {
+        char[] chars = new char[string.length];
+        for(int i = 0; i < chars.length; i++) {
+            if (string[i] == '\0') {
+                chars[i] = ' ';
+                continue;
+            }
+            chars[i] = (char)string[i];
+        }
+
+        return new String(chars);
+    }
     
     /**
      * Creates a new string with blank glyphs. This string is guaranteed to not
@@ -224,7 +235,7 @@ public final class GString implements Iterable<Glyph> {
     }
     
     /**
-     * Constructs an array of glyphs for the given string of text. The presence
+     * Constructs a {@code GString} for the given string of text. The presence
      * of escape sequences in the string (delimited by <code>\e[...m</code>) is
      * taken into account when constructing these glyphs; therefore, do not
      * necessarily expect that the length of the given text and the length of
@@ -235,7 +246,7 @@ public final class GString implements Iterable<Glyph> {
      * @return A GString with escaped values extracted and applied to their
      *         respective glyphs.
      */
-    public static GString of(String text) {
+    public static GString of(String text, Color background) {
         /*
          * Support extracting color data in the form of 
          * "\e[<0..255>;<0..255>;<0..255>m".
@@ -268,27 +279,27 @@ public final class GString implements Iterable<Glyph> {
                 i++;
             }
             
-            glyphs.add(new Glyph(chars[i], current));
+            glyphs.add(new Glyph(chars[i],
+                                 current,
+                                 background));
         }
         
         return new GString(glyphs.toArray(new Glyph[0]));
     }
     
     /**
-     * <p>
-     * Given an array of glyphs, this method will wrap the glyphs onto separate
-     * lines, based on the given line length.
-     * </p>
+     * Wraps this string to the given <code>length</code>. This method (rather
+     * primitively) breaks the string on the spaces between individual words.
      * 
      * <p>
      * <i>Implementation Note</i>: This algorithm is greedy and makes no
-     * attempt to balance the distribution of glyphs between lines.
+     * attempt to balance the distribution of {@code Glyphs} between lines.
      * </p>
      * 
-     * @param length The maximum number of glyphs that can appear on a line
+     * @param length The maximum number of Glyphs that can appear on a line
      *               before being wrapped.
      * 
-     * @return An array of glyphs, where each line's length is guaranteed to
+     * @return An array of Glyphs, where each line's length is guaranteed to
      *         be no greater than the given length, and spaces between words at
      *         the rightmost bound of a line are discarded.
      */

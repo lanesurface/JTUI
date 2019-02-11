@@ -48,6 +48,20 @@ public class GlyphBuffer {
     }
 
     /**
+     * Updates the each of the {@code Location}s within this buffer so that
+     * they contain the given glyph.
+     * 
+     * @param glyph The {@code Glyph} to insert into each of the given
+     *              locations.
+     * @param locations The Locations to insert the Glyph into.
+     */
+    public void update(Glyph glyph,
+                       Location... locations) {
+        for (int i = 0; i < locations.length; i++)
+            update(glyph, locations[i]);
+    }
+
+    /**
      * Starting at the given {@code Location}, this method will will replace
      * the glyphs from start to the length of the string, assuming that this
      * string is within the bounds of the buffer.

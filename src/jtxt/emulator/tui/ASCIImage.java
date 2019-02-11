@@ -101,9 +101,9 @@ public class ASCIImage extends Component {
             GString line = GString.blank(0);
             for (int x = 0; x < width; x++) {
                 int rgb = image.getRGB(x, y),
-                    lum = ((rgb >> 16 & 0xFF) +
-                           (rgb >> 8 & 0xFF) + 
-                           (rgb & 0xFF)) / 3;
+                    lum = ((rgb >> 16 & 0xFF)
+                           + (rgb >> 8 & 0xFF)
+                           + (rgb & 0xFF)) / 3;
                 
                 int index = (int)Math.min(Math.round(lum / range), 
                                           ASCII_CHARS.length - 1);

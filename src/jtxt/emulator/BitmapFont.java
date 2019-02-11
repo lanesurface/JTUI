@@ -129,14 +129,14 @@ public class BitmapFont {
         
         if (character == '\0') return null;
         if (character < minCodePoint || character > maxCodePoint) {
-            String msg = String.format("The given character %c is outside the "
-                                       + "valid range of characters, starting "
-                                       + "at the codepoint %d and ending at "
-                                       + "the codepoint %d.%n",
-                                       character,
-                                       minCodePoint,
-                                       maxCodePoint);
-            throw new IllegalArgumentException(msg);
+            System.out.format("The given character %c is outside the valid "
+                              + "range of characters: [%d, %d].%n",
+                              character,
+                              minCodePoint,
+                              maxCodePoint);
+            
+            
+            character = '?';
         }
         
         WritableRaster raster = 

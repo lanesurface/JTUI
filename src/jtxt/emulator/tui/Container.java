@@ -171,19 +171,14 @@ public class Container<T extends Component> extends Component
     
     @Override
     public void draw(GlyphBuffer buffer) {
-        /*
-         * Fill the Container with block characters of the same color as the
-         * background. (The children will draw over some of these, and that is
-         * okay.)
-         */
         Glyph background = new Glyph('\u2588',
                                      this.background,
-                                     this.background); // ??
+                                     null); // ??
         Glyph[] glyphs = new Glyph[width];
         Arrays.fill(glyphs, background);
         GString string = new GString(glyphs);
         
-        for (int line = 0; line < height; line++)
+        for (int line = bounds.start.line; line < height; line++)
             buffer.update(string, Location.at(bounds,
                                               line,
                                               bounds.start.position));

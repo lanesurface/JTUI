@@ -199,8 +199,8 @@ public final class GString implements Iterable<Glyph> {
     @Override
     public String toString() {
         int[] data = Arrays.stream(glyphs)
-            .mapToInt(g -> (char)g.character)
-            .toArray();
+                           .mapToInt(g -> (char)g.character)
+                           .toArray();
 
         return getStringFromArray(data);
     }

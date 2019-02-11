@@ -21,14 +21,17 @@ public class TestConsoleOutput {
         BufferedImage image = ImageIO.read(
             ClassLoader.getSystemResource("coke.jpg")
         );
-        ASCIImage coke = new ASCIImage(layout.getParametersForCell(0, 1),
-                                       image);
+        ASCIImage ascii = new ASCIImage(layout.getParametersForCell(0, 1),
+                                        image);
+//        Component coke = new Border(Border.Type.DASHED,
+//                                    Color.GRAY,
+//                                    ascii);
         
         PlainTextWriter writer = new PlainTextWriter(System.out);
         writer.draw(80,
                     20,
                     layout,
                     text,
-                    coke);
+                    ascii);
     }
 }

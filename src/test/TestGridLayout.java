@@ -21,8 +21,8 @@ public class TestGridLayout {
         Terminal terminal = new Terminal.Builder("Grid Test")
                                         .dimensions(80, 20)
                                         .rasterType(Renderer.RasterType.HARDWARE_ACCELERATED)
-                                        .font("DejaVu Sans Mono")
-                                        .textSize(11)
+                                        .font("Consolas")
+                                        .textSize(12)
                                         .build();
         /* 
          * This layout takes an array of integers, where each element in the

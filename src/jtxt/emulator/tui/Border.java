@@ -17,7 +17,6 @@ package jtxt.emulator.tui;
 
 import java.awt.Color;
 import java.util.Arrays;
-import java.util.Optional;
 
 import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
@@ -44,9 +43,7 @@ public class Border extends Decorator {
              * If only one character is specified for this border, use it for
              * drawing the span and edges.
              */
-            this(character,
-                 character,
-                 character);
+            this(character, character, character);
         }
         
         Type(char span, char edge, char corner) {
@@ -58,8 +55,6 @@ public class Border extends Decorator {
     
     private Type type;
     
-    private Color color;
-    
     /**
      * Initializes a border for the given component, using the character
      * defined by the type and the color for drawing the border.
@@ -68,12 +63,12 @@ public class Border extends Decorator {
      * @param type The type of character to use for drawing the border.
      * @param color The color of the border.
      */
-    public Border(Type type,
-                  Color color,
-                  Component component) {
+    public Border(Type type, Color color, Component component) {
+        super(component);
         this.type = type;
-        this.color = color;
-        this.component = component;
+        this.foreground = color;
+        
+        setBackground(component.background);
     }
     
     @Override
@@ -91,11 +86,9 @@ public class Border extends Decorator {
         super.draw(buffer);
         
         Glyph[] glyphs = new Glyph[width];
-        Arrays.fill(glyphs, new Glyph(type.span,
-                                      color,
-                                      background));
+        Arrays.fill(glyphs, new Glyph(type.span, foreground, background));
         glyphs[0] = glyphs[width - 1] = new Glyph(type.corner,
-                                                  color,
+                                                  foreground,
                                                   background);
         GString border = new GString(glyphs);
         
@@ -117,13 +110,10 @@ public class Border extends Decorator {
                 continue;
             }
             
-            Glyph edge = new Glyph(type.edge, color, background);
-            buffer.update(edge, Location.at(bounds,
-                                            line,
-                                            bounds.start.position));
-            buffer.update(edge, Location.at(bounds,
-                                            line,
-                                            bounds.end.position - 1));
+            Glyph edge = new Glyph(type.edge, foreground, background);
+            buffer.update(edge,
+                          Location.at(bounds, line, bounds.start.position),
+                          Location.at(bounds, line, bounds.end.position - 1));
         }
     }
 }

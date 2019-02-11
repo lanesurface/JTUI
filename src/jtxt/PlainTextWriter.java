@@ -101,10 +101,7 @@ public class PlainTextWriter {
                      int height,
                      Layout layout,
                      Component... components) {
-        Region bounds = new Region(0,
-                                   0,
-                                   height,
-                                   width);
+        Region bounds = new Region(0, 0, height, width);
         BufferedFrame buffer = new BufferedFrame(bounds);
         RootContainer root = new RootContainer(bounds,
                                                layout,

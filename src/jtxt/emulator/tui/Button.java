@@ -18,11 +18,11 @@ public class Button extends Decorator implements Interactable {
     public Button(String text,
                   Color textColor,
                   Object parameters) {
-        component = new Border(Border.Type.DASHED,
-                               Color.WHITE,
-                               new TextBox(parameters,
-                                           Glyphs.escape(textColor) + text,
-                                           TextBox.Position.CENTER));
+        super(new Border(Border.Type.DASHED,
+                         Color.WHITE,
+                         new TextBox(parameters,
+                                     Glyphs.escape(textColor) + text,
+                                     TextBox.Position.CENTER)));
         clickCallbacks = new ArrayList<>();
     }
     
@@ -44,6 +44,11 @@ public class Button extends Decorator implements Interactable {
     public boolean clicked(Location clickLocation) {
         for (Callable callback : clickCallbacks)
             callback.dispatch();
+        
+        component.foreground = new Color(255,
+                                         0,
+                                         0);
+        update();
         
         /*
          * We can't do anything with keyboard input, so yield control of the

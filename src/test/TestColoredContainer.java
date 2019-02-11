@@ -5,6 +5,7 @@ import java.awt.Color;
 import jtxt.emulator.Renderer;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.Axis;
+import jtxt.emulator.tui.Border;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.Container;
 import jtxt.emulator.tui.GridLayout;
@@ -26,20 +27,17 @@ public class TestColoredContainer {
         terminal.createRootContainer(layout);
         
         GridParameters parameters = layout.getParametersForCell(0, 0);
-        Container<Component> container = new Container<>(parameters,
-                                                         new SequentialLayout(Axis.X),
-                                                         Color.CYAN);
+        Container<Component> container =
+            new Container<>(parameters,
+                            new SequentialLayout(Axis.X),
+                            Color.CYAN);
 
-//        terminal.add(new Border(Border.Type.DASHED,
-//                                Color.LIGHT_GRAY,
-//                                container));
-        terminal.add(container);
+        terminal.add(new Border(Border.Type.DASHED,
+                                Color.LIGHT_GRAY,
+                                container));
         
-        Component text = new TextBox(new SequentialParameters(20, 10),
-                                     "Hello, O beautiful colored container!",
-                                     TextBox.Position.CENTER);
-        container.add(text);
-        
-        // System
+        container.add(new TextBox(new SequentialParameters(20, 10),
+                                  "Hello, O beautiful colored container!",
+                                  TextBox.Position.CENTER));
     }
 }

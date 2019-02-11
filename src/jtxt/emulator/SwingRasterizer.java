@@ -15,10 +15,7 @@
  */
 package jtxt.emulator;
 
-import java.awt.Color;
-import java.awt.GradientPaint;
 import java.awt.Graphics2D;
-import java.awt.Paint;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
@@ -51,29 +48,25 @@ class SwingRasterizer implements GlyphRasterizer {
             numLines = bounds.getHeight(),
             lineSize = bounds.getWidth();
         
-        // Set a color here while I work out how to preserve color information.
-        Paint paint = new GradientPaint(0,
-                                        0,
-                                        Color.CYAN,
-                                        0,
-                                        50,
-                                        Color.PINK,
-                                        true);
-        g.setPaint(paint);
+        int charWidth = context.charSize.width,
+            charHeight = context.charSize.height;
         
-//        for (int line = 0; line < numLines; line++)
-//            g.drawString(buffer.getString(line).getData(0, lineSize),
-//                         0,
-//                         line * context.charSize.height + ascent);
         for (int line = 0; line < numLines; line++) {
             for (int position = 0; position < lineSize; position++) {
                 Glyph glyph = buffer.getGlyph(Location.at(bounds,
                                                           line,
                                                           position));
+                int x = position * charWidth,
+                    y = line * charHeight + ascent;
+                
+                g.setColor(glyph.background);
+                g.fillRect(x,
+                           line * charHeight,
+                           x + charWidth,
+                           line * charHeight * 2);
+                
                 g.setColor(glyph.color);
-                g.drawString(glyph.character + "",
-                             position * context.charSize.width,
-                             line * context.charSize.height  + ascent);
+                g.drawString(glyph.character + "", x, y);
             }
         }
         

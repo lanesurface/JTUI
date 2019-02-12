@@ -68,7 +68,7 @@ public class Container<T extends Component> extends Component
         this.parameters = parameters;
         this.layout = layout;
         this.children = new ArrayList<>();
-        this.background = Color.BLACK;
+//        this.background = Color.BLACK;
         
         add(children);
     }
@@ -173,7 +173,7 @@ public class Container<T extends Component> extends Component
     public void draw(GlyphBuffer buffer) {
         Glyph background = new Glyph('\u2588',
                                      this.background,
-                                     null); // ??
+                                     Glyph.TRANSPARENT);
         Glyph[] glyphs = new Glyph[width];
         Arrays.fill(glyphs, background);
         GString string = new GString(glyphs);

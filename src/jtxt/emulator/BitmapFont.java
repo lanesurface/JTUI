@@ -127,17 +127,9 @@ public class BitmapFont {
     public Image getCharacterAsImage(Glyph glyph) {
         char character = glyph.character;
         
-        if (character == '\0') return null;
-        if (character < minCodePoint || character > maxCodePoint) {
-            System.out.format("The given character %c is outside the valid "
-                              + "range of characters: [%d, %d].%n",
-                              character,
-                              minCodePoint,
-                              maxCodePoint);
-            
-            
-            character = '?';
-        }
+        if (character == '\0'
+            || character < minCodePoint
+            || character > maxCodePoint) return null;
         
         WritableRaster raster = 
             transformGlyphToColor(glyphs[character - minCodePoint],

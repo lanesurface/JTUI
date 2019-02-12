@@ -313,7 +313,7 @@ public class Terminal implements ComponentObserver {
             numLines = 20;
             updatesPerSecond = 60;
             background = Color.BLACK;
-            rasterType = RasterType.SOFTWARE;
+            rasterType = RasterType.HARDWARE_ACCELERATED;
             transparency = 0.8f;
         }
         
@@ -348,8 +348,8 @@ public class Terminal implements ComponentObserver {
             return this;
         }
         
-        public Builder rasterType(Renderer.RasterType rasterType) {
-            this.rasterType = rasterType;
+        public Builder useExperimentalRasterizer() {
+            this.rasterType = RasterType.SOFTWARE;
             
             return this;
         }

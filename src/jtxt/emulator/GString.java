@@ -182,6 +182,7 @@ public final class GString implements Iterable<Glyph> {
             
             data.append(String.format("\u001B[38;2;%d;%d;%dm"
                                       + "\u001B[48;2;%d;%d;%dm",
+                                      /* Foreground components: */
                                       foreground.getRed(),
                                       foreground.getGreen(),
                                       foreground.getBlue(),

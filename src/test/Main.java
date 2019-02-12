@@ -35,7 +35,7 @@ public class Main {
         term.add(border);
         
         BufferedImage source = ImageIO.read(
-            ClassLoader.getSystemResource("app.jpg")
+            ClassLoader.getSystemResource("coke.jpg")
         );
         Component image = new ASCIImage(new SequentialParameters(40, 15),
                                         source);

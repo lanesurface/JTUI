@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jtxt.GlyphBuffer;
+import jtxt.emulator.Glyph;
 import jtxt.emulator.Region;
 
 /**
@@ -62,7 +63,7 @@ public abstract class Component {
     
     protected Component() {
         this(Color.BLACK,
-             Color.WHITE);
+             Glyph.TRANSPARENT);
     }
     
     protected Component(Color foreground,

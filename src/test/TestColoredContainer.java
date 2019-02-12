@@ -2,7 +2,6 @@ package test;
 
 import java.awt.Color;
 
-import jtxt.emulator.Renderer;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.Axis;
 import jtxt.emulator.tui.Border;
@@ -18,7 +17,6 @@ public class TestColoredContainer {
     public static void main(String[] args) {
         Terminal terminal =
             new Terminal.Builder("Colored Container")
-                        .rasterType(Renderer.RasterType.HARDWARE_ACCELERATED)
                         .transparency(0.6f)
                         .font("Consolas")
                         .build();

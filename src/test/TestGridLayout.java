@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import jtxt.emulator.Renderer;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.Border;
@@ -20,7 +19,6 @@ public class TestGridLayout {
     public static void main(String[] args) {
         Terminal terminal = new Terminal.Builder("Grid Test")
                                         .dimensions(80, 20)
-                                        .rasterType(Renderer.RasterType.HARDWARE_ACCELERATED)
                                         .font("Consolas")
                                         .textSize(12)
                                         .build();

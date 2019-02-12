@@ -30,10 +30,10 @@ public class Glyph {
     public final Color color,
                        background;
     
-    private static final Color TRANSPARENT = new Color(0,
-                                                       0,
-                                                       0,
-                                                       0);
+    public static final Color TRANSPARENT = new Color(0,
+                                                      0,
+                                                      0,
+                                                      0);
     
     /**
      * A Glyph that is guaranteed to not appear in the terminal, but will avoid
@@ -69,13 +69,14 @@ public class Glyph {
     public Glyph(char character, int red, int green, int blue) {
         this(character,
              new Color(red, green, blue),
-             Color.BLACK);
+             TRANSPARENT);
     }
     
     @Override
     public String toString() {
-        return String.format("Glyph: [char='%c',color=%s]", 
+        return String.format("Glyph: [char='%c', color=%s, background=%s]%n", 
                              character,
-                             color);
+                             color,
+                             background);
     }
 }

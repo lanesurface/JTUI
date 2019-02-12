@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import jtxt.emulator.Renderer;
 import jtxt.emulator.Terminal;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.Border;
@@ -20,11 +19,9 @@ public class TestTable {
     public static void main(String[] args)
         throws IOException
     {
-        Terminal terminal =
-            new Terminal.Builder("Table Test")
-                        .font("DejaVu Sans Mono")
-                        .rasterType(Renderer.RasterType.HARDWARE_ACCELERATED)
-                        .build();
+        Terminal terminal = new Terminal.Builder("Table Test")
+                                        .font("DejaVu Sans Mono")
+                                        .build();
         
         GridLayout layout = GridLayout.initializeForDimensions(1, 1);
         terminal.createRootContainer(layout);

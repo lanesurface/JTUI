@@ -63,7 +63,8 @@ for test in tests:
                                  os.extsep.join([package,
                                                  test.split('.')[0]])])
     if exit_code != 0:
-      sys.stderr.write('Could not run the test {}.'.format(test))
+      sys.stderr.write('Could not run the test {t}, exited with '
+                       'code={code}.'.format(t=test, code=exit_code))
       sys.exit(exit_code)
   except FileNotFoundError:
       print('You must specify the path to your JDK with the flag --JDK_BIN \

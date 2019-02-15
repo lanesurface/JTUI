@@ -29,12 +29,15 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
 import java.net.URISyntaxException;
-import java.nio.file.Paths;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.swing.JComponent;
 
-public final class Renderer extends JComponent {
+import jtxt.DrawableSurface;
+import jtxt.GlyphBuffer;
+
+public final class Renderer extends JComponent implements DrawableSurface {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -151,6 +154,16 @@ public final class Renderer extends JComponent {
                                                width,
                                                height);
     }
+    
+    @Override
+    public void draw(GlyphBuffer buffer) { }
+    
+    @Override
+    public void draw(GlyphBuffer buffer,
+                     int x,
+                     int y,
+                     int width,
+                     int height) { }
     
     @Override
     public void paint(Graphics g) {

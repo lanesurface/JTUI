@@ -32,7 +32,19 @@ public abstract class Term implements ComponentObserver {
     
     protected RootContainer root;
     
+    protected DrawableSurface surface;
+    
     private KeyboardTarget focusedComponent;
+    
+    protected Term(int width,
+                   int height) {
+        context = new Context(width,
+                              height,
+                              null,
+                              0,
+                              0);
+        surface = createDrawableSurface(width, height);
+    }
     
     public void add(Component... components) {
         if (root == null)
@@ -51,9 +63,9 @@ public abstract class Term implements ComponentObserver {
         return root;
     }
     
-    public void focus(Location location) {
-        Component component = getComponentAt(location.line,
-                                             location.position);
+    public void focus(int line, int position) {
+        Component component = getComponentAt(line,
+                                             position);
         KeyboardTarget focusedComponent = component instanceof KeyboardTarget
                                           ? (KeyboardTarget)component
                                           : this.focusedComponent;
@@ -69,6 +81,12 @@ public abstract class Term implements ComponentObserver {
         int width = bounds.getWidth(),
             height = bounds.getHeight();
         
+        surface.draw(root.drawToBuffer(width, height),
+                     0,
+                     0,
+                     width,
+                     height);
+        
         /*
          * TODO: Have a way to only update the part of the screen that changed.
          *       (Would we have to draw straight to the screen, and pass the
@@ -78,22 +96,10 @@ public abstract class Term implements ComponentObserver {
          */
         
         /*
-         * `DrawableSurface`s are components which are able to render a
-         * GlyphBuffer. An instance of this class will determine which kind of
-         * renderer it will use when it implements this method. For the terminal
-         * emulator, it will want to return a renderer that can be added to a
-         * swing window (aka a JComponent), but for a terminal which outputs to
-         * the native console, it should return a renderer which encodes its
-         * output in ANSI escapes/whatever.
-         */
-        
-        /*
          * I also need to separate the updates coming from the EventDispatcher
          * and updates which Components gernerate (which means that a new
          * frame needs to be rasterized).
          */
-        DrawableSurface surface = createDrawableSurface(width, height);
-        surface.draw(root.drawToBuffer(width, height));
     }
     
     protected Component getComponentAt(int line, int position) {
@@ -102,6 +108,18 @@ public abstract class Term implements ComponentObserver {
                                                position));
     }
     
+    /**
+     * Initializes the area that text will be rendered to. This surface should
+     * be capable of transforming a {@code GlyphBuffer} into a representation
+     * suitable for output to the client machine.
+     * 
+     * @param width The number of characters wide the surface should be
+     *              able to render.
+     * @param height The number of character tall the surface should be
+     *               able to render.
+     * 
+     * @return ...
+     */
     protected abstract DrawableSurface createDrawableSurface(int width,
                                                              int height);
 }

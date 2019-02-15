@@ -131,9 +131,8 @@ public class BitmapFont {
             || character < minCodePoint
             || character > maxCodePoint) return null;
         
-        WritableRaster raster = 
-            transformGlyphToColor(glyphs[character - minCodePoint],
-                                  glyph.color);
+        WritableRaster raster = changeColor(glyphs[character - minCodePoint],
+                                            glyph.color);
         
         return new BufferedImage(outCM,
                                  raster,
@@ -141,9 +140,24 @@ public class BitmapFont {
                                  null);
     }
     
-    protected WritableRaster transformGlyphToColor(WritableRaster raster,
-                                                   Color color) {
-        WritableRaster modified = 
+    /**
+     * For the glyph defined by the given Raster, the visible areas of the
+     * letter form will be transformed to the specified color, and all pixels
+     * of the same color as <code>colorMask</code> (not accounting for the
+     * alpha component) will be filtered out of the Raster returned from this
+     * method.
+     * 
+     * @param raster The pixel data for the glyph to modify.
+     * @param color The color that the glyph returned from this method should
+     *              be transformed to.
+     * 
+     * @return A Raster containing the same pixel data as the input Raster,
+     *         with the mask color filtered out and all other pixels being the
+     *         color which was given.
+     */
+    protected WritableRaster changeColor(WritableRaster raster,
+                                         Color color) {
+        WritableRaster colored = 
             outCM.createCompatibleWritableRaster(raster.getWidth(),
                                                  raster.getHeight());
         
@@ -161,13 +175,13 @@ public class BitmapFont {
                                               ? (byte)0
                                               : (byte)255;
                 
-                modified.setDataElements(x,
-                                         y,
-                                         samples);
+                colored.setDataElements(x,
+                                        y,
+                                        samples);
             }
         }
         
         
-        return modified;
+        return colored;
     }
 }

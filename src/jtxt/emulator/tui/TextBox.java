@@ -73,7 +73,10 @@ public class TextBox extends Component {
     public void draw(GlyphBuffer buffer) {
         GString[] lines = text.wrap(width);
         for (int line = 0; line < lines.length; line++) {
-            int spos = bounds.start.position;
+            int spos = bounds.start.position,
+                sline = bounds.start.line
+                        + (bounds.getHeight()
+                        - lines.length) / 2;
             
             switch (justification) {
             case RIGHT:
@@ -85,7 +88,7 @@ public class TextBox extends Component {
             default: break;
             }
             
-            buffer.update(lines[line], new Location(bounds.start.line + line,
+            buffer.update(lines[line], new Location(sline + line,
                                                     spos));
         }
     }

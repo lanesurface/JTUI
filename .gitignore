@@ -27,3 +27,4 @@ tools/*.py
 .settings/
 
 roadmap.txt
+stats.txt

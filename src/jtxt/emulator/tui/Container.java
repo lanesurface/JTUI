@@ -109,6 +109,21 @@ public class Container<T extends Component> extends Component
         return children.get(index);
     }
     
+    public Component getComponentAt(Location location) {
+        for (Component child : children) {
+            if (location.inside(child.bounds)) {
+                if (child instanceof Container)
+                    return ((Container<?>)child).getComponentAt(location);
+                
+                return child;
+            }
+        }
+        
+        return location.inside(bounds)
+               ? this
+               : null;
+    }
+    
     /**
      * Returns the components in this container in the order defined by the
      * layout that has been set. 
@@ -178,7 +193,7 @@ public class Container<T extends Component> extends Component
         Arrays.fill(glyphs, background);
         GString string = new GString(glyphs);
         
-        for (int line = bounds.start.line; line < height; line++)
+        for (int line = bounds.start.line; line < bounds.end.line; line++)
             buffer.update(string, Location.at(bounds,
                                               line,
                                               bounds.start.position));

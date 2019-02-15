@@ -37,7 +37,7 @@ public class Table extends Container<Table.Column> {
      * the {@code GridLayout}, we use much of the functionality already written
      * for this layout manager when drawing the Components of this Container.
      */
-    protected GridLayout grid;
+    private GridLayout grid;
     
     protected int rows,
                   columns;
@@ -236,10 +236,6 @@ public class Table extends Container<Table.Column> {
         @Override
         public void draw(GlyphBuffer buffer) {
             for (Component component : components) {
-//                for (int line = 0; line < height; line++)
-//                    buffer.update(GString.of("|"),
-//                                  new Location(line, bounds.start.position));
-                
                 if (component == null) continue;
                 component.draw(buffer);
             }

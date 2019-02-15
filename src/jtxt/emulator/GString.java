@@ -172,6 +172,17 @@ public final class GString implements Iterable<Glyph> {
                                               end));
     }
     
+    /**
+     * Converts this string into a series of ANSI escape sequences so that it
+     * can be printed at a console. Color information is preserved. 
+     * 
+     * @param start The first character within this {@code GString} that should
+     *              be escaped into a String.
+     * @param end The last character in this GString that should be escaped.
+     * 
+     * @return A substring of this {@code GString} that has color information
+     *         embedded within it in the form of ANSI escape sequences.
+     */
     public String getData(int start, int end) {        
         StringBuilder data = new StringBuilder();
         

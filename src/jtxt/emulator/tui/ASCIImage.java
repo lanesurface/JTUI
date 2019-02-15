@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ public class ASCIImage extends Component {
         return image;
     }
     
-    private void mapToGlyphs() {
+    private void mapImageToGlyphs() {
         BufferedImage image = resize();
 
         double range = 255.0 / ASCII_CHARS.length;
@@ -121,10 +121,11 @@ public class ASCIImage extends Component {
     public void draw(GlyphBuffer buffer) {
         if (cached == null
             || cached.length != height
-            || cached[0].length() != width) mapToGlyphs();
+            || cached[0].length() != width) mapImageToGlyphs();
         
         for (int line = 0; line < height; line++)
-            buffer.update(cached[line], new Location(bounds.start.line + line,
-                                                     bounds.start.position));
+            buffer.update(cached[line], Location.at(bounds,
+                                                    bounds.start.line + line,
+                                                    bounds.start.position));
     }
 }

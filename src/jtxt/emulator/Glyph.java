@@ -58,6 +58,10 @@ public class Glyph {
         this.background = background;
     }
     
+    public Glyph(char character, Color color) {
+        this(character, color, TRANSPARENT);
+    }
+    
     /**
      * Constructs a new Glyph with the given character and RGB components.
      * 

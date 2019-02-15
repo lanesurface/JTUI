@@ -15,6 +15,8 @@
  */
 package jtxt.emulator.tui;
 
+import jtxt.GlyphBuffer;
+import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.Region;
 import jtxt.emulator.ResizeSubscriber;
 
@@ -46,5 +48,15 @@ public class RootContainer
                              0,
                              lines,
                              lineSize));
+    }
+    
+    public GlyphBuffer drawToBuffer(int width, int height) {
+        GlyphBuffer buffer = new BufferedFrame(new Region(0,
+                                                          0,
+                                                          width,
+                                                          height));
+        draw(buffer);
+        
+        return buffer;
     }
 }

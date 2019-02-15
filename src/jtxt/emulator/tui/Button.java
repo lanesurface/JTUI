@@ -8,7 +8,8 @@ import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 import jtxt.emulator.util.Glyphs;
 
-public class Button extends Decorator implements Interactable {
+public class Button extends Decorator implements Interactable,
+                                                 FocusableComponent {
     /**
      * The actions to perform whenever this button receives a notification that
      * it has been pressed by a client.
@@ -56,4 +57,10 @@ public class Button extends Decorator implements Interactable {
          */
         return false;
     }
+
+    @Override
+    public void onFocus() { /* ... */ }
+
+    @Override
+    public void focusChanged() { /* ... */ }
 }

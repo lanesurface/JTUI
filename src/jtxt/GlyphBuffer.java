@@ -1,5 +1,6 @@
 package jtxt;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jtxt.emulator.GString;
@@ -31,6 +32,16 @@ public class GlyphBuffer {
      * an exception.
      */
     protected Region bounds;
+    
+    public GlyphBuffer(Region bounds) {
+        this.bounds = bounds;
+        buffer = new ArrayList<>();
+        
+        int numLines = bounds.getHeight(),
+            lineSize = bounds.getWidth();
+        for (int line = 0; line < numLines; line++)
+            buffer.add(GString.blank(lineSize));
+    }
     
     /**
      * Updates the character at the specified index. This will overwrite the
@@ -129,9 +140,9 @@ public class GlyphBuffer {
      */
     public GString[] getGlyphs(Region region) {
         if (!region.inside(bounds))
-            throw new LocationOutOfBoundsException("The given region is " +
-                                                   "outside the bounds of " +
-                                                   "this buffer.");
+            throw new LocationOutOfBoundsException("The given region is "
+                                                   + "outside the bounds of "
+                                                   + "this buffer.");
         
         int height = region.getHeight();
         GString[] glyphs = new GString[height];
@@ -141,6 +152,26 @@ public class GlyphBuffer {
                                             region.end.position);
         
         return glyphs;
+    }
+    
+    /**
+     * Creates a new {@code GlyphBuffer}, copying the data which this one
+     * contains within the given region, where the coordinates of the start of
+     * this region become (0,&nbsp;0) in the new GlyphBuffer.
+     * 
+     * @param region A {@code Region} with coordinates which are within this
+     *               buffer.
+     * 
+     * @return A new {@code GlyphBuffer} that contains a copy of the data
+     *         within the given Region in this buffer.
+     */
+    public GlyphBuffer createClippedBuffer(Region region) {
+        GString[] lines = getGlyphs(region);
+        GlyphBuffer buffer = new GlyphBuffer(region);
+        buffer.update(lines,
+                      region.getStart());
+        
+        return buffer;
     }
     
     /**

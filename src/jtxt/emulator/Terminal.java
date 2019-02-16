@@ -16,13 +16,11 @@
 package jtxt.emulator;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 
 import javax.swing.JFrame;
 
-import jtxt.emulator.Renderer.RasterType;
 import jtxt.emulator.tui.Component;
 import jtxt.emulator.tui.ComponentObserver;
 import jtxt.emulator.tui.Interactable;
@@ -143,35 +141,30 @@ public class Terminal implements ComponentObserver {
     public Terminal(Context context,
                     String title,
                     Color background,
-                    float transparency,
-                    Renderer.RasterType rasterType) {
+                    float transparency) {
         this.context = context;
         
         window = new JFrame(title);
         window.setResizable(true);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        FontMetrics fm = window.getFontMetrics(context.font);
-        context.setCharDimensions(fm.getMaxAdvance(),
-                                  fm.getHeight() - fm.getLeading());
-        
-        renderer = Renderer.getInstance(context,
+        Font font = new Font(Font.MONOSPACED,
+                             Font.PLAIN,
+                             12);
+        FontMetrics fm = window.getFontMetrics(font);
+        int width = fm.getMaxAdvance(),
+            height = fm.getHeight() - fm.getLeading();
+        renderer = Renderer.getInstance(font,
+                                        width,
+                                        height,
                                         background,
-                                        transparency,
-                                        rasterType);
+                                        transparency);
         renderer.setPreferredSize(context.windowSize);
         window.add(renderer);
         
         dispatcher = new EventDispatcher(this,
                                          renderer);
         window.addMouseListener(dispatcher);
-        
-        prompt = new Prompt();
-        // The prompt spans a single line at the bottom of the window.
-        prompt.setPreferredSize(new Dimension(context.windowSize.width,
-                                              context.charSize.height));
-        prompt.setFont(context.font.deriveFont(Font.BOLD));
-        window.add(prompt, java.awt.BorderLayout.SOUTH);
         
         window.pack();
         window.setVisible(true);
@@ -221,9 +214,9 @@ public class Terminal implements ComponentObserver {
         return root;
     }
     
-    int getCharWidth() { return context.charSize.width; }
+    int getCharWidth() { return -1; }
     
-    int getCharHeight() { return context.charSize.height; }
+    int getCharHeight() { return -1; }
     
     /**
      * Adds the components to the root container.
@@ -296,8 +289,6 @@ public class Terminal implements ComponentObserver {
         
         private Color background;
         
-        private Renderer.RasterType rasterType;
-        
         private float transparency;
         
         public Builder(String title) {
@@ -313,7 +304,6 @@ public class Terminal implements ComponentObserver {
             numLines = 20;
             updatesPerSecond = 60;
             background = Color.BLACK;
-            rasterType = RasterType.HARDWARE_ACCELERATED;
             transparency = 0.8f;
         }
         
@@ -348,12 +338,6 @@ public class Terminal implements ComponentObserver {
             return this;
         }
         
-        public Builder useExperimentalRasterizer() {
-            this.rasterType = RasterType.SOFTWARE;
-            
-            return this;
-        }
-        
         public Builder transparency(float transparency) {
             this.transparency = transparency;
             
@@ -362,15 +346,11 @@ public class Terminal implements ComponentObserver {
         
         public Terminal build() {
             Context context = new Context(lineSize,
-                                          numLines,
-                                          fontName,
-                                          textSize,
-                                          updatesPerSecond);
+                                          numLines);
             return new Terminal(context,
                                 title,
                                 background,
-                                transparency,
-                                rasterType);
+                                transparency);
         }
     }
     
@@ -398,10 +378,7 @@ public class Terminal implements ComponentObserver {
      */
     @Override
     public void update() {
-        BufferedFrame frame = new BufferedFrame(context.getBounds());
-        root.draw(frame);
-        renderer.renderFrame(frame,
-                             context.getWidth(),
-                             context.getHeight());
+        renderer.draw(root.drawToBuffer(context.getWidth(),
+                                        context.getHeight()));
     }
 }

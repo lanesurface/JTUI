@@ -1,5 +1,5 @@
 /* 
- * Copyright 2018 Lane W. Surface 
+ * Copyright 2018, 2019 Lane W. Surface 
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package jtxt.emulator;
 
 import java.awt.Dimension;
-import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,18 +39,6 @@ public class Context implements ResizeSubject {
      * The number of lines in the text-pane.
      */
     private int numLines;
-    
-    /**
-     * The font used for rendering text in the window.
-     */
-    public final Font font;
-    
-    /**
-     * The size of a character. This is based on the font specified in the
-     * {@code Configuration} constructor. These need to be set by a 
-     * {@code Terminal} instance since they rely on java.awt.FontMetrics.
-     */
-    Dimension charSize;
     
     /**
      * The size of the text-pane. This is calculated from the size of a glyph
@@ -86,16 +73,12 @@ public class Context implements ResizeSubject {
      */
     public Context(Context context) {
         this(context.lineSize,
-             context.numLines,
-             context.font.getName(),
-             context.font.getSize(),
-             context.updatesPerSecond);
+             context.numLines);
         /*
          *  Make sure the dimensions are copied into the new context; this
          *  is used for returning context instance from the terminal, and
          *  rendering is based on how these may be defined.
          */
-        charSize = context.charSize;
         windowSize = context.windowSize;
     }
 
@@ -110,11 +93,7 @@ public class Context implements ResizeSubject {
      *                         need to be applied.
      */
     public Context(int lineSize,
-                   int numLines,
-                   String fontName,
-                   int fontSize,
-                   int updatesPerSecond) {
-        font = new Font(fontName, Font.PLAIN, fontSize);
+                   int numLines) {
         resizeSubscribers = new ArrayList<>();
         this.lineSize = lineSize;
         this.numLines = numLines;
@@ -122,7 +101,7 @@ public class Context implements ResizeSubject {
                             0,
                             numLines,
                             lineSize);
-        this.updatesPerSecond = updatesPerSecond;
+        updatesPerSecond = 60;
     }
 
     /**
@@ -139,31 +118,8 @@ public class Context implements ResizeSubject {
         lineSize = reader.getValueAsInt("num_chars_x");
         numLines = reader.getValueAsInt("num_chars_y");
         
-        int size = reader.getValueAsInt("text_size");
-        String fontName = reader.getRawValue("font");
-        font = new Font(fontName, Font.PLAIN, size);
-        
         resizeSubscribers = new ArrayList<>();
         this.updatesPerSecond = 60; // TODO: Replace default value.
-    }
-
-    /**
-     * Sets the dimensions of the font and calculates the size of the window
-     * based on the number of lines, line size, and the font dimensions.
-     * 
-     * @param charWidth The width of a character based on {@link #font}
-     * @param charHeight The height of a character based on {@link #font}.
-     */
-    void setCharDimensions(int charWidth, int charHeight) {
-        charSize = new Dimension(charWidth, charHeight);
-        
-        int w = lineSize * charWidth,
-            h = numLines * charHeight;
-        windowSize = new Dimension(w, h);
-    }
-
-    public Dimension getCharacterDimensions() {
-        return charSize;
     }
     
     public void setDimensions(int numLines,

@@ -15,6 +15,8 @@
  */
 package jtxt.emulator;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -23,10 +25,10 @@ import java.awt.image.RenderedImage;
 import jtxt.GlyphBuffer;
 
 class SwingRasterizer implements GlyphRasterizer {
-    protected Context context;
+    protected Font font;
     
-    public SwingRasterizer(Context context) {
-        this.context = context;
+    public SwingRasterizer(Font font) {
+        this.font = font;
     }
     
     @Override
@@ -43,13 +45,15 @@ class SwingRasterizer implements GlyphRasterizer {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                            RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         
-        g.setFont(context.font);
-        int ascent = g.getFontMetrics().getAscent(),
+        g.setFont(font);
+        FontMetrics fm = g.getFontMetrics();
+        
+        int ascent = fm.getAscent(),
             numLines = bounds.getHeight(),
             lineSize = bounds.getWidth();
         
-        int charWidth = context.charSize.width,
-            charHeight = context.charSize.height;
+        int charWidth = fm.getMaxAdvance(),
+            charHeight = fm.getHeight() - fm.getLeading();
         
         for (int line = 0; line < numLines; line++) {
             for (int position = 0; position < lineSize; position++) {

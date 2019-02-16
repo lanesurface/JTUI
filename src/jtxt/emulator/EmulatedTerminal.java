@@ -17,12 +17,13 @@ package jtxt.emulator;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 
 import javax.swing.JFrame;
 
 import jtxt.DrawableSurface;
 import jtxt.Term;
-import jtxt.emulator.Renderer.RasterType;
 import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
 
@@ -36,27 +37,36 @@ public class EmulatedTerminal extends Term {
     
     private Color background;
     
+    private Font font;
+    
+    protected int charWidth,
+                  charHeight;
+    
     private float transparency;
     
     public EmulatedTerminal(String title,
                             int width,
                             int height,
+                            String fontName,
+                            int size,
                             Color background,
                             float transparency) {
         super(width, height);
         
         this.background = background;
         this.transparency = transparency;
-        context = new Context(width,
-                              height,
-                              "Consolas",
-                              11,
-                              60);
+        
         window = new JFrame(title);
+        font = new Font(fontName,
+                        Font.PLAIN,
+                        size);
+        FontMetrics fm = window.getFontMetrics(font);
+        charWidth = fm.getMaxAdvance();
+        charHeight = fm.getHeight() - fm.getLeading();
+        
+        surface = createDrawableSurface(width,
+                                        height);
     }
-    
-    // Create a font, modify the context, and trigger an update.
-    public void setFont(String name, int size) { }
     
     @Override
     public RootContainer createRootContainer(Layout layout) {
@@ -70,12 +80,13 @@ public class EmulatedTerminal extends Term {
     
     @Override
     protected DrawableSurface createDrawableSurface(int width, int height) {
-        Renderer renderer =
-            Renderer.getInstance(context,
-                                 background,
-                                 transparency,
-                                 RasterType.HARDWARE_ACCELERATED);
-        renderer.setPreferredSize(new Dimension(context.windowSize));
+        Renderer renderer = Renderer.getInstance(font,
+                                                 charWidth,
+                                                 charHeight,
+                                                 background,
+                                                 transparency);
+        renderer.setPreferredSize(new Dimension(charWidth * width,
+                                                charHeight * height));
         window.add(renderer);
         
         dispatcher = new EventDispatcher(null, // FIXME: Compatible interfaces

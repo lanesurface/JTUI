@@ -51,8 +51,8 @@ public class BitmapFont {
      */
     public final int maxCodePoint;
     
-    protected int charWidth,
-                  charHeight;
+    protected int width,
+                  height;
     
     private int xOffset,
                 yOffset;
@@ -73,12 +73,12 @@ public class BitmapFont {
     private int colorMask = 0x000000;
     
     protected BitmapFont(Path fontPath,
-                         int charWidth,
-                         int charHeight,
+                         int width,
+                         int height,
                          int minCodePoint,
                          int numPoints) {
-        this.charWidth = charWidth;
-        this.charHeight = charHeight;
+        this.width = width;
+        this.height = height;
         this.minCodePoint = minCodePoint;
         maxCodePoint = minCodePoint + numPoints;
         glyphs = new WritableRaster[numPoints];
@@ -103,18 +103,18 @@ public class BitmapFont {
             WritableRaster fontRaster = fontImage.getRaster();
             
             int cells = (int)Math.sqrt(numPoints);
-            xOffset = fontImage.getWidth() / cells - charWidth;
-            yOffset = fontImage.getHeight() / cells - charHeight;
+            xOffset = fontImage.getWidth() / cells - width;
+            yOffset = fontImage.getHeight() / cells - height;
             
             for (int r = 0; r < cells; r++) {
                 for (int c = 0; c < cells; c++) {
-                    int x = (charWidth + xOffset) * c,
-                        y = (charHeight + yOffset) * r;
+                    int x = (width + xOffset) * c,
+                        y = (height + yOffset) * r;
                     glyphs[r * cells + c] =
                         fontRaster.createWritableChild(x,
                                                        y,
-                                                       charWidth,
-                                                       charHeight,
+                                                       width,
+                                                       height,
                                                        0,
                                                        0,
                                                        null);
@@ -161,8 +161,8 @@ public class BitmapFont {
             outCM.createCompatibleWritableRaster(raster.getWidth(),
                                                  raster.getHeight());
         
-        for (int y = 0; y < charHeight; y++) {
-            for (int x = 0; x < charWidth; x++) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
                 int pix = inCM.getRGB(raster.getDataElements(x,
                                                              y,
                                                              null));

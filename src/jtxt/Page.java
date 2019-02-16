@@ -92,6 +92,10 @@ public class Page extends GlyphBuffer {
     }
     
     public Page(PageSettings settings, Layout layout) {
+        super(new Region(0,
+                         0,
+                         settings.width,
+                         settings.height));
         this.settings = settings;
         
         Location pageStart = new Location(settings.marginTop,

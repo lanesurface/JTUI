@@ -25,14 +25,10 @@ import jtxt.GlyphBuffer;
  * 
  */
 public class ChunkingRasterizer implements GlyphRasterizer {
-    private Context context;
-    
     private BitmapFont font;
     
-    public ChunkingRasterizer(Context context,
-                              BitmapFont font,
+    public ChunkingRasterizer(BitmapFont font,
                               int numChunks) {
-        this.context = context;
         this.font = font;
     }
 
@@ -56,8 +52,8 @@ public class ChunkingRasterizer implements GlyphRasterizer {
                                                           line,
                                                           position));
                 
-                int x = position * context.charSize.width,
-                    y = line * context.charSize.height;
+                int x = position * font.width,
+                    y = line * font.height;
                 g.drawImage(font.getCharacterAsImage(glyph),
                             x,
                             y,

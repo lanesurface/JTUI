@@ -15,7 +15,8 @@
  */
 package jtxt;
 
-import jtxt.emulator.Context;
+import java.util.Objects;
+
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 import jtxt.emulator.tui.Component;
@@ -28,7 +29,8 @@ import jtxt.emulator.tui.RootContainer;
  * 
  */
 public abstract class Term implements ComponentObserver {
-    protected Context context;
+    protected int width,
+                  height;
     
     protected RootContainer root;
     
@@ -36,27 +38,19 @@ public abstract class Term implements ComponentObserver {
     
     private KeyboardTarget focusedComponent;
     
-    protected Term(int width,
-                   int height) {
-        context = new Context(width,
-                              height,
-                              null,
-                              0,
-                              0);
-        surface = createDrawableSurface(width, height);
+    protected Term(int width, int height) {
+        this.width = width;
+        this.height = height;
     }
     
     public void add(Component... components) {
-        if (root == null)
-            throw new IllegalStateException("Cannot add components to the "
-                                            + "terminal before a RootContainer "
-                                            + "is created.");
-        
+        Objects.requireNonNull(root, "Cannot add Components to the terminal "
+                                     + "before a RootContainer is created.");
         root.add(components);
     }
     
     public RootContainer createRootContainer(Layout layout) {
-        root = new RootContainer(context.getBounds(),
+        root = new RootContainer(new Region(0, 0, width, height),
                                  layout);
         root.registerObserver(this);
         
@@ -78,27 +72,13 @@ public abstract class Term implements ComponentObserver {
     
     public void update() {
         Region bounds = root.getBounds();
-        int width = bounds.getWidth(),
-            height = bounds.getHeight();
-        
-        surface.draw(root.drawToBuffer(width, height),
-                     0,
-                     0,
-                     width,
-                     height);
+        surface.draw(root.drawToBuffer(bounds.getWidth(),
+                                       bounds.getHeight()));
         
         /*
-         * TODO: Have a way to only update the part of the screen that changed.
-         *       (Would we have to draw straight to the screen, and pass the
-         *       buffer stage somehow?) This method would also need to take the
-         *       bounds of the region that needs to be updated (or the
-         *       component?)
-         */
-        
-        /*
-         * I also need to separate the updates coming from the EventDispatcher
-         * and updates which Components gernerate (which means that a new
-         * frame needs to be rasterized).
+         * TODO: I need to separate the updates coming from the EventDispatcher
+         *       and updates which Components generate (which means that a new
+         *       frame needs to be rasterized).
          */
     }
     

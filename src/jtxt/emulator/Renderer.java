@@ -20,6 +20,7 @@ import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -76,16 +77,14 @@ public final class Renderer extends JComponent implements DrawableSurface {
      */
     private RenderedImage rasterizedFrame;
     
-    /**
-     * The kind of {@code GlyphRasterizer} that should be created when we
-     * construct an instance of the {@code Renderer}.
-     */
-    public static enum RasterType { HARDWARE_ACCELERATED,
-                                    SOFTWARE }
+    private int charWidth,
+                charHeight;
     
     Renderer(Color background,
              float transparency,
-             GlyphRasterizer rasterizer) {
+             GlyphRasterizer rasterizer,
+             int charWidth,
+             int charHeight) {
         BufferedImage scr = null;
         if (transparency != 1.0f) {
             try {
@@ -104,66 +103,66 @@ public final class Renderer extends JComponent implements DrawableSurface {
         this.background = background;
         this.transparency = transparency;
         this.rasterizer = rasterizer;
+        this.charWidth = charWidth;
+        this.charHeight = charHeight;
     }
     
-    public static Renderer getInstance(Context context,
+    public static Renderer getInstance(Font font,
+                                       int charWidth,
+                                       int charHeight,
                                        Color background,
-                                       float transparency,
-                                       RasterType rasterType) {
+                                       float transparency) {
         GlyphRasterizer rasterizer = null;
         
-        switch (rasterType) {
-        case HARDWARE_ACCELERATED:
-            rasterizer = new SwingRasterizer(context);
-            
-            break;
-        case SOFTWARE:
+        if (font == null) {
             try {
                 Path path = Paths.get(
                     ClassLoader.getSystemResource("dejavu-sans-mono-256.bmp")
                                .toURI()
                 );
-                BitmapFont font = new BitmapFont(path,
-                                                 8,
-                                                 15,
+                charWidth = 8;
+                charHeight = 15;
+                BitmapFont bfnt = new BitmapFont(path,
+                                                 charWidth,
+                                                 charHeight,
                                                  32,
                                                  256);
-                rasterizer = new ChunkingRasterizer(context,
-                                                    font,
+                rasterizer = new ChunkingRasterizer(bfnt,
                                                     16);
-                
-                context.setCharDimensions(8, 15);
             }
             catch (URISyntaxException ex) { /* TODO */ }
-            
-            break;
-        default:
-            throw new IllegalArgumentException("The given raster type is " +
-                                               "not recognized.");
         }
+        else rasterizer = new SwingRasterizer(font);
         
         return new Renderer(background,
                             transparency,
-                            rasterizer);
-    }
-    
-    public void renderFrame(BufferedFrame frame,
-                            int width,
-                            int height) {
-        rasterizedFrame = rasterizer.rasterize(frame,
-                                               width,
-                                               height);
+                            rasterizer,
+                            charWidth,
+                            charHeight);
     }
     
     @Override
-    public void draw(GlyphBuffer buffer) { }
+    public void draw(GlyphBuffer buffer) {
+        Region bounds = buffer.getBounds();
+        rasterizer.rasterize(buffer,
+                             charWidth * bounds.getWidth(),
+                             charHeight * bounds.getHeight());
+    }
     
     @Override
     public void draw(GlyphBuffer buffer,
                      int x,
                      int y,
                      int width,
-                     int height) { }
+                     int height) {
+        buffer = buffer.createClippedBuffer(new Region(y,
+                                                       x,
+                                                       height,
+                                                       width));
+        rasterizer.rasterize(buffer,
+                             charWidth * width,
+                             charHeight * height);
+    }
     
     @Override
     public void paint(Graphics g) {

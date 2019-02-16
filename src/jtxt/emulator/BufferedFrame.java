@@ -47,12 +47,6 @@ public class BufferedFrame extends GlyphBuffer implements Serializable {
      *               may be rendered anywhere within the given bounds.)
      */
     public BufferedFrame(Region bounds) {
-        this.bounds = bounds;
-        buffer = new ArrayList<>();
-        
-        int numLines = bounds.getHeight(),
-            lineSize = bounds.getWidth();
-        for (int line = 0; line < numLines; line++)
-            buffer.add(GString.blank(lineSize));
+        super(bounds);
     }
 }

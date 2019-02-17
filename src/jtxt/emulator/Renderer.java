@@ -73,7 +73,11 @@ public final class Renderer extends JComponent implements DrawableSurface {
      * to the window as many times as necessary before the next frame is
      * requested.
      * 
-     * @see Renderer#renderFrame(BufferedFrame, int, int)
+     * @see Renderer#draw(GlyphBuffer,
+     *                    int,
+     *                    int,
+     *                    int,
+     *                    int)
      */
     private RenderedImage rasterizedFrame;
     
@@ -144,9 +148,9 @@ public final class Renderer extends JComponent implements DrawableSurface {
     @Override
     public void draw(GlyphBuffer buffer) {
         Region bounds = buffer.getBounds();
-        rasterizer.rasterize(buffer,
-                             charWidth * bounds.getWidth(),
-                             charHeight * bounds.getHeight());
+        rasterizedFrame = rasterizer.rasterize(buffer,
+                                               charWidth * bounds.getWidth(),
+                                               charHeight * bounds.getHeight());
     }
     
     @Override
@@ -155,13 +159,10 @@ public final class Renderer extends JComponent implements DrawableSurface {
                      int y,
                      int width,
                      int height) {
-        buffer = buffer.createClippedBuffer(new Region(y,
-                                                       x,
-                                                       height,
-                                                       width));
-        rasterizer.rasterize(buffer,
-                             charWidth * width,
-                             charHeight * height);
+        draw(buffer.createClippedBuffer(new Region(y,
+                                                   x,
+                                                   height,
+                                                   width)));
     }
     
     @Override

@@ -18,9 +18,9 @@ public class TestEmulator {
                                              0.6f);
         GridLayout layout = GridLayout.initializeForDimensions(1, 1);
         terminal.createRootContainer(layout);
-        
+
         TextBox text = new TextBox(layout.getParametersForCell(0, 0),
-                                   "Hello, O beautiful emulator!",
+                                   "\\e[255;255;000mHello, O beautiful emulator!",
                                    TextBox.Position.CENTER);
         terminal.add(text);
     }

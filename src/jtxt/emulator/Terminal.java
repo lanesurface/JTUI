@@ -371,7 +371,6 @@ public class Terminal implements ComponentObserver {
      */
     @Override
     public void update() {
-        renderer.draw(root.drawToBuffer(context.getWidth(),
-                                        context.getHeight()));
+        renderer.draw(root.drawToBuffer());
     }
 }

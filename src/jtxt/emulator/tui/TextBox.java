@@ -15,8 +15,6 @@
  */
 package jtxt.emulator.tui;
 
-import java.awt.Color;
-
 import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
 import jtxt.emulator.Location;
@@ -31,9 +29,9 @@ public class TextBox extends Component {
      * The position within the bounds of this component that the text should
      * be justified in.
      */
-    public static enum Position { LEFT,
-                                  CENTER,
-                                  RIGHT }
+    public enum Position { LEFT,
+                           CENTER,
+                           RIGHT }
     
     private Position justification;
     
@@ -60,13 +58,6 @@ public class TextBox extends Component {
         this.text = GString.of(text,
                                background);
         this.justification = justification;
-    }
-    
-    @Override
-    public void setBackground(Color background) {
-        super.setBackground(background);
-        text = GString.of(text.toString(),
-                          background);
     }
     
     @Override

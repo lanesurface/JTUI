@@ -48,8 +48,8 @@ public abstract class Term implements ComponentObserver {
     public RootContainer createRootContainer(Layout layout) {
         root = new RootContainer(new Region(0,
                                             0,
-                                            width,
-                                            height),
+                                            height,
+                                            width),
                                  layout);
         root.registerObserver(this);
         
@@ -68,9 +68,7 @@ public abstract class Term implements ComponentObserver {
     }
     
     public void update() {
-        Region bounds = root.getBounds();
-        surface.draw(root.drawToBuffer(bounds.getWidth(),
-                                       bounds.getHeight()));
+        surface.draw(root.drawToBuffer());
         
         /*
          * TODO: I need to separate the updates coming from the EventDispatcher
@@ -79,9 +77,13 @@ public abstract class Term implements ComponentObserver {
          */
     }
     
-    public int getWidth() { return width; }
+    public int getWidth() {
+        return width;
+    }
     
-    public int getHeight() { return height; }
+    public int getHeight() {
+        return height;
+    }
     
     protected Component getComponentAt(int line, int position) {
         return root.getComponentAt(Location.at(root.getBounds(),

@@ -50,11 +50,8 @@ public class RootContainer
                              lineSize));
     }
     
-    public GlyphBuffer drawToBuffer(int width, int height) {
-        GlyphBuffer buffer = new BufferedFrame(new Region(0,
-                                                          0,
-                                                          width,
-                                                          height));
+    public GlyphBuffer drawToBuffer() {
+        GlyphBuffer buffer = new GlyphBuffer(bounds);
         draw(buffer);
         
         return buffer;

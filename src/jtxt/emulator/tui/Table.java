@@ -15,12 +15,12 @@
  */
 package jtxt.emulator.tui;
 
-import java.util.Arrays;
-
 import jtxt.GlyphBuffer;
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
 import jtxt.emulator.tui.GridLayout.GridParameters;
+
+import java.util.Arrays;
 
 /**
  * A {@code Container} which organizes its children into rows and columns. This
@@ -60,11 +60,11 @@ public class Table extends Container<Table.Column> {
         grid = (GridLayout)layout;
         this.rows = rows;
         this.columns = columns;
-        
+
         Column[] cols = new Column[columns];
         for (int column = 0; column < columns; column++)
             cols[column] = createColumn(column);
-        
+
         children = Arrays.asList(cols);
     }
     

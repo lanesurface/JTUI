@@ -15,15 +15,11 @@
  */
 package jtxt;
 
-import java.util.Objects;
-
 import jtxt.emulator.Location;
 import jtxt.emulator.Region;
-import jtxt.emulator.tui.Component;
-import jtxt.emulator.tui.ComponentObserver;
-import jtxt.emulator.tui.KeyboardTarget;
-import jtxt.emulator.tui.Layout;
-import jtxt.emulator.tui.RootContainer;
+import jtxt.emulator.tui.*;
+
+import java.util.Objects;
 
 /**
  * 
@@ -50,7 +46,10 @@ public abstract class Term implements ComponentObserver {
     }
     
     public RootContainer createRootContainer(Layout layout) {
-        root = new RootContainer(new Region(0, 0, width, height),
+        root = new RootContainer(new Region(0,
+                                            0,
+                                            width,
+                                            height),
                                  layout);
         root.registerObserver(this);
         
@@ -58,12 +57,10 @@ public abstract class Term implements ComponentObserver {
     }
     
     public void focus(int line, int position) {
-        Component component = getComponentAt(line,
-                                             position);
-        KeyboardTarget focusedComponent = component instanceof KeyboardTarget
-                                          ? (KeyboardTarget)component
-                                          : this.focusedComponent;
-        focus(focusedComponent);
+        Component component = getComponentAt(line, position);
+        focusedComponent = component instanceof KeyboardTarget
+                           ? (KeyboardTarget)component
+                           : focusedComponent;
     }
     
     public void focus(KeyboardTarget target) {
@@ -82,11 +79,15 @@ public abstract class Term implements ComponentObserver {
          */
     }
     
+    public int getWidth() { return width; }
+    
+    public int getHeight() { return height; }
+    
     protected Component getComponentAt(int line, int position) {
         return root.getComponentAt(Location.at(root.getBounds(),
                                                line,
                                                position));
-    }
+    }    
     
     /**
      * Initializes the area that text will be rendered to. This surface should

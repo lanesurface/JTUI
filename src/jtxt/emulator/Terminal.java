@@ -15,18 +15,11 @@
  */
 package jtxt.emulator;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-
-import javax.swing.JFrame;
-
 import jtxt.emulator.tui.Component;
-import jtxt.emulator.tui.ComponentObserver;
-import jtxt.emulator.tui.Interactable;
-import jtxt.emulator.tui.KeyboardTarget;
-import jtxt.emulator.tui.Layout;
-import jtxt.emulator.tui.RootContainer;
+import jtxt.emulator.tui.*;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A class for displaying TUI {@code Component}s on the screen. Components
@@ -162,7 +155,7 @@ public class Terminal implements ComponentObserver {
         renderer.setPreferredSize(context.windowSize);
         window.add(renderer);
         
-        dispatcher = new EventDispatcher(this,
+        dispatcher = new EventDispatcher(null,
                                          renderer);
         window.addMouseListener(dispatcher);
         

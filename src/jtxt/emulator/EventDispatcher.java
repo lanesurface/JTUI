@@ -32,7 +32,7 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
      * a reference here, as we may need to notify it whenever some relavent
      * state changes.
      */
-    protected final Terminal terminal;
+    protected final EmulatedTerminal terminal;
     
     /**
      * The instance of the {@code Renderer} that the terminal constructed. 
@@ -53,7 +53,7 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
     
     private boolean running = true;
     
-    public EventDispatcher(Terminal terminal,
+    public EventDispatcher(EmulatedTerminal terminal,
                            Renderer renderer) {
         this.terminal = terminal;
         this.renderer = renderer;
@@ -73,21 +73,21 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
      * </strong></p>
      */
     protected void poll() {
-        int width = renderer.getWidth(),
-            height = renderer.getHeight(),
-            numLines = height / terminal.getCharHeight(),
-            lineSize = width / terminal.getCharWidth();
-
-        if (numLines != terminal.context.getNumberOfLines()
-            || lineSize != terminal.context.getLineSize())
-        {
-            terminal.context.setDimensions(numLines,
-                                           lineSize,
-                                           width,
-                                           height);
-
-            terminal.update();
-        }
+//        int width = renderer.getWidth(),
+//            height = renderer.getHeight(),
+//            numLines = height / terminal.charHeight,
+//            lineSize = width / terminal.charWidth;
+//
+//        if (numLines != terminal.getHeight()
+//            || lineSize != terminal.getWidth())
+//        {
+//            terminal.setDimensions(numLines,
+//                                   lineSize,
+//                                   width,
+//                                   height);
+//
+//            terminal.update();
+//        }
 
         dispatchMouseEvents();
         renderer.repaint();
@@ -119,10 +119,10 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
                 y = event.getY();
             
             // Determine the location that this event originated from.
-            Location loc = new Location(y / terminal.getCharHeight(),
-                                        x / terminal.getCharWidth());
-            
-            terminal.clickComponent(loc);
+//            Location loc = new Location(y / terminal.getCharHeight(),
+//                                        x / terminal.getCharWidth());
+//            
+//            terminal.clickComponent(loc);
         }
     }
     
@@ -132,7 +132,7 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
     
     @Override
     public void run() {
-        long msPerUpdate = 1000 / terminal.context.updatesPerSecond,
+        long msPerUpdate = 1000 / 60,
              start;
        
        while (running) {

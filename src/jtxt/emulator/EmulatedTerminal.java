@@ -15,17 +15,13 @@
  */
 package jtxt.emulator;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-
-import javax.swing.JFrame;
-
 import jtxt.DrawableSurface;
 import jtxt.Term;
 import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * 
@@ -57,6 +53,8 @@ public class EmulatedTerminal extends Term {
         this.transparency = transparency;
         
         window = new JFrame(title);
+        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
         font = new Font(fontName,
                         Font.PLAIN,
                         size);
@@ -66,6 +64,8 @@ public class EmulatedTerminal extends Term {
         
         surface = createDrawableSurface(width,
                                         height);
+        window.pack();
+        window.setVisible(true);
     }
     
     @Override
@@ -89,7 +89,7 @@ public class EmulatedTerminal extends Term {
                                                 charHeight * height));
         window.add(renderer);
         
-        dispatcher = new EventDispatcher(null, // FIXME: Compatible interfaces
+        dispatcher = new EventDispatcher(this,
                                          renderer);
         window.addMouseListener(dispatcher);
         

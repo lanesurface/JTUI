@@ -26,5 +26,9 @@ tools/*.py
 .classpath
 .settings/
 
+#IntelliJ stuff
+.idea/
+*.iml
+
 roadmap.txt
 stats.txt

@@ -72,12 +72,6 @@ public final class Renderer extends JComponent implements DrawableSurface {
      * this render generated this image. This rasterized image may be painted
      * to the window as many times as necessary before the next frame is
      * requested.
-     * 
-     * @see Renderer#draw(GlyphBuffer,
-     *                    int,
-     *                    int,
-     *                    int,
-     *                    int)
      */
     private RenderedImage rasterizedFrame;
     
@@ -151,18 +145,6 @@ public final class Renderer extends JComponent implements DrawableSurface {
         rasterizedFrame = rasterizer.rasterize(buffer,
                                                charWidth * bounds.getWidth(),
                                                charHeight * bounds.getHeight());
-    }
-    
-    @Override
-    public void draw(GlyphBuffer buffer,
-                     int x,
-                     int y,
-                     int width,
-                     int height) {
-        draw(buffer.createClippedBuffer(new Region(y,
-                                                   x,
-                                                   height,
-                                                   width)));
     }
     
     @Override

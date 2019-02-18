@@ -1,14 +1,15 @@
 package test;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
-
-import jtxt.PlainTextWriter;
+import jtxt.ANSIWriter;
+import jtxt.emulator.Region;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.GridLayout;
+import jtxt.emulator.tui.RootContainer;
 import jtxt.emulator.tui.TextBox;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
 public class TestConsoleOutput {
     public static void main(String[] args) throws IOException {
@@ -23,15 +24,16 @@ public class TestConsoleOutput {
         );
         ASCIImage ascii = new ASCIImage(layout.getParametersForCell(0, 1),
                                         image);
-//        Component coke = new Border(Border.Type.DASHED,
-//                                    Color.GRAY,
-//                                    ascii);
-        
-        PlainTextWriter writer = new PlainTextWriter(System.out);
-        writer.draw(80,
-                    20,
-                    layout,
-                    text,
-                    ascii);
+
+        ANSIWriter writer = new ANSIWriter(System.out);
+        Region bounds = new Region(0,
+                                   0,
+                                   20,
+                                   80);
+        RootContainer root = new RootContainer(bounds,
+                                               layout,
+                                               text,
+                                               ascii);
+        writer.draw(root.drawToBuffer());
     }
 }

@@ -24,17 +24,34 @@ import java.util.Objects;
 /**
  * 
  */
-public abstract class Term implements ComponentObserver {
+public abstract class Terminal implements ComponentObserver {
     protected int width,
                   height;
-    
+
+    /**
+     * The root container that all components that appear in the terminal
+     * belong to. Components that are not added to another container will be
+     * direct ancestors of this container.
+     *
+     * @see #add(Component...)
+     */
     protected RootContainer root;
-    
+
+    /**
+     * The surface defines how {@code Glyph}s which are in the buffer are drawn
+     * to the screen.
+     */
     protected DrawableSurface surface;
-    
+
+    /**
+     * The current {@code Component} receiving key events.
+     *
+     * @see #focus(KeyboardTarget)
+     * @see #focus(int, int)
+     */
     private KeyboardTarget focusedComponent;
     
-    protected Term(int width, int height) {
+    protected Terminal(int width, int height) {
         this.width = width;
         this.height = height;
     }
@@ -44,7 +61,18 @@ public abstract class Term implements ComponentObserver {
                                      + "before a RootContainer is created.");
         root.add(components);
     }
-    
+
+    /**
+     * Constructs and returns a new {@code RootContainer} using this terminal
+     * as the context, and the given layout as the super layout of all
+     * {@code Component}s within the terminal.
+     *
+     * @param layout The layout to use for placing Components within this
+     *               terminal.
+     *
+     * @return A new {@code RootContainer} which has been constructed for this
+     *         terminal with the given layout.
+     */
     public RootContainer createRootContainer(Layout layout) {
         root = new RootContainer(new Region(0,
                                             0,
@@ -62,11 +90,12 @@ public abstract class Term implements ComponentObserver {
                            ? (KeyboardTarget)component
                            : focusedComponent;
     }
-    
+
     public void focus(KeyboardTarget target) {
         focusedComponent = target;
     }
-    
+
+    @Override
     public void update() {
         surface.draw(root.drawToBuffer());
         

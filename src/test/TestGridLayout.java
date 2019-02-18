@@ -1,27 +1,24 @@
 package test;
 
+import jtxt.emulator.EmulatedTerminal;
+import jtxt.Terminal;
+import jtxt.emulator.tui.*;
+import jtxt.emulator.tui.GridLayout.GridParameters;
+
+import javax.imageio.ImageIO;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
-import jtxt.emulator.Terminal;
-import jtxt.emulator.tui.ASCIImage;
-import jtxt.emulator.tui.Border;
-import jtxt.emulator.tui.Button;
-import jtxt.emulator.tui.Component;
-import jtxt.emulator.tui.GridLayout;
-import jtxt.emulator.tui.GridLayout.GridParameters;
-import jtxt.emulator.tui.TextBox;
-
 public class TestGridLayout {
     public static void main(String[] args) {
-        Terminal terminal = new Terminal.Builder("Grid Test")
-                                        .dimensions(80, 20)
-                                        .font("Consolas")
-                                        .textSize(12)
-                                        .build();
+        Terminal terminal = new EmulatedTerminal("GridLayout",
+                                                 80,
+                                                 20,
+                                                 "Consolas",
+                                                 12,
+                                                 Color.BLACK,
+                                                 0.6f);
         /* 
          * This layout takes an array of integers, where each element in the
          * array represents the number of cells in the respective row in the
@@ -39,9 +36,9 @@ public class TestGridLayout {
          *  2  |       |          |        |
          *     -----------------------------
          */
-        GridLayout layout = new GridLayout(new int[] { 1,
-                                                       2,
-                                                       3 });
+        GridLayout layout = new GridLayout(1,
+                                           2,
+                                           3);
         terminal.createRootContainer(layout);
         
         Component photo = null;

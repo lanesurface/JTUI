@@ -32,10 +32,10 @@ import jtxt.emulator.tui.RootContainer;
  * Draws Components to an external source, such as a system console or other
  * device which can be written to with an instance of {@code OutputStream}.
  */
-public class PlainTextWriter {
+public class ANSIWriter implements DrawableSurface {
     private final PrintStream output;
     
-    public PlainTextWriter(OutputStream outputStream) {
+    public ANSIWriter(OutputStream outputStream) {
         PrintStream ps = null;
         try {
             ps = new PrintStream(outputStream,
@@ -47,7 +47,7 @@ public class PlainTextWriter {
         output = ps;
     }
     
-    public BufferedFrame createSuitableFrame() {
+    public GlyphBuffer createSuitableBuffer() {
         int width = -1,
             height = -1;
         
@@ -75,39 +75,20 @@ public class PlainTextWriter {
         }
         catch (IOException ie) { /* I don't know when this happens. */ }
         
-        return new BufferedFrame(new Region(0,
-                                            0,
-                                            width,
-                                            height));
+        return new GlyphBuffer(new Region(0,
+                                          0,
+                                          width,
+                                          height));
     }
-    
-    /**
-     * Converts and outputs the {@code GlyphBuffer} to the stream which this
-     * printer was initialized with. 
-     * 
-     * @param buffer The buffer to write to the OutputStream.
-     */
-    public void print(GlyphBuffer buffer) {
+
+    @Override
+    public void draw(GlyphBuffer buffer) {
         Region bounds = buffer.getBounds();
         int width = bounds.getWidth(),
             height = bounds.getHeight();
-        
+
         for (int line = 0; line < height; line++)
             output.println(buffer.getString(line).getData(0,
                                                           width));
-    }
-
-    public void draw(int width,
-                     int height,
-                     Layout layout,
-                     Component... components) {
-        Region bounds = new Region(0, 0, height, width);
-        BufferedFrame buffer = new BufferedFrame(bounds);
-        RootContainer root = new RootContainer(bounds,
-                                               layout,
-                                               components);
-        
-        root.draw(buffer);
-        print(buffer);
     }
 }

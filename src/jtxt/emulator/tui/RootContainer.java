@@ -49,11 +49,11 @@ public class RootContainer
                              lines,
                              lineSize));
     }
-    
+
     public GlyphBuffer drawToBuffer() {
         GlyphBuffer buffer = new GlyphBuffer(bounds);
         draw(buffer);
-        
+
         return buffer;
     }
 }

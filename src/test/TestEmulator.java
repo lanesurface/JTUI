@@ -2,14 +2,14 @@ package test;
 
 import java.awt.Color;
 
-import jtxt.Term;
+import jtxt.Terminal;
 import jtxt.emulator.EmulatedTerminal;
 import jtxt.emulator.tui.GridLayout;
 import jtxt.emulator.tui.TextBox;
 
 public class TestEmulator {
     public static void main(String[] args) {
-        Term terminal = new EmulatedTerminal("Emulator",
+        Terminal terminal = new EmulatedTerminal("Emulator",
                                              80,
                                              20,
                                              "Consolas",

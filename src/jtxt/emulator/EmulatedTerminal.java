@@ -16,7 +16,7 @@
 package jtxt.emulator;
 
 import jtxt.DrawableSurface;
-import jtxt.Term;
+import jtxt.Terminal;
 import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
 
@@ -26,7 +26,7 @@ import java.awt.*;
 /**
  * 
  */
-public class EmulatedTerminal extends Term {
+public class EmulatedTerminal extends Terminal {
     protected JFrame window;
     
     protected EventDispatcher dispatcher;

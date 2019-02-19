@@ -55,12 +55,6 @@ public class Container<T extends Component> extends Component
      */
     protected Layout layout;
     
-    /**
-     * The color that will appear behind the text in this container and it's
-     * children (unless a child defines another color itself).
-     */
-//    private Color background;
-    
     @SafeVarargs
     public Container(Object parameters,
                      Layout layout,
@@ -68,7 +62,6 @@ public class Container<T extends Component> extends Component
         this.parameters = parameters;
         this.layout = layout;
         this.children = new ArrayList<>();
-//        this.background = Color.BLACK;
         
         add(children);
     }
@@ -111,7 +104,7 @@ public class Container<T extends Component> extends Component
     
     public Component getComponentAt(Location location) {
         for (Component child : children) {
-            if (location.inside(child.bounds)) {
+            if (location.inside(child.getBounds())) {
                 if (child instanceof Container)
                     return ((Container<?>)child).getComponentAt(location);
                 

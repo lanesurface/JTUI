@@ -105,7 +105,15 @@ public abstract class Terminal implements ComponentObserver {
          *       frame needs to be rasterized).
          */
     }
-    
+
+    public void resize(int width, int height) {
+        this.width = width;
+        this.height = height;
+
+        root.resize(height, width);
+        update();
+    }
+
     public int getWidth() {
         return width;
     }

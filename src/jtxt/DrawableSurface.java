@@ -20,7 +20,7 @@ import jtxt.emulator.Region;
 /**
  * An area on the screen which is able to display a {@code GlyphBuffer}. This
  * area is independent of any specific buffer which is present, but may have
- * a fixed width and height on the screen.
+ * a fixed width and height that the buffer may be drawn within.
  *
  * @see GlyphBuffer
  */

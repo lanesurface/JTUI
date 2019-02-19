@@ -73,21 +73,14 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
      * </strong></p>
      */
     protected void poll() {
-//        int width = renderer.getWidth(),
-//            height = renderer.getHeight(),
-//            numLines = height / terminal.charHeight,
-//            lineSize = width / terminal.charWidth;
-//
-//        if (numLines != terminal.getHeight()
-//            || lineSize != terminal.getWidth())
-//        {
-//            terminal.setDimensions(numLines,
-//                                   lineSize,
-//                                   width,
-//                                   height);
-//
-//            terminal.update();
-//        }
+        int width = renderer.getWidth(),
+            height = renderer.getHeight(),
+            numLines = height / terminal.charHeight,
+            lineSize = width / terminal.charWidth;
+
+        if (numLines != terminal.getHeight()
+            || lineSize != terminal.getWidth()) terminal.resize(lineSize,
+                                                                numLines);
 
         dispatchMouseEvents();
         renderer.repaint();
@@ -117,12 +110,9 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
             MouseEvent event = mouseEvents.remove();
             int x = event.getX(),
                 y = event.getY();
-            
-            // Determine the location that this event originated from.
-//            Location loc = new Location(y / terminal.getCharHeight(),
-//                                        x / terminal.getCharWidth());
-//            
-//            terminal.clickComponent(loc);
+
+            terminal.click(y / terminal.charHeight,
+                           x / terminal.charWidth);
         }
     }
     

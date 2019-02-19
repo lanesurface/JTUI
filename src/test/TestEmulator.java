@@ -10,12 +10,12 @@ import jtxt.emulator.tui.TextBox;
 public class TestEmulator {
     public static void main(String[] args) {
         Terminal terminal = new EmulatedTerminal("Emulator",
-                                             80,
-                                             20,
-                                             "Consolas",
-                                             12,
-                                             Color.BLACK,
-                                             0.6f);
+                                                 80,
+                                                 20,
+                                                 "Consolas",
+                                                 12,
+                                                 Color.BLACK,
+                                                 0.6f);
         GridLayout layout = GridLayout.initializeForDimensions(1, 1);
         terminal.createRootContainer(layout);
 

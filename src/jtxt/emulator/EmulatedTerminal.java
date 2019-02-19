@@ -17,6 +17,8 @@ package jtxt.emulator;
 
 import jtxt.DrawableSurface;
 import jtxt.Terminal;
+import jtxt.emulator.tui.Component;
+import jtxt.emulator.tui.Interactable;
 import jtxt.emulator.tui.Layout;
 import jtxt.emulator.tui.RootContainer;
 
@@ -28,18 +30,18 @@ import java.awt.*;
  */
 public class EmulatedTerminal extends Terminal {
     protected JFrame window;
-    
+
     protected EventDispatcher dispatcher;
-    
+
     private Color background;
-    
+
     private Font font;
-    
+
     protected int charWidth,
                   charHeight;
-    
+
     private float transparency;
-    
+
     public EmulatedTerminal(String title,
                             int width,
                             int height,
@@ -48,36 +50,46 @@ public class EmulatedTerminal extends Terminal {
                             Color background,
                             float transparency) {
         super(width, height);
-        
+
         this.background = background;
         this.transparency = transparency;
-        
+
         window = new JFrame(title);
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
+
         font = new Font(fontName,
                         Font.PLAIN,
                         size);
         FontMetrics fm = window.getFontMetrics(font);
         charWidth = fm.getMaxAdvance();
         charHeight = fm.getHeight() - fm.getLeading();
-        
+
         surface = createDrawableSurface(width,
                                         height);
         window.pack();
         window.setVisible(true);
     }
-    
+
+    public void click(int line, int position) {
+        Component component = getComponentAt(line, position);
+        Interactable interactable = component instanceof Interactable
+                                    ? (Interactable)component
+                                    : null;
+        interactable.clicked(Location.at(component.getBounds(),
+                                         line,
+                                         position));
+    }
+
     @Override
     public RootContainer createRootContainer(Layout layout) {
         super.createRootContainer(layout);
         
         Thread poller = new Thread(dispatcher);
         poller.start();
-        
+
         return root;
     }
-    
+
     @Override
     protected DrawableSurface createDrawableSurface(int width, int height) {
         Renderer renderer = Renderer.getInstance(font,

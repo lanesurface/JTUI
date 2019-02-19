@@ -15,18 +15,10 @@
  */
 package jtxt;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-
-import jtxt.emulator.BufferedFrame;
 import jtxt.emulator.Region;
-import jtxt.emulator.tui.Component;
-import jtxt.emulator.tui.Layout;
-import jtxt.emulator.tui.RootContainer;
+
+import java.io.*;
+import java.util.Arrays;
 
 /**
  * Draws Components to an external source, such as a system console or other
@@ -34,7 +26,7 @@ import jtxt.emulator.tui.RootContainer;
  */
 public class ANSIWriter implements DrawableSurface {
     private final PrintStream output;
-    
+
     public ANSIWriter(OutputStream outputStream) {
         PrintStream ps = null;
         try {

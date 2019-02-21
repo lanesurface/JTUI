@@ -1,10 +1,9 @@
 package test;
 
-import jtxt.ANSIWriter;
-import jtxt.emulator.Region;
+import jtxt.SystemConsole;
+import jtxt.Terminal;
 import jtxt.emulator.tui.ASCIImage;
 import jtxt.emulator.tui.GridLayout;
-import jtxt.emulator.tui.RootContainer;
 import jtxt.emulator.tui.TextBox;
 
 import javax.imageio.ImageIO;
@@ -13,7 +12,9 @@ import java.io.IOException;
 
 public class TestConsoleOutput {
     public static void main(String[] args) throws IOException {
+        Terminal console = new SystemConsole();
         GridLayout layout = GridLayout.initializeForDimensions(1, 2);
+        console.createRootContainer(layout);
         
         TextBox text = new TextBox(layout.getParametersForCell(0, 0),
                                    "Hello world!",
@@ -25,15 +26,7 @@ public class TestConsoleOutput {
         ASCIImage ascii = new ASCIImage(layout.getParametersForCell(0, 1),
                                         image);
 
-        ANSIWriter writer = new ANSIWriter(System.out);
-        Region bounds = new Region(0,
-                                   0,
-                                   20,
-                                   80);
-        RootContainer root = new RootContainer(bounds,
-                                               layout,
-                                               text,
-                                               ascii);
-        writer.draw(root.drawToBuffer());
+        console.add(text,
+                    ascii);
     }
 }

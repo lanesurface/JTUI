@@ -38,39 +38,39 @@ public class ANSIWriter implements DrawableSurface {
         
         output = ps;
     }
-    
-    public GlyphBuffer createSuitableBuffer() {
+
+    public Region getConsoleDimensions() {
         int width = -1,
             height = -1;
-        
+
         output.print("\u001B[s\n" +
-                     "\u001B[5000;5000H\n" + 
+                     "\u001B[5000;5000H\n" +
                      "\u001B[6n\n" +
                      "\u001B[u\n");
-        
+
         try {
             InputStream input = System.in;
             byte[] bytes = new byte[input.available()];
             input.read(bytes,
                        0,
                        bytes.length);
-            
+
             if (bytes.length == 0) {
                 output.println("This output device is not capable of " +
                                "rendering the interface... aborting.");
                 return null;
             }
-            
+
             output.format("bytes=%s,%n%s",
                           Arrays.toString(bytes),
                           new String(bytes));
         }
         catch (IOException ie) { /* I don't know when this happens. */ }
-        
-        return new GlyphBuffer(new Region(0,
-                                          0,
-                                          width,
-                                          height));
+
+        return new Region(0,
+                          0,
+                          height,
+                          width);
     }
 
     @Override

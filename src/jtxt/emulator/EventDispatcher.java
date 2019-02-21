@@ -52,6 +52,9 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
     private Queue<MouseEvent> mouseEvents;
     
     private boolean running = true;
+
+    // The number of times that events will be dispatched every second.
+    private static final int UPDATES_PER_SECOND = 60;
     
     public EventDispatcher(EmulatedTerminal terminal,
                            Renderer renderer) {
@@ -71,16 +74,24 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
      *  it every time that the terminal needs to update (determined by the
      *  ups given by the client).
      * </strong></p>
+     *
+     * @param delta The amount of time that has passed (in seconds) since this
+     *              method was last called.
      */
-    protected void poll() {
+    protected void poll(double delta) {
         int width = renderer.getWidth(),
             height = renderer.getHeight(),
             numLines = height / terminal.charHeight,
             lineSize = width / terminal.charWidth;
 
-        if (numLines != terminal.getHeight()
-            || lineSize != terminal.getWidth()) terminal.resize(lineSize,
-                                                                numLines);
+        /*
+         * FIXME: This process is extremely slow; we shouldn't have to redraw
+         *        the components as much as we do. There needs to be a better
+         *        way to check if the window has been resized.
+         */
+        if ((numLines != terminal.getHeight()
+            || lineSize != terminal.getWidth())
+            && delta <= 0.05) terminal.resize(lineSize, numLines);
 
         dispatchMouseEvents();
         renderer.repaint();
@@ -92,18 +103,17 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
     }
     
     /**
-     * <P>
      * Removes all mouse events from the event queue, and notifies the
      * respective {@code Component}s that should receive the events if they are
-     * {@code Interactable} (meaning they can receive, and respond to, mouse
+     * {@code Interactable} (meaning they can receive and respond to mouse
      * events). The order in which these events are dispatched is the same as
      * the order in which they originally occurred.
-     * </P>
-     * <P>
+     *
+     * <p>
      * Additionally, this method may change the actively focused Component
      * within the terminal if any of the Components which received a mouse
-     * event and were Interactable requested to be focused by the terminal.
-     * </P>
+     * event and were Interactable requested to receive key events.
+     * </p>
      */
     protected synchronized void dispatchMouseEvents() {
         while (!mouseEvents.isEmpty()) {
@@ -111,26 +121,24 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
             int x = event.getX(),
                 y = event.getY();
 
-            terminal.click(y / terminal.charHeight,
-                           x / terminal.charWidth);
+            terminal.generateClickForComponentAt(y / terminal.charHeight,
+                                                 x / terminal.charWidth);
         }
     }
-    
-    public void stop() {
-        running = false;
-    }
-    
+
     @Override
     public void run() {
-        long msPerUpdate = 1000 / 60,
-             start;
+        long msPerUpdate = 1000 / UPDATES_PER_SECOND,
+             current = 0,
+             last;
        
        while (running) {
-           start = System.currentTimeMillis();
-           poll();
+           last = current;
+           current = System.currentTimeMillis();
+           poll((current - last) / 1000.0);
            
            try {
-               long sleepTime = start
+               long sleepTime = current
                                 + msPerUpdate
                                 - System.currentTimeMillis();
                if (sleepTime > 0) Thread.sleep(sleepTime);

@@ -17,11 +17,18 @@
 
 package jtxt;
 
-public class Console extends Terminal {
-    public Console() {
-        super(80, 20); // FIXME: At best, we can only guess right now.
-        surface = createDrawableSurface(width,
-                                        height);
+import jtxt.emulator.Region;
+
+public class SystemConsole extends Terminal {
+    protected ANSIWriter writer;
+
+    public SystemConsole() {
+        writer = new ANSIWriter(System.out);
+        Region consoleDims = writer.getConsoleDimensions();
+        setDimensions(consoleDims.getWidth(),
+                      consoleDims.getHeight());
+        /* surface = createDrawableSurface(width,
+                                           height); */
     }
 
     @Override

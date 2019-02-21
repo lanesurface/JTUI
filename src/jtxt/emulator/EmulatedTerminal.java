@@ -70,14 +70,13 @@ public class EmulatedTerminal extends Terminal {
         window.setVisible(true);
     }
 
-    public void click(int line, int position) {
+    public void generateClickForComponentAt(int line, int position) {
         Component component = getComponentAt(line, position);
-        Interactable interactable = component instanceof Interactable
-                                    ? (Interactable)component
-                                    : null;
-        interactable.clicked(Location.at(component.getBounds(),
-                                         line,
-                                         position));
+        if (component == null) return;
+
+        Interactable interactable = (Interactable)component;
+        interactable.clicked(new Location(line,
+                                          position));
     }
 
     @Override

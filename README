@@ -1,24 +1,41 @@
 ABOUT THIS PROJECT
 
-In my search for a pure Java library for creating appealing TUIs (text-based
-user interface), I came up short of anything that resembled a suitable 
-solution. Available libraries either attempt to wrap native ncurses code or are
-inadequate for the types of projects that I wish to build. This library 
-therefore aims to fill that need for a reliable, modern, and pure-Java library
-for creating appealing terminal user interfaces.
+In my search for a pure Java library for creating appealing texual user-interfaces,
+I came up short of anything that resembled a suitable solution. Available
+libraries either attempt to wrap native ncurses code or are inadequate for the
+types of projects that I wish to build. This library therefore aims to fill that
+need for a reliable, modern, and pure-Java library for creating appealing
+TUIs.
 
-In order to avoid using formatting characters to create the UI (as ncurses 
-does), I have opted to wrap everything in a terminal emulator written on
-top of Swing. This also has the convenient trade-off of making the buffer
-dynamic; we don't have to clear the terminal before redrawing a region of
-the interface. I also hope to make font-rendering consistent across all
-platforms on which an application is run, in a truly portable fashion.
+The ultimate goal of this project is to not only make it easy to create the
+interfaces that you want when you are limited to a non-windows based graphics
+environment, but also to make these graphics elements appealing, modern, and
+sleek.
 
-On operating systems like Windows, the terminal does not allow for per-
-character color information, nor does it allow for an easy way to control low-
-level formatting of the text. This API should provide a consistent interface
-across all Java-compatible machines, and present an application in the same
-fashion to all of its clients.
+The TUIs can either be output to a system console if the terminal supports
+UTF-8 and the ANSI standard for formatting characters, or they can be displayed
+in the terminal emulator bundled with this project. Because I want code based
+on this library to be as simple as possible, and learning how to use it a
+painless and uncumbersome process, this should all be transparent to you.
+Simply knowing how to construct an intance of a terminal which you can draw your
+components to should be enough. Refer to the documentation for further details
+about how this should be done.
+
+Following is a list of a few popular terminals and emulators that should be
+capable of displaying an application.
+
+COMPATIBLE TERMINALS AND EMULATORS
+
+Because I use ANSI escape sequences to encode the character color data (and
+possibly other escape sequences in the future), a compatible terminal must be
+used to display it. Suitable terminals need to also support UTF-8.
+
+ * Compatible Terminals: Cygwin,
+                         Windows Subsystem for Linux (WSL) bash prompt,
+                         IntelliJ console (with limited color support),
+                         Any terminal installed by default on Linux/OS X
+ * Incompatible Terminals: Command Prompt,
+                           Commander
 
 BUILDING THIS PROJECT
 

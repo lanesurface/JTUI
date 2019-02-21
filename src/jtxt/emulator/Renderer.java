@@ -164,20 +164,20 @@ public final class Renderer extends JComponent implements DrawableSurface {
          * Draw the screenshot within the bounds of this renderer. If this
          * component is opaque, the image won't be visible anyway.
          */
-        graphics.drawImage(screen,
-                           0,
-                           0,
-                           width,
-                           height,
-                           startX,
-                           startY,
-                           endX,
-                           endY,
-                           null);
-        
-        Composite comp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                                                    transparency);
-        graphics.setComposite(comp);
+//        graphics.drawImage(screen,
+//                           0,
+//                           0,
+//                           width,
+//                           height,
+//                           startX,
+//                           startY,
+//                           endX,
+//                           endY,
+//                           null);
+//
+//        Composite comp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+//                                                    transparency);
+//        graphics.setComposite(comp);
         graphics.setColor(background);
         graphics.fillRect(0,
                           0,

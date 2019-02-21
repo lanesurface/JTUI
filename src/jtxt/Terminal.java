@@ -50,12 +50,14 @@ public abstract class Terminal implements ComponentObserver {
      * @see #focus(int, int)
      */
     private KeyboardTarget focusedComponent;
-    
+
     protected Terminal(int width, int height) {
         this.width = width;
         this.height = height;
     }
-    
+
+    protected Terminal() { }
+
     public void add(Component... components) {
         Objects.requireNonNull(root, "Cannot add Components to the terminal "
                                      + "before a RootContainer is created.");
@@ -121,12 +123,19 @@ public abstract class Terminal implements ComponentObserver {
     public int getHeight() {
         return height;
     }
+
+    protected void setDimensions(int width, int height) {
+        this.width = width;
+        this.height = height;
+        root.resize(width,
+                    height);
+    }
     
     protected Component getComponentAt(int line, int position) {
         return root.getComponentAt(Location.at(root.getBounds(),
                                                line,
                                                position));
-    }    
+    }
     
     /**
      * Initializes the area that text will be rendered to. This surface should

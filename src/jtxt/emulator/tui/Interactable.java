@@ -14,7 +14,7 @@ import jtxt.emulator.Location;
  */
 public interface Interactable {
     /**
-     * This method is called whenever a mouse click is generated within the
+     * This method is called whenever a mouse generateClickForComponentAt is generated within the
      * bounds of a {@code Component} which is interactive. 
      * 
      * @param clickLocation The location within the terminal in which the mouse

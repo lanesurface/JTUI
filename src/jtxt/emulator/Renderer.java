@@ -15,28 +15,13 @@
  */
 package jtxt.emulator;
 
-import java.awt.AWTException;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Robot;
-import java.awt.Toolkit;
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.swing.JComponent;
-
 import jtxt.DrawableSurface;
 import jtxt.GlyphBuffer;
+
+import javax.swing.JComponent;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 
 public final class Renderer extends JComponent implements DrawableSurface {
     private static final long serialVersionUID = 1L;
@@ -110,28 +95,23 @@ public final class Renderer extends JComponent implements DrawableSurface {
                                        int charHeight,
                                        Color background,
                                        float transparency) {
-        GlyphRasterizer rasterizer = null;
-        
-        if (font == null) {
-            try {
-                Path path = Paths.get(
-                    ClassLoader.getSystemResource("dejavu-sans-mono-256.bmp")
-                               .toURI()
-                );
-                charWidth = 8;
-                charHeight = 15;
-                BitmapFont bfnt = new BitmapFont(path,
-                                                 charWidth,
-                                                 charHeight,
-                                                 32,
-                                                 256);
-                rasterizer = new ChunkingRasterizer(bfnt,
-                                                    16);
-            }
-            catch (URISyntaxException ex) { /* TODO */ }
-        }
-        else rasterizer = new SwingRasterizer(font);
-        
+        GlyphRasterizer rasterizer = new SwingRasterizer(font);
+        return new Renderer(background,
+                            transparency,
+                            rasterizer,
+                            charWidth,
+                            charHeight);
+    }
+
+    public static Renderer getInstance(BitmapFont font,
+                                       int charWidth,
+                                       int charHeight,
+                                       Color background,
+                                       float transparency) {
+        GlyphRasterizer rasterizer = new ChunkingRasterizer(font,
+                                                            16);
+
+
         return new Renderer(background,
                             transparency,
                             rasterizer,
@@ -164,20 +144,20 @@ public final class Renderer extends JComponent implements DrawableSurface {
          * Draw the screenshot within the bounds of this renderer. If this
          * component is opaque, the image won't be visible anyway.
          */
-//        graphics.drawImage(screen,
-//                           0,
-//                           0,
-//                           width,
-//                           height,
-//                           startX,
-//                           startY,
-//                           endX,
-//                           endY,
-//                           null);
-//
-//        Composite comp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-//                                                    transparency);
-//        graphics.setComposite(comp);
+        graphics.drawImage(screen,
+                           0,
+                           0,
+                           width,
+                           height,
+                           startX,
+                           startY,
+                           endX,
+                           endY,
+                           null);
+
+        Composite comp = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                                                    transparency);
+        graphics.setComposite(comp);
         graphics.setColor(background);
         graphics.fillRect(0,
                           0,

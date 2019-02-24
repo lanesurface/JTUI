@@ -18,7 +18,7 @@ public class TestGridLayout {
                                                  "Consolas",
                                                  12,
                                                  Color.BLACK,
-                                                 0.6f);
+                                                 0.8f);
         /* 
          * This layout takes an array of integers, where each element in the
          * array represents the number of cells in the respective row in the

@@ -24,6 +24,9 @@ import jtxt.emulator.tui.RootContainer;
 
 import javax.swing.*;
 import java.awt.*;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * 
@@ -91,6 +94,22 @@ public class EmulatedTerminal extends Terminal {
 
     @Override
     protected DrawableSurface createDrawableSurface(int width, int height) {
+//        BitmapFont font = null;
+//        try {
+//            Path path = Paths.get(
+//                    ClassLoader.getSystemResource("dejavu-sans-mono-256.bmp")
+//                               .toURI()
+//            );
+//            charWidth = 8;
+//            charHeight = 15;
+//            font = new BitmapFont(path,
+//                                  charWidth,
+//                                  charHeight,
+//                                  32,
+//                                  256);
+//        }
+//        catch (URISyntaxException urisex) { /* 0.0 */ }
+
         Renderer renderer = Renderer.getInstance(font,
                                                  charWidth,
                                                  charHeight,
@@ -100,8 +119,7 @@ public class EmulatedTerminal extends Terminal {
                                                 charHeight * height));
         window.add(renderer);
         
-        dispatcher = new EventDispatcher(this,
-                                         renderer);
+        dispatcher = new EventDispatcher(this, renderer);
         window.addMouseListener(dispatcher);
         
         return renderer;

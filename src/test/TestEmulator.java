@@ -15,7 +15,7 @@ public class TestEmulator {
                                                  "Consolas",
                                                  12,
                                                  Color.BLACK,
-                                                 0.6f);
+                                                 1.f);
         GridLayout layout = GridLayout.initializeForDimensions(1, 1);
         terminal.createRootContainer(layout);
 

@@ -43,8 +43,8 @@ class SwingRasterizer implements GlyphRasterizer {
         Graphics2D g = image.createGraphics();
         
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                           RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
-        
+                           RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+
         g.setFont(font);
         FontMetrics fm = g.getFontMetrics();
         

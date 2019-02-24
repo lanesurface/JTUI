@@ -34,6 +34,7 @@ used to display it. Suitable terminals need to also support UTF-8.
                          Windows Subsystem for Linux (WSL) bash prompt,
                          IntelliJ console (with limited color support),
                          Any terminal installed by default on Linux/OS X
+
  * Incompatible Terminals: Command Prompt,
                            Commander
 

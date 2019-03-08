@@ -18,6 +18,7 @@ package jtxt;
 import jtxt.emulator.Region;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 /**
@@ -28,15 +29,9 @@ public class ANSIWriter implements DrawableSurface {
     private final PrintStream output;
 
     public ANSIWriter(OutputStream outputStream) {
-        PrintStream ps = null;
-        try {
-            ps = new PrintStream(outputStream,
+        output = new PrintStream(outputStream,
                                  true,
-                                 "UTF-8");
-        }
-        catch (UnsupportedEncodingException e) { ps = System.out; }
-        
-        output = ps;
+                                 StandardCharsets.UTF_8);
     }
 
     public Region getConsoleDimensions() {

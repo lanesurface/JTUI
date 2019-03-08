@@ -231,11 +231,13 @@ public final class GString implements Iterable<Glyph> {
     }
     
     /**
-     * Creates a new string with blank glyphs. This string is guaranteed to not
-     * appear in the terminal when rendered.
+     * Creates a new string with blank {@code Glyphs}. This string is
+     * guaranteed to not appear in the terminal when rendered.
      * 
      * @param length The number of null characters that the string should
      *               contain.
+     * @return A new {@code GString} containing all null Glyphs and has the
+     *         length specified.
      * 
      * @see Glyph#BLANK
      */
@@ -254,6 +256,10 @@ public final class GString implements Iterable<Glyph> {
      * the string returned by this method will be the same.
      * 
      * @param text The string of text to convert to glyphs.
+     * @param background The color which will appear behind the text. Use
+     *                   {@link Glyph.TRANSPARENT} if you wish to retain the default
+     *                   color of the terminal. (This is essentially a highlight
+     *                   color.)
      * 
      * @return A GString with escaped values extracted and applied to their
      *         respective glyphs.
@@ -269,22 +275,25 @@ public final class GString implements Iterable<Glyph> {
         int index = 0;
         while (index < text.length()) {
             if (text.startsWith("\\e", index)) {
-                index += 3;
+                index += 3; // Advance past `\e[`.
                 String[] colorData = text.substring(index,
                                                     text.indexOf('m'))
-                                         .split(";", 3);
+                                         .split(";");
 
-                int[] components = Arrays.stream(colorData)
-                                         .mapToInt(Integer::parseInt)
-                                         .toArray();
+                int[] components = new int[colorData.length];
+                for (int ci = 0;
+                     ci < components.length;
+                     ci++)
+                {
+                    String component = colorData[ci];
+                    components[ci] = Integer.parseInt(component);
+                    index += component.length();
+                }
 
                 current = new Color(components[0],
                                     components[1],
                                     components[2]);
-
-                index += 1 + colorData[0].length()
-                           + colorData[1].length()
-                           + colorData[2].length();
+                index++; // Account for `m` character.
             }
 
             glyphs.add(new Glyph(text.charAt(index),

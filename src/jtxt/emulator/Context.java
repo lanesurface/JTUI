@@ -43,8 +43,6 @@ public class Context implements ResizeSubject {
     /**
      * The size of the text-pane. This is calculated from the size of a glyph
      * and the number of lines and columns.
-     * 
-     * @see #setCharDimensions(int, int)
      */
     Dimension windowSize;
 
@@ -85,12 +83,6 @@ public class Context implements ResizeSubject {
     /**
      * @param lineSize The number of characters available on each line.
      * @param numLines The number of lines in the terminal.
-     * @param fontName The name of the font to use for rendering the text in
-     *                 the terminal.
-     * @param fontSize The size of the terminal's font.
-     * @param updatesPerSecond The number of times per second that the terminal
-     *                         should poll the window to see if any changes
-     *                         need to be applied.
      */
     public Context(int lineSize,
                    int numLines) {

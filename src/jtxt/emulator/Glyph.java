@@ -51,6 +51,7 @@ public class Glyph {
      * 
      * @param character The character that this Glyph represents.
      * @param color The color of this character.
+     * @param background The color which appears behind this text.
      */
     public Glyph(char character, Color color, Color background) {
         this.character = character;

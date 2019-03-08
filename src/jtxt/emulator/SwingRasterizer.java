@@ -51,7 +51,7 @@ class SwingRasterizer implements GlyphRasterizer {
         int ascent = fm.getAscent(),
             numLines = bounds.getHeight(),
             lineSize = bounds.getWidth();
-        
+
         int charWidth = fm.getMaxAdvance(),
             charHeight = fm.getHeight() - fm.getLeading();
         

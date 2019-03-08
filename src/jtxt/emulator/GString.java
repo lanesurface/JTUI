@@ -263,37 +263,34 @@ public final class GString implements Iterable<Glyph> {
          * Support extracting color data in the form of 
          * "\e[<0..255>;<0..255>;<0..255>m".
          */
-        char[] chars = text.toCharArray();
-        
         ArrayList<Glyph> glyphs = new ArrayList<>();
         Color current = Color.WHITE;
-        
-        for (int i = 0; i < chars.length; i++) {
-            if (chars[i] == '\\' && chars[i+1] == 'e') {
-                i += 2;
-                
-                int ci = 0;
-                int[] components = new int[3];
-                do {
-                    char[] comp = { chars[++i],
-                                    chars[++i],
-                                    chars[++i] };
-                    
-                    String s = new String(comp);
-                    components[ci++] = Integer.parseInt(s);
-                    
-                    i++;
-                } while (chars[i] != 'm');
-                
-                current = new Color(components[0], 
-                                    components[1], 
+
+        int index = 0;
+        while (index < text.length()) {
+            if (text.startsWith("\\e", index)) {
+                index += 3;
+                String[] colorData = text.substring(index,
+                                                    text.indexOf('m'))
+                                         .split(";", 3);
+
+                int[] components = Arrays.stream(colorData)
+                                         .mapToInt(Integer::parseInt)
+                                         .toArray();
+
+                current = new Color(components[0],
+                                    components[1],
                                     components[2]);
-                i++;
+
+                index += 1 + colorData[0].length()
+                           + colorData[1].length()
+                           + colorData[2].length();
             }
-            
-            glyphs.add(new Glyph(chars[i],
+
+            glyphs.add(new Glyph(text.charAt(index),
                                  current,
                                  background));
+            index++;
         }
         
         return new GString(glyphs.toArray(new Glyph[0]));
@@ -311,9 +308,9 @@ public final class GString implements Iterable<Glyph> {
      * @param length The maximum number of Glyphs that can appear on a line
      *               before being wrapped.
      * 
-     * @return An array of Glyphs, where each line's length is guaranteed to
-     *         be no greater than the given length, and spaces between words at
-     *         the rightmost bound of a line are discarded.
+     * @return An array of {@code GString}s, where each line's length is
+     *         guaranteed to be no greater than the given length, and spaces
+     *         between words at the rightmost bound of a line are discarded.
      */
     public GString[] wrap(int length) {
         if (glyphs.length > length) {
@@ -324,9 +321,7 @@ public final class GString implements Iterable<Glyph> {
             int index = 0;
             
             /*
-             * The difference between the number of characters that have been
-             * wrapped into lines and the number of characters that still need 
-             * to be processed.
+             * The number of characters that still need to be wrapped.
              */
             int delta = glyphs.length;
             

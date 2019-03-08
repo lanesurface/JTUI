@@ -126,7 +126,8 @@ public class Location {
         Location location = new Location(line,
                                          position);
         if (!location.inside(bounds))
-            throw new IllegalArgumentException("The given " + location
+            throw new IllegalArgumentException("The given location "
+                                               + location
                                                + " is outside valid bounds.");
         
         return location;

@@ -63,11 +63,11 @@ public final class Renderer extends JComponent implements DrawableSurface {
     private int charWidth,
                 charHeight;
     
-    Renderer(Color background,
-             float transparency,
-             GlyphRasterizer rasterizer,
-             int charWidth,
-             int charHeight) {
+    /* package-private */ Renderer(Color background,
+                                   float transparency,
+                                   GlyphRasterizer rasterizer,
+                                   int charWidth,
+                                   int charHeight) {
         BufferedImage scr = null;
         if (transparency != 1.0f) {
             try {

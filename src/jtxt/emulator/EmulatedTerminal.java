@@ -1,10 +1,10 @@
-/* 
+/*
  * Copyright 2019 Lane W. Surface
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -24,104 +24,99 @@ import jtxt.emulator.tui.RootContainer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URISyntaxException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 /**
- * 
+ *
  */
 public class EmulatedTerminal extends Terminal {
-    protected JFrame window;
+  private JFrame window;
+  private EventDispatcher dispatcher;
+  private Color bg;
+  private Font font;
+  private int cw, ch;
+  private float trans;
 
-    protected EventDispatcher dispatcher;
+  public EmulatedTerminal(
+    String title,
+    int width,
+    int height,
+    String fontName,
+    int size,
+    Color background,
+    float transparency)
+  {
+    super(
+      width,
+      height);
 
-    private Color background;
+    this.bg = background;
+    this.trans = transparency;
 
-    private Font font;
+    window = new JFrame(title);
+    window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-    protected int charWidth,
-                  charHeight;
+    font = new Font(
+      fontName,
+      Font.PLAIN,
+      size);
+    FontMetrics fm = window.getFontMetrics(font);
+    cw = fm.getMaxAdvance();
+    ch = fm.getHeight() - fm.getLeading();
 
-    private float transparency;
+    surface = createDrawableSurface(
+      width,
+      height);
+    window.pack();
+    window.setVisible(true);
+  }
 
-    public EmulatedTerminal(String title,
-                            int width,
-                            int height,
-                            String fontName,
-                            int size,
-                            Color background,
-                            float transparency) {
-        super(width, height);
+  public void generateClickForComponentAt(
+    int line,
+    int position)
+  {
+    Component component = getComponentAt(
+      line,
+      position);
+    if (component == null)
+      return;
 
-        this.background = background;
-        this.transparency = transparency;
+    Interactable interactable = (Interactable)component;
+    interactable.clicked(new Location(
+      line,
+      position));
+  }
 
-        window = new JFrame(title);
-        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+  @Override
+  public RootContainer createRootContainer(Layout layout) {
+    super.createRootContainer(layout);
 
-        font = new Font(fontName,
-                        Font.PLAIN,
-                        size);
-        FontMetrics fm = window.getFontMetrics(font);
-        charWidth = fm.getMaxAdvance();
-        charHeight = fm.getHeight() - fm.getLeading();
+    Thread poller = new Thread(dispatcher);
+    poller.start();
 
-        surface = createDrawableSurface(width,
-                                        height);
-        window.pack();
-        window.setVisible(true);
-    }
+    return root;
+  }
 
-    public void generateClickForComponentAt(int line, int position) {
-        Component component = getComponentAt(line, position);
-        if (component == null) return;
+  @Override
+  protected DrawableSurface createDrawableSurface(
+    int width,
+    int height)
+  {
+    Renderer renderer = Renderer.getInstance(
+      font,
+      cw,
+      ch,
+      bg,
+      trans);
+    renderer.setPreferredSize(new Dimension(
+      cw * width,
+      ch * height));
+    window.add(renderer);
 
-        Interactable interactable = (Interactable)component;
-        interactable.clicked(new Location(line,
-                                          position));
-    }
+    dispatcher = new EventDispatcher(
+      this,
+      renderer);
+    window.addMouseListener(dispatcher);
 
-    @Override
-    public RootContainer createRootContainer(Layout layout) {
-        super.createRootContainer(layout);
-        
-        Thread poller = new Thread(dispatcher);
-        poller.start();
-
-        return root;
-    }
-
-    @Override
-    protected DrawableSurface createDrawableSurface(int width, int height) {
-//        BitmapFont font = null;
-//        try {
-//            Path path = Paths.get(
-//                    ClassLoader.getSystemResource("dejavu-sans-mono-256.bmp")
-//                               .toURI()
-//            );
-//            charWidth = 8;
-//            charHeight = 15;
-//            font = new BitmapFont(path,
-//                                  charWidth,
-//                                  charHeight,
-//                                  32,
-//                                  256);
-//        }
-//        catch (URISyntaxException urisex) { /* 0.0 */ }
-
-        Renderer renderer = Renderer.getInstance(font,
-                                                 charWidth,
-                                                 charHeight,
-                                                 background,
-                                                 transparency);
-        renderer.setPreferredSize(new Dimension(charWidth * width,
-                                                charHeight * height));
-        window.add(renderer);
-        
-        dispatcher = new EventDispatcher(this, renderer);
-        window.addMouseListener(dispatcher);
-        
-        return renderer;
-    }
+    return renderer;
+  }
 }

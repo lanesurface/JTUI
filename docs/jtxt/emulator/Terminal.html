@@ -257,8 +257,8 @@ implements <a href="../../jtxt/emulator/tui/ComponentObserver.html" title="inter
 <tr class="altColor">
 <td class="colOne"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Terminal.html#Terminal-jtxt.emulator.Context-java.lang.String-java.awt.Color-float-jtxt.emulator.Renderer.RasterType-">Terminal</a></span>(<a href="../../jtxt/emulator/Context.html" title="class in jtxt.emulator">Context</a>&nbsp;context,
         java.lang.String&nbsp;title,
-        java.awt.Color&nbsp;background,
-        float&nbsp;transparency,
+        java.awt.Color&nbsp;bg,
+        float&nbsp;trans,
         <a href="../../jtxt/emulator/Renderer.RasterType.html" title="enum in jtxt.emulator">Renderer.RasterType</a>&nbsp;rasterType)</code>
 <div class="block">Creates a new instance of <code>Terminal</code> based on the given 
  <code>Context</code>'s properties.</div>
@@ -479,8 +479,8 @@ implements <a href="../../jtxt/emulator/tui/ComponentObserver.html" title="inter
 <h4>Terminal</h4>
 <pre>public&nbsp;Terminal(<a href="../../jtxt/emulator/Context.html" title="class in jtxt.emulator">Context</a>&nbsp;context,
                 java.lang.String&nbsp;title,
-                java.awt.Color&nbsp;background,
-                float&nbsp;transparency,
+                java.awt.Color&nbsp;bg,
+                float&nbsp;trans,
                 <a href="../../jtxt/emulator/Renderer.RasterType.html" title="enum in jtxt.emulator">Renderer.RasterType</a>&nbsp;rasterType)</pre>
 <div class="block">Creates a new instance of <code>Terminal</code> based on the given 
  <code>Context</code>'s properties.</div>
@@ -488,9 +488,9 @@ implements <a href="../../jtxt/emulator/tui/ComponentObserver.html" title="inter
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>context</code> - The setting information for the terminal.</dd>
 <dd><code>title</code> - The title of the terminal window.</dd>
-<dd><code>background</code> - The color of the background which appears being the
+<dd><code>bg</code> - The color of the bg which appears being the
                    text.</dd>
-<dd><code>transparency</code> - A normalized value between zero and one, which will
+<dd><code>trans</code> - A normalized value between zero and one, which will
                      determine how much of the screen is visible behind
                      the window, as well as the visibility of the text.</dd>
 <dd><code>rasterType</code> - The type of rasterizer to use for rendering text to

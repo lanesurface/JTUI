@@ -184,17 +184,17 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>private java.awt.Color</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#background">background</a></span></code>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#bg">bg</a></span></code>
 <div class="block">The color that is painted behind the text in the terminal.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>private int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#charHeight">charHeight</a></span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#ch">ch</a></span></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>private int</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#charWidth">charWidth</a></span></code>&nbsp;</td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#cw">cw</a></span></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>private java.awt.image.RenderedImage</code></td>
@@ -222,8 +222,8 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>private float</code></td>
-<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#transparency">transparency</a></span></code>
-<div class="block">The transparency of this component.</div>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#trans">trans</a></span></code>
+<div class="block">The trans of this component.</div>
 </td>
 </tr>
 </table>
@@ -262,11 +262,11 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#Renderer-java.awt.Color-float-jtxt.emulator.GlyphRasterizer-int-int-">Renderer</a></span>(java.awt.Color&nbsp;background,
-        float&nbsp;transparency,
+<td class="colOne"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#Renderer-java.awt.Color-float-jtxt.emulator.GlyphRasterizer-int-int-">Renderer</a></span>(java.awt.Color&nbsp;bg,
+        float&nbsp;trans,
         <a href="../../jtxt/emulator/GlyphRasterizer.html" title="interface in jtxt.emulator">GlyphRasterizer</a>&nbsp;rasterizer,
-        int&nbsp;charWidth,
-        int&nbsp;charHeight)</code>&nbsp;</td>
+        int&nbsp;cw,
+        int&nbsp;ch)</code>&nbsp;</td>
 </tr>
 </table>
 </li>
@@ -294,18 +294,18 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 <tr id="i1" class="rowColor">
 <td class="colFirst"><code>static <a href="../../jtxt/emulator/Renderer.html" title="class in jtxt.emulator">Renderer</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#getInstance-jtxt.emulator.BitmapFont-int-int-java.awt.Color-float-">getInstance</a></span>(<a href="../../jtxt/emulator/BitmapFont.html" title="class in jtxt.emulator">BitmapFont</a>&nbsp;font,
-           int&nbsp;charWidth,
-           int&nbsp;charHeight,
-           java.awt.Color&nbsp;background,
-           float&nbsp;transparency)</code>&nbsp;</td>
+           int&nbsp;cw,
+           int&nbsp;ch,
+           java.awt.Color&nbsp;bg,
+           float&nbsp;trans)</code>&nbsp;</td>
 </tr>
 <tr id="i2" class="altColor">
 <td class="colFirst"><code>static <a href="../../jtxt/emulator/Renderer.html" title="class in jtxt.emulator">Renderer</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/Renderer.html#getInstance-java.awt.Font-int-int-java.awt.Color-float-">getInstance</a></span>(java.awt.Font&nbsp;font,
-           int&nbsp;charWidth,
-           int&nbsp;charHeight,
-           java.awt.Color&nbsp;background,
-           float&nbsp;transparency)</code>&nbsp;</td>
+           int&nbsp;cw,
+           int&nbsp;ch,
+           java.awt.Color&nbsp;bg,
+           float&nbsp;trans)</code>&nbsp;</td>
 </tr>
 <tr id="i3" class="rowColor">
 <td class="colFirst"><code>void</code></td>
@@ -386,31 +386,31 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 <h4>screen</h4>
 <pre>private final&nbsp;java.awt.image.BufferedImage screen</pre>
 <div class="block">This is a screenshot of the screen before we began rendering. When the
- transparency of the window is less than <code>1.0f</code>, the pixels of
+ trans of the window is less than <code>1.0f</code>, the pixels of
  this image are combined with those of the terminal to give an illusion
  of a transparent window.</div>
 </li>
 </ul>
-<a name="background">
+<a name="bg">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>background</h4>
-<pre>private&nbsp;java.awt.Color background</pre>
+<h4>bg</h4>
+<pre>private&nbsp;java.awt.Color bg</pre>
 <div class="block">The color that is painted behind the text in the terminal.</div>
 </li>
 </ul>
-<a name="transparency">
+<a name="trans">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>transparency</h4>
-<pre>private&nbsp;float transparency</pre>
-<div class="block">The transparency of this component. (A value less than <code>1.0f</code>
+<h4>trans</h4>
+<pre>private&nbsp;float trans</pre>
+<div class="block">The trans of this component. (A value less than <code>1.0f</code>
  will cause the values of pixels behind the window to be combined with
- those of the terminal, to give the illusion of transparency.)</div>
+ those of the terminal, to give the illusion of trans.)</div>
 </li>
 </ul>
 <a name="rasterizer">
@@ -437,22 +437,22 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
  requested.</div>
 </li>
 </ul>
-<a name="charWidth">
+<a name="cw">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>charWidth</h4>
-<pre>private&nbsp;int charWidth</pre>
+<h4>cw</h4>
+<pre>private&nbsp;int cw</pre>
 </li>
 </ul>
-<a name="charHeight">
+<a name="ch">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
-<h4>charHeight</h4>
-<pre>private&nbsp;int charHeight</pre>
+<h4>ch</h4>
+<pre>private&nbsp;int ch</pre>
 </li>
 </ul>
 </li>
@@ -469,11 +469,11 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 <ul class="blockListLast">
 <li class="blockList">
 <h4>Renderer</h4>
-<pre>Renderer(java.awt.Color&nbsp;background,
-         float&nbsp;transparency,
+<pre>Renderer(java.awt.Color&nbsp;bg,
+         float&nbsp;trans,
          <a href="../../jtxt/emulator/GlyphRasterizer.html" title="interface in jtxt.emulator">GlyphRasterizer</a>&nbsp;rasterizer,
-         int&nbsp;charWidth,
-         int&nbsp;charHeight)</pre>
+         int&nbsp;cw,
+         int&nbsp;ch)</pre>
 </li>
 </ul>
 </li>
@@ -491,10 +491,10 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 <li class="blockList">
 <h4>getInstance</h4>
 <pre>public static&nbsp;<a href="../../jtxt/emulator/Renderer.html" title="class in jtxt.emulator">Renderer</a>&nbsp;getInstance(java.awt.Font&nbsp;font,
-                                   int&nbsp;charWidth,
-                                   int&nbsp;charHeight,
-                                   java.awt.Color&nbsp;background,
-                                   float&nbsp;transparency)</pre>
+                                   int&nbsp;cw,
+                                   int&nbsp;ch,
+                                   java.awt.Color&nbsp;bg,
+                                   float&nbsp;trans)</pre>
 </li>
 </ul>
 <a name="getInstance-jtxt.emulator.BitmapFont-int-int-java.awt.Color-float-">
@@ -504,10 +504,10 @@ implements <a href="../../jtxt/DrawableSurface.html" title="interface in jtxt">D
 <li class="blockList">
 <h4>getInstance</h4>
 <pre>public static&nbsp;<a href="../../jtxt/emulator/Renderer.html" title="class in jtxt.emulator">Renderer</a>&nbsp;getInstance(<a href="../../jtxt/emulator/BitmapFont.html" title="class in jtxt.emulator">BitmapFont</a>&nbsp;font,
-                                   int&nbsp;charWidth,
-                                   int&nbsp;charHeight,
-                                   java.awt.Color&nbsp;background,
-                                   float&nbsp;transparency)</pre>
+                                   int&nbsp;cw,
+                                   int&nbsp;ch,
+                                   java.awt.Color&nbsp;bg,
+                                   float&nbsp;trans)</pre>
 </li>
 </ul>
 <a name="draw-jtxt.GlyphBuffer-">

@@ -20,21 +20,21 @@ package jtxt;
 import jtxt.emulator.Region;
 
 public class SystemConsole extends Terminal {
-    protected ANSIWriter writer;
+  private ANSIWriter writer;
 
-    public SystemConsole() {
-        writer = new ANSIWriter(System.out);
-        Region consoleDims = writer.getConsoleDimensions();
-        setDimensions(consoleDims.getWidth(),
-                      consoleDims.getHeight());
-        /* surface = createDrawableSurface(width,
-                                           height); */
-    }
+  public SystemConsole() {
+    writer = new ANSIWriter(System.out);
+    Region consoleDims = writer.getConsoleDimensions();
+    setDimensions(
+      consoleDims.getWidth(),
+      consoleDims.getHeight());
+  }
 
-    @Override
-    protected DrawableSurface createDrawableSurface(int width, int height) {
-        return new ANSIWriter(System.out /*,
-                              width,
-                              height */);
-    }
+  @Override
+  protected DrawableSurface createDrawableSurface(
+    int width,
+    int height)
+  {
+    return new ANSIWriter(System.out);
+  }
 }

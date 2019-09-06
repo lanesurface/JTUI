@@ -1,10 +1,10 @@
-/* 
+/*
  * Copyright 2019 Lane W. Surface
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -22,38 +22,41 @@ import jtxt.emulator.Location;
  * TODO
  */
 public class Slider extends Component implements Interactable {
-    protected final int resolution;
-    
-    protected final int minValue,
-                        maxValue;
-    
-    protected int value;
-    
-    public Slider(Object parameters,
-                  int resolution,
-                  int minValue,
-                  int maxValue) {
-        this.parameters = parameters;
-        this.resolution = resolution;
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-    }
-    
-    public void moveTo(int value) {
-        this.value = value;
-        update();
-    }
-    
-    @Override
-    public boolean clicked(Location clickLocation) {
-        int range = (maxValue - minValue),
-            pos = range * ((bounds.getWidth() - clickLocation.position) / 100);
-        moveTo(pos);
-        
-        // Don't capture focus of the keyboard.
-        return false;
-    }
+  private final int res,
+    min,
+    max;
 
-    @Override
-    public void draw(GlyphBuffer buffer) { /* ... */ }
+  protected int value;
+
+  public Slider(
+    Object params,
+    int res,
+    int min,
+    int max)
+  {
+    this.parameters = params;
+    this.res = res;
+    this.min = min;
+    this.max = max;
+  }
+
+  public void moveTo(int value) {
+    this.value = value;
+    update();
+  }
+
+  @Override
+  public boolean clicked(Location clickLocation) {
+    int range, pos;
+
+    range = (max-min);
+    pos = range * ((bounds.getWidth() - clickLocation.position) / 100);
+    moveTo(pos);
+
+    // Don't capture focus of the keyboard.
+    return false;
+  }
+
+  @Override
+  public void draw(GlyphBuffer buffer) { /* ... */ }
 }

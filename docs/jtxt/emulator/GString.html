@@ -257,7 +257,7 @@ implements java.lang.Iterable&lt;<a href="../../jtxt/emulator/Glyph.html" title=
 <tr id="i9" class="rowColor">
 <td class="colFirst"><code>static <a href="../../jtxt/emulator/GString.html" title="class in jtxt.emulator">GString</a></code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../jtxt/emulator/GString.html#of-java.lang.String-java.awt.Color-">of</a></span>(java.lang.String&nbsp;text,
-  java.awt.Color&nbsp;background)</code>
+  java.awt.Color&nbsp;bg)</code>
 <div class="block">Constructs a <code>GString</code> for the given string of text.</div>
 </td>
 </tr>
@@ -555,7 +555,7 @@ implements java.lang.Iterable&lt;<a href="../../jtxt/emulator/Glyph.html" title=
 <li class="blockList">
 <h4>of</h4>
 <pre>public static&nbsp;<a href="../../jtxt/emulator/GString.html" title="class in jtxt.emulator">GString</a>&nbsp;of(java.lang.String&nbsp;text,
-                         java.awt.Color&nbsp;background)</pre>
+                         java.awt.Color&nbsp;bg)</pre>
 <div class="block">Constructs a <code>GString</code> for the given string of text. The presence
  of escape sequences in the string (delimited by <code>\e[...m</code>) is
  taken into account when constructing these glyphs; therefore, do not
@@ -564,7 +564,7 @@ implements java.lang.Iterable&lt;<a href="../../jtxt/emulator/Glyph.html" title=
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>text</code> - The string of text to convert to glyphs.</dd>
-<dd><code>background</code> - The color which will appear behind the text. Use
+<dd><code>bg</code> - The color which will appear behind the text. Use
                    <code>Glyph.TRANSPARENT</code> if you wish to retain the default
                    color of the terminal. (This is essentially a highlight
                    color.)</dd>

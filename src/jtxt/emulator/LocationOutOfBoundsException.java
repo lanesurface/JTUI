@@ -1,10 +1,10 @@
-/* 
- * Copyright 2018 Lane W. Surface 
- * 
+/*
+ * Copyright 2018 Lane W. Surface
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -16,16 +16,15 @@
 package jtxt.emulator;
 
 /**
- * Thrown when a given {@code Location} falls outside of a terminal's 
- * text-buffer.
+ * Thrown when a given {@code Location} falls outside of a terminal's text-buffer.
  */
 @SuppressWarnings("serial")
 public class LocationOutOfBoundsException extends IndexOutOfBoundsException {
-    public LocationOutOfBoundsException(Location location) {
-        super(location + " is out of bounds.");
-    }
-    
-    public LocationOutOfBoundsException(String msg) {
-        super(msg);
-    }
+  public LocationOutOfBoundsException(Location location) {
+    super(location + " is out of bounds.");
+  }
+
+  public LocationOutOfBoundsException(String msg) {
+    super(msg);
+  }
 }

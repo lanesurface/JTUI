@@ -1,10 +1,10 @@
-/* 
+/*
  * Copyright 2019 Lane W. Surface
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -22,133 +22,161 @@ import jtxt.emulator.tui.*;
 import java.util.Objects;
 
 /**
- * 
+ *
  */
 public abstract class Terminal implements ComponentObserver {
-    protected int width,
-                  height;
+  protected int width,
+    height;
 
-    /**
-     * The root container that all components that appear in the terminal
-     * belong to. Components that are not added to another container will be
-     * direct ancestors of this container.
-     *
-     * @see #add(Component...)
+  /**
+   * The root container that all components that appear in the terminal belong to.
+   * Components that are not added to another container will be direct ancestors of
+   * this container.
+   *
+   * @see #add(Component...)
+   */
+  protected RootContainer root;
+
+  /**
+   * The surface defines how {@code Glyph}s which are in the buffer are drawn to the
+   * screen.
+   */
+  protected DrawableSurface surface;
+
+  /**
+   * The current {@code Component} receiving key events.
+   *
+   * @see #focus(KeyboardTarget)
+   * @see #focus(int, int)
+   */
+  private KeyboardTarget focusedComponent;
+
+  protected Terminal(
+    int width,
+    int height)
+  {
+    this.width = width;
+    this.height = height;
+  }
+
+  protected Terminal() { }
+
+  public void add(Component... components) {
+    Objects.requireNonNull(
+      root,
+      "Cannot add Components to the terminal "
+      + "before a RootContainer is created.");
+    root.add(components);
+  }
+
+  /**
+   * Constructs and returns a new {@code RootContainer} using this terminal as the
+   * context, and the given layout as the super layout of all {@code Component}s
+   * within the terminal.
+   *
+   * @param layout The layout to use for placing Components within this terminal.
+   *
+   * @return A new {@code RootContainer} which has been constructed for this terminal
+   *   with the given layout.
+   */
+  public RootContainer createRootContainer(Layout layout) {
+    root = new RootContainer(
+      new Region(
+        0,
+        0,
+        height,
+        width),
+      layout);
+    root.registerObserver(this);
+
+    return root;
+  }
+
+  public void focus(
+    int line,
+    int position)
+  {
+    Component component = getComponentAt(
+      line,
+      position);
+    focusedComponent = component instanceof KeyboardTarget
+      ? (KeyboardTarget)component
+      : focusedComponent;
+  }
+
+  public void focus(KeyboardTarget target) {
+    focusedComponent = target;
+  }
+
+  @Override
+  public void update() {
+    surface.draw(root.drawToBuffer());
+
+    /*
+     * TODO: I need to separate the updates coming from the EventDispatcher
+     *       and updates which Components generate (which means that a new
+     *       frame needs to be rasterized).
      */
-    protected RootContainer root;
+  }
 
-    /**
-     * The surface defines how {@code Glyph}s which are in the buffer are drawn
-     * to the screen.
-     */
-    protected DrawableSurface surface;
+  public void resize(
+    int width,
+    int height)
+  {
+    this.width = width;
+    this.height = height;
 
-    /**
-     * The current {@code Component} receiving key events.
-     *
-     * @see #focus(KeyboardTarget)
-     * @see #focus(int, int)
-     */
-    private KeyboardTarget focusedComponent;
+    root.resize(
+      height,
+      width);
+    update();
+  }
 
-    protected Terminal(int width, int height) {
-        this.width = width;
-        this.height = height;
-    }
+  public int getWidth() {
+    return width;
+  }
 
-    protected Terminal() { }
+  public int getHeight() {
+    return height;
+  }
 
-    public void add(Component... components) {
-        Objects.requireNonNull(root, "Cannot add Components to the terminal "
-                                     + "before a RootContainer is created.");
-        root.add(components);
-    }
+  public void setDimensions(
+    int width,
+    int height)
+  {
+    this.width = width;
+    this.height = height;
 
-    /**
-     * Constructs and returns a new {@code RootContainer} using this terminal
-     * as the context, and the given layout as the super layout of all
-     * {@code Component}s within the terminal.
-     *
-     * @param layout The layout to use for placing Components within this
-     *               terminal.
-     *
-     * @return A new {@code RootContainer} which has been constructed for this
-     *         terminal with the given layout.
-     */
-    public RootContainer createRootContainer(Layout layout) {
-        root = new RootContainer(new Region(0,
-                                            0,
-                                            height,
-                                            width),
-                                 layout);
-        root.registerObserver(this);
-        
-        return root;
-    }
-    
-    public void focus(int line, int position) {
-        Component component = getComponentAt(line, position);
-        focusedComponent = component instanceof KeyboardTarget
-                           ? (KeyboardTarget)component
-                           : focusedComponent;
-    }
+    root.resize(
+      width,
+      height);
+  }
 
-    public void focus(KeyboardTarget target) {
-        focusedComponent = target;
-    }
+  protected Component getComponentAt(
+    int line,
+    int position)
+  {
+    return root.getComponentAt(Location.at(
+      root.getBounds(),
+      line,
+      position));
+  }
 
-    @Override
-    public void update() {
-        surface.draw(root.drawToBuffer());
-        
-        /*
-         * TODO: I need to separate the updates coming from the EventDispatcher
-         *       and updates which Components generate (which means that a new
-         *       frame needs to be rasterized).
-         */
-    }
-
-    public void resize(int width, int height) {
-        this.width = width;
-        this.height = height;
-
-        root.resize(height, width);
-        update();
-    }
-
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
-    }
-
-    protected void setDimensions(int width, int height) {
-        this.width = width;
-        this.height = height;
-        root.resize(width,
-                    height);
-    }
-    
-    protected Component getComponentAt(int line, int position) {
-        return root.getComponentAt(Location.at(root.getBounds(),
-                                               line,
-                                               position));
-    }
-    
-    /**
-     * Initializes the area that text will be rendered to. This surface should
-     * be capable of transforming a {@code GlyphBuffer} into a representation
-     * suitable for output to the client machine.
-     * 
-     * @param width The number of characters wide the surface should be
-     *              able to render.
-     * @param height The number of character tall the surface should be
-     *               able to render.
-     * 
-     * @return ...
-     */
-    protected abstract DrawableSurface createDrawableSurface(int width,
-                                                             int height);
+  /**
+   * Initializes the area that text will be rendered to. This surface should be
+   * capable of transforming a {@code GlyphBuffer} into a representation suitable for
+   * output to the client machine.
+   *
+   * @param width The number of characters wide the surface should be able to
+   *   render.
+   * @param height The number of character tall the surface should be able to
+   *   render.
+   *
+   * @return An instance of a DrawableSurface by which a client may manipulate
+   *   the underlying instance of the GlyphBuffer which governs the interface of
+   *   this terminal.
+   */
+  protected abstract DrawableSurface createDrawableSurface(
+    int width,
+    int height);
 }

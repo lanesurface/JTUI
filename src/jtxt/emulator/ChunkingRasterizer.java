@@ -1,10 +1,10 @@
-/* 
+/*
  * Copyright 2019 Lane W. Surface
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -22,45 +22,56 @@ import java.awt.image.RenderedImage;
 import jtxt.GlyphBuffer;
 
 /**
- * 
+ *
  */
 public class ChunkingRasterizer implements GlyphRasterizer {
-    private BitmapFont font;
-    
-    public ChunkingRasterizer(BitmapFont font,
-                              int numChunks) {
-        this.font = font;
+  private BitmapFont font;
+
+  public ChunkingRasterizer(
+    BitmapFont font,
+    int numChunks)
+  {
+    this.font = font;
+  }
+
+  @Override
+  public RenderedImage rasterize(
+    GlyphBuffer buffer,
+    int width,
+    int height)
+  {
+    // TODO: Do the chunking. ;)
+    BufferedImage image = new BufferedImage(
+      width,
+      height,
+      BufferedImage.TYPE_INT_ARGB);
+    Graphics2D g = (Graphics2D)image.getGraphics();
+
+    Region bounds;
+    int nl, ls;
+
+    bounds = buffer.getBounds();
+    nl = bounds.getHeight();
+    ls = bounds.getWidth();
+
+    for (int line = 0; line < nl; line++) {
+      for (int position = 0; position < ls; position++) {
+        int x, y;
+        Glyph glyph = buffer.getGlyph(Location.at(
+          bounds,
+          line,
+          position));
+
+        x = position * font.getWidth();
+        y = line * font.getHeight();
+        g.drawImage(
+          font.getCharacterAsImage(glyph),
+          x,
+          y,
+          null);
+      }
     }
 
-    @Override
-    public RenderedImage rasterize(GlyphBuffer buffer,
-                                   int width,
-                                   int height) {
-        // TODO: Do the chunking. ;)
-        BufferedImage image = new BufferedImage(width,
-                                                height,
-                                                BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g = (Graphics2D)image.getGraphics();
-        
-        Region bounds = buffer.getBounds();
-        int numLines = bounds.getHeight(),
-            lineSize = bounds.getWidth();
-        
-        for (int line = 0; line < numLines; line++) {
-            for (int position = 0; position < lineSize; position++) {
-                Glyph glyph = buffer.getGlyph(Location.at(bounds,
-                                                          line,
-                                                          position));
-                
-                int x = position * font.width,
-                    y = line * font.height;
-                g.drawImage(font.getCharacterAsImage(glyph),
-                            x,
-                            y,
-                            null);
-            }
-        }
-        
-        return image;
-    }
+    return image;
+  }
 }

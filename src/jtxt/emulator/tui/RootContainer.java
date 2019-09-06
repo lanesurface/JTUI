@@ -1,10 +1,10 @@
-/* 
- * Copyright 2018 Lane W. Surface 
- * 
+/*
+ * Copyright 2018 Lane W. Surface
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
@@ -21,39 +21,47 @@ import jtxt.emulator.Region;
 import jtxt.emulator.ResizeSubscriber;
 
 public class RootContainer
-    extends Container<Component>
-    implements ResizeSubscriber
+  extends Container<Component>
+  implements ResizeSubscriber
 {
-    /**
-     * Creates a new container which occupies the entire area which was given
-     * when the context was created. The size of this container will match the
-     * dimensions passed to terminal's builder.
+  /**
+   * Creates a new container which occupies the entire area which was given when the
+   * context was created. The size of this container will match the dimensions passed
+   * to terminal's builder.
+   */
+  public RootContainer(
+    Region bounds,
+    Layout layout,
+    Component... children)
+  {
+    super(
+      null,
+      layout);
+
+    setBounds(bounds);
+    add(children);
+  }
+
+  @Override
+  public void resize(
+    int lines,
+    int lineSize)
+  {
+    /*
+     * The context notified us that the window has been resized, so the
+     * bounds of this container need to be adjusted.
      */
-    public RootContainer(Region bounds,
-                         Layout layout,
-                         Component... children) {
-        super(null, layout);
-        
-        setBounds(bounds);
-        add(children);
-    }
+    setBounds(new Region(
+      0,
+      0,
+      lines,
+      lineSize));
+  }
 
-    @Override
-    public void resize(int lines, int lineSize) {
-        /*
-         * The context notified us that the window has been resized, so the
-         * bounds of this container need to be adjusted.
-         */
-        setBounds(new Region(0,
-                             0,
-                             lines,
-                             lineSize));
-    }
+  public GlyphBuffer drawToBuffer() {
+    GlyphBuffer buffer = new GlyphBuffer(bounds);
+    draw(buffer);
 
-    public GlyphBuffer drawToBuffer() {
-        GlyphBuffer buffer = new GlyphBuffer(bounds);
-        draw(buffer);
-
-        return buffer;
-    }
+    return buffer;
+  }
 }

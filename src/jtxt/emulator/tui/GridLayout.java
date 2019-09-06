@@ -94,7 +94,7 @@ public class GridLayout implements Layout {
 
   /**
    * Creates an instance of {@code GridParameters} for the given range of cells, so
-   * that the parameters specify that the {@code Component} which these parameters
+   * that the params specify that the {@code Component} which these params
    * are applied to should occupy that entire range of cells within the layout.
    *
    * @param startRow The row of the first cell in the range.
@@ -120,7 +120,7 @@ public class GridLayout implements Layout {
   }
 
   /**
-   * The parameters which describe the {@code Cell}s which a {@code Component} should
+   * The params which describe the {@code Cell}s which a {@code Component} should
    * occupy within this layout.
    */
   public class GridParameters {
@@ -162,7 +162,7 @@ public class GridLayout implements Layout {
   @Override
   public Region getBounds(Object params) {
     if (!(params instanceof GridParameters))
-      throw new IllegalArgumentException("Layout parameters must be " +
+      throw new IllegalArgumentException("Layout params must be " +
                                          "of an appropriate type.");
 
     GridParameters gp;

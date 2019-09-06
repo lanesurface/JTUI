@@ -79,7 +79,7 @@ public class Glyph {
     
     @Override
     public String toString() {
-        return String.format("Glyph: [char='%c', color=%s, background=%s]%n", 
+        return String.format("Glyph: [char='%c', color=%s, bg=%s]%n",
                              character,
                              color,
                              background);

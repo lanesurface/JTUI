@@ -34,7 +34,7 @@ public class Slider extends Component implements Interactable {
     int min,
     int max)
   {
-    this.parameters = params;
+    this.params = params;
     this.res = res;
     this.min = min;
     this.max = max;

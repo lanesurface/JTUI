@@ -25,7 +25,7 @@ public abstract class Decorator extends Component {
   }
 
   /**
-   * Returns the layout parameters that this {@code Decorator}s component was
+   * Returns the layout params that this {@code Decorator}s component was
    * initialized with.
    */
   @Override

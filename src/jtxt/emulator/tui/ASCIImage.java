@@ -119,7 +119,7 @@ public class ASCIImage extends Component {
   /**
    * Create a new ASCII image from given source image.
    *
-   * @param parameters The Layout parameters to use for positioning this image.
+   * @param parameters The Layout params to use for positioning this image.
    * @param source The image to use for creating this ASCII image.
    */
   public ASCIImage(
@@ -130,7 +130,7 @@ public class ASCIImage extends Component {
       source,
       "The source image must be loaded " +
       "before conversion.");
-    this.parameters = parameters;
+    this.params = parameters;
     this.source = source;
   }
 
@@ -142,12 +142,12 @@ public class ASCIImage extends Component {
    */
   private BufferedImage resize() {
     Image scaled = source.getScaledInstance(
-      width,
-      height,
+      getWidth(),
+      getHeight(),
       Image.SCALE_SMOOTH);
     BufferedImage image = new BufferedImage(
-      width,
-      height,
+      getWidth(),
+      getHeight(),
       BufferedImage.TYPE_INT_ARGB);
     Graphics graphics = image.getGraphics();
     graphics.drawImage(
@@ -163,11 +163,11 @@ public class ASCIImage extends Component {
     BufferedImage image = resize();
 
     double range = 255.0 / CHARS.length;
-    cached = new GString[height];
+    cached = new GString[getHeight()];
 
-    for (int y = 0; y < height; y++) {
+    for (int y = 0; y < getHeight(); y++) {
       GString line = GString.blank(0);
-      for (int x = 0; x < width; x++) {
+      for (int x = 0; x < getWidth(); x++) {
         int rgb, lum;
 
         rgb = image.getRGB(
@@ -184,7 +184,7 @@ public class ASCIImage extends Component {
         line = line.append(new Glyph(
           out,
           new Color(rgb),
-          background));
+          bg));
       }
 
       cached[y] = line;
@@ -194,11 +194,11 @@ public class ASCIImage extends Component {
   @Override
   public void draw(GlyphBuffer buffer) {
     if (cached == null
-        || cached.length != height
-        || cached[0].length() != width)
+        || cached.length != getHeight()
+        || cached[0].length() != getWidth())
       mapImageToGlyphs();
 
-    for (int l = 0; l < height; l++) {
+    for (int l = 0; l < getHeight(); l++) {
       buffer.update(cached[l], Location.at(
         bounds,
         bounds.start.line+l,

@@ -33,58 +33,36 @@ import jtxt.emulator.Region;
  * GlyphBuffer} interface. This could be a document, PDF, the terminal emulator, or
  * any number of extensions.
  *
- * @see jtxt.emulator.Terminal
  * @see Container
  * @see jtxt.Document
  * @see Layout
  * @see jtxt.GlyphBuffer
  */
 public abstract class Component {
-  /**
-   * The bounds that this {@code Component} is allowed to draw itself within.
-   */
   protected Region bounds;
-
-  /**
-   * The parameters that are passed to the layout that this {@code Component}'s
-   * parent container has been initialized with. Do note that an incorrect parameter
-   * type (or a type that isn't a parameter) will cause an exception to be thrown at
-   * runtime.
-   */
-  protected Object parameters;
-  protected int width, height;
-
+  protected Object params;
+  private int width, height;
   protected List<ComponentObserver> observers;
-
-  protected Color foreground,
-    background;
+  protected Color fg, bg;
 
   protected Component() {
     this(
+      0,
+      0,
       Color.BLACK,
       Glyph.TRANSPARENT);
   }
 
   protected Component(
-    Color foreground,
-    Color background)
+    int width,
+    int height,
+    Color fg,
+    Color bg)
   {
-    this.foreground = foreground;
-    this.background = background;
+    this.fg = fg;
+    this.bg = bg;
     observers = new ArrayList<>();
   }
-
-  /**
-   * Renders the component within the bounds of that this component has been inflated
-   * to. A component which updates Glyphs within the bounds that have been allocated
-   * by the Layout can be sure that the characters will be updated appropriately; the
-   * behavior for a component which does not is undefined.
-   *
-   * @param buffer An object on which a component can draw itself, and which makes
-   *   certain guarantees about conforming to the bounds which are allocated by a
-   *   {@code Container}'s layout.
-   */
-  public abstract void draw(GlyphBuffer buffer);
 
   /**
    * Gets the bounds that this component has been allocated within its parent
@@ -104,8 +82,8 @@ public abstract class Component {
    */
   public void setBounds(Region bounds) {
     this.bounds = bounds;
-    width = bounds.getWidth();
-    height = bounds.getHeight();
+    setWidth(bounds.getWidth());
+    setHeight(bounds.getHeight());
   }
 
   public void setBackground(
@@ -122,18 +100,18 @@ public abstract class Component {
   }
 
   public void setBackground(Color background) {
-    this.background = background;
+    this.bg = background;
   }
 
   /**
-   * Gets the parameters that define how this component should be placed within its
+   * Gets the params that define how this component should be placed within its
    * parent container.
    *
-   * @return The parameters which define how this component should be placed within
+   * @return The params which define how this component should be placed within
    *   its parent.
    */
   public Object getLayoutParameters() {
-    return parameters;
+    return params;
   }
 
   public void registerObserver(ComponentObserver observer) {
@@ -141,6 +119,23 @@ public abstract class Component {
   }
 
   protected void update() {
-    for (ComponentObserver co : observers) { co.update(); }
+    for (ComponentObserver co : observers)
+      co.update();
+  }
+
+  public int getWidth() {
+    return width;
+  }
+
+  public void setWidth(int width) {
+    this.width = width;
+  }
+
+  public int getHeight() {
+    return height;
+  }
+
+  public void setHeight(int height) {
+    this.height = height;
   }
 }

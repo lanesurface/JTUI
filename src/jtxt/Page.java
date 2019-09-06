@@ -43,7 +43,7 @@ public class Page extends GlyphBuffer {
     /**
      * The amount of padding around each of the edges of the page. The bounds in
      * which {@code Component}s can be placed is shrunk according to these
-     * parameters.
+     * params.
      */
     private int marginTop,
       marginBottom,

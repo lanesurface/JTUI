@@ -80,9 +80,9 @@ public class Border extends Decorator {
   {
     super(component);
     this.type = type;
-    this.foreground = color;
+    this.fg = color;
 
-    setBackground(component.background);
+    setBackground(component.bg);
   }
 
   @Override
@@ -100,15 +100,15 @@ public class Border extends Decorator {
   public void draw(GlyphBuffer buffer) {
     super.draw(buffer);
 
-    Glyph[] glyphs = new Glyph[width];
+    Glyph[] glyphs = new Glyph[getWidth()];
     Arrays.fill(glyphs, new Glyph(
       type.span,
-      foreground,
-      background));
-    glyphs[0] = glyphs[width-1] = new Glyph(
+      fg,
+      bg));
+    glyphs[0] = glyphs[getWidth() - 1] = new Glyph(
       type.corner,
-      foreground,
-      background);
+      fg,
+      bg);
     GString border = new GString(glyphs);
 
     for (int l = bounds.start.line; l < bounds.end.line; l++) {
@@ -129,8 +129,8 @@ public class Border extends Decorator {
 
       Glyph edge = new Glyph(
         type.edge,
-        foreground,
-        background);
+        fg,
+        bg);
       Location s, e;
 
       s = Location.at(

@@ -46,7 +46,7 @@ public class Table extends Container<Table.Column> {
    * insertion of rows and cols at runtime, and which makes it more convenient to
    * group related children in a structured fashion.
    *
-   * @param parameters The layout parameters for this Container.
+   * @param parameters The layout params for this Container.
    * @param rows The initial number of rows in this Table.
    * @param columns The initial number of cols in this Table.
    */
@@ -175,7 +175,7 @@ public class Table extends Container<Table.Column> {
       int size)
     {
       this.size = size;
-      this.parameters = parameters;
+      this.params = parameters;
       components = new Component[size];
     }
 
@@ -238,7 +238,7 @@ public class Table extends Container<Table.Column> {
     @Override
     public void setBounds(Region bounds) {
       super.setBounds(bounds);
-      rheight = height / size;
+      rheight = getHeight() / size;
 
       for (int r = 0; r < components.length; r++) {
         Component component = components[r];
@@ -250,7 +250,7 @@ public class Table extends Container<Table.Column> {
           bounds.start.position);
         component.setBounds(Region.fromLocation(
           start,
-          width,
+          getWidth(),
           rheight));
       }
     }

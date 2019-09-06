@@ -18,37 +18,49 @@ package jtxt.emulator.tui;
 import jtxt.emulator.Region;
 
 /**
- * Allocates the bounds of a {@code Container}'s children, using objects passed to
- * these children to determine the location in which they will be placed.
+ * Every Component in the interface has an intrinsic width and height which
+ * were passed to it during construction. A Layout determines how much of the
+ * component appears within its parent Container, such that it obeys the
+ * rules for the allocation of these bounds defined by an implementation of
+ * this interface (which is then passed to a Container by a client).
+ *
+ * <p>
+ * Generally, a Component has no knowlege of the bounds it has been given.
+ * That is to say that the Container clips this component after it has drawn
+ * itself so that the portion which has been requested appears in the
+ * interface. It is very likely (and designed purposely to be that way) that
+ * a Component will draw outside of these bounds.
+ * </p>
  */
 public interface Layout {
   /**
-   * Calculates the size of the {@code Region} that a {@code Component} may be placed
-   * within, using the given parameters object to make this calculation. The type of
-   * this object, as well as the way that it affects the determination of the bounds,
-   * is implementation-dependent. This method may throw an error if the type of this
-   * parameter is incorrect (because a client passed an incorrect parameter when
-   * constructing a Component).
+   * Calculates the size of the {@code Region} that a {@code Component} may be
+   * placed within, using the given params object to make this calculation. The
+   * type of this object, as well as the way that it affects the determination
+   * of the bounds, is implementation-dependent. This method may throw an error
+   * if the type of this parameter is incorrect (because a client passed an
+   * incorrect parameter when constructing a Component).
    *
-   * @param parameters An object which describes the positioning information that
-   *   will be used to calculate these bounds. This is implementation dependent, and
-   *   the type of this object is likely to change between different {@code
-   *   Layout}s.
+   * @param parameters An object which describes the positioning information
+   *   that will be used to calculate these bounds. This is implementation
+   *   dependent, and the type of this object is likely to change between
+   *   different {@code Layout}s.
    *
-   * @return The bounds that the <code>parameters</code> object represents.
+   * @return The bounds that the <code>params</code> object represents.
    */
   Region getBounds(Object parameters);
 
   /**
    * Sets the bounds of the parent container that this {@code Layout} manages.
    *
-   * @param parentBounds The bounds of the Container that this Layout manages.
+   * @param parentBounds The bounds of the Container that this Layout
+   *   manages.
    */
   void setParentBounds(Region parentBounds);
 
   /**
-   * Sets the bounds of a Component, using the parameter object that the component
-   * has defined.
+   * Sets the bounds of a Component, using the parameter object that the
+   * component has defined.
    *
    * @param child The Component to allocate bounds to.
    */

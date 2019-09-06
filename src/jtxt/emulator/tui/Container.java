@@ -16,10 +16,7 @@
 package jtxt.emulator.tui;
 
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import jtxt.GlyphBuffer;
 import jtxt.emulator.GString;
@@ -43,12 +40,8 @@ public class Container<T extends Component>
   extends Component
   implements Iterable<Component>
 {
-  /**
-   * A collection of all the children this container owns. Components owned by this
-   * container inherit certain properties of it. This container may also dictate the
-   * way that components added to it appear on the screen.
-   */
   protected List<T> children;
+  private Map<? extends T,Object> params;
 
   /**
    * The layout that determines how the children of this container will be placed
@@ -62,7 +55,7 @@ public class Container<T extends Component>
     Layout layout,
     T... children)
   {
-    this.parameters = parameters;
+    this.params = parameters;
     this.layout = layout;
     this.children = new ArrayList<>();
 
@@ -80,7 +73,7 @@ public class Container<T extends Component>
       parameters,
       layout,
       children);
-    this.background = background;
+    this.bg = background;
   }
 
   /**
@@ -94,17 +87,13 @@ public class Container<T extends Component>
     for (T child : children) {
       this.children.add(child);
       layout.setComponentBounds(child);
-      child.setBackground(background);
+      child.setBackground(bg);
 
       for (ComponentObserver co : observers)
         child.registerObserver(co);
     }
 
     update();
-  }
-
-  T getChild(int index) {
-    return children.get(index);
   }
 
   public Component getComponentAt(Location location) {
@@ -136,6 +125,13 @@ public class Container<T extends Component>
   @Override
   public Iterator<Component> iterator() {
     return new ContainerIterator();
+  }
+
+  @Override
+  public int hashCode() {
+    return java.util.Objects.hash(
+      children,
+      params);
   }
 
   private class ContainerIterator implements Iterator<Component> {
@@ -186,9 +182,9 @@ public class Container<T extends Component>
   public void draw(GlyphBuffer buffer) {
     Glyph background = new Glyph(
       '\u2588',
-      this.background,
+      this.bg,
       Glyph.TRANSPARENT);
-    Glyph[] glyphs = new Glyph[width];
+    Glyph[] glyphs = new Glyph[getWidth()];
     Arrays.fill(
       glyphs,
       background);

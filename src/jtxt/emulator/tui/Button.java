@@ -46,7 +46,7 @@ public class Button extends Decorator implements Interactable,
   public boolean clicked(Location clickLocation) {
     for (Callable callback : callbacks) { callback.dispatch(); }
 
-    component.foreground = new Color(
+    component.fg = new Color(
       255,
       0,
       0);

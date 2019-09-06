@@ -55,16 +55,16 @@ public class TextBox extends Component {
     String text,
     Position just)
   {
-    this.parameters = params;
+    this.params = params;
     this.text = GString.of(
       text,
-      background);
+      bg);
     this.just = just;
   }
 
   @Override
   public void draw(GlyphBuffer buffer) {
-    GString[] lines = text.wrap(width);
+    GString[] lines = text.wrap(getWidth());
     for (int line = 0; line < lines.length; line++) {
       int spos, sline;
       spos = bounds.start.position;

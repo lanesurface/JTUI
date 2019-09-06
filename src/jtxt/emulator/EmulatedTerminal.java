@@ -119,4 +119,12 @@ public class EmulatedTerminal extends Terminal {
 
     return renderer;
   }
+
+  int getCharWidth() {
+    return cw;
+  }
+
+  int getCharHeight() {
+    return ch;
+  }
 }

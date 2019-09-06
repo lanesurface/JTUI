@@ -35,7 +35,7 @@ public class ANSIWriter implements DrawableSurface {
       StandardCharsets.UTF_8);
   }
 
-  public Region getConsoleDimensions() {
+  Region getConsoleDimensions() {
     int w, h;
 
     w = -1;

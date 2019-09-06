@@ -17,8 +17,8 @@ package jtxt.emulator;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * Handles events which are propagated by a user, and which must be polled for over
@@ -32,7 +32,7 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
    * reference here, as we may need to notify it whenever some relavent state
    * changes.
    */
-  protected final EmulatedTerminal terminal;
+  private final EmulatedTerminal terminal;
 
   /**
    * The instance of the {@code Renderer} that the terminal constructed. May need to
@@ -47,11 +47,11 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
    * update (processing event), which will be either dispatched to their respective
    * component or discarded if the target component isn't {@code Interactable}.
    */
-  private Queue<MouseEvent> mouseEvents; // FIXME: Use an ArrayDeque
+  private Deque<MouseEvent> events;
 
   private boolean running = true;
 
-  private static final int UPDATES_PER_SECOND = 60;
+  private static final int UPS = 60;
 
   public EventDispatcher(
     EmulatedTerminal terminal,
@@ -59,14 +59,14 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
   {
     this.terminal = terminal;
     this.renderer = renderer;
-    mouseEvents = new LinkedList<>();
+    events = new ArrayDeque<>();
   }
 
   private void poll(double delta) {
     int width = renderer.getWidth(),
       height = renderer.getHeight(),
-      numLines = height / terminal.ch,
-      lineSize = width / terminal.cw;
+      numLines = height / terminal.getCharHeight(),
+      lineSize = width / terminal.getCharWidth();
 
     /*
      * FIXME: This process is extremely slow; we shouldn't have to redraw
@@ -100,43 +100,43 @@ public class EventDispatcher extends MouseAdapter implements Runnable {
    * </p>
    */
   private synchronized void dispatchMouseEvents() {
-    while (!mouseEvents.isEmpty()) {
+    while (!events.isEmpty()) {
       MouseEvent event;
       int x, y;
 
-      event = mouseEvents.remove();
+      event = events.poll();
       x = event.getX();
       y = event.getY();
 
       terminal.generateClickForComponentAt(
-        y / terminal.ch,
-        x / terminal.cw);
+        y / terminal.getCharHeight(),
+        x / terminal.getCharWidth());
     }
   }
 
   @Override
   public synchronized void mouseClicked(MouseEvent event) {
-    mouseEvents.add(event);
+    events.offer(event);
   }
 
   @Override
   public void run() {
-    long curr,
+    long now,
       last,
-      st;
-    int ms;
+      start;
+    int msPerUpdate;
 
-    ms = 1000 / UPDATES_PER_SECOND;
-    curr = 0;
+    msPerUpdate = 1000 / UPS;
+    now = 0;
     while (running) {
-      last = curr;
-      curr = System.currentTimeMillis();
-      poll((curr - last) / 1000.0);
+      last = now;
+      now = System.currentTimeMillis();
+      poll((now - last) / 1000.0);
 
       try {
-        st = curr + ms - System.currentTimeMillis();
-        if (st > 0)
-          Thread.sleep(st);
+        start = now + msPerUpdate - System.currentTimeMillis();
+        if (start > 0)
+          Thread.sleep(start);
       } catch (InterruptedException ie) { return; }
     }
   }

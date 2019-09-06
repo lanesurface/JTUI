@@ -18,16 +18,17 @@ package jtxt;
 import jtxt.emulator.Region;
 
 /**
- * An area on the screen which is able to display a {@code GlyphBuffer}. This area is
- * independent of any specific buffer which is present, but may have a fixed width
- * and height that the buffer may be drawn within.
+ * An area on the screen which is able to display a {@code GlyphBuffer}. This
+ * area is independent of any specific buffer which is present, but may have a
+ * fixed width and height that the buffer may be drawn within.
  *
  * @see GlyphBuffer
  */
 public interface DrawableSurface {
   /**
-   * Draws the given {@code GlyphBuffer} onto this surface, using the bounds defined
-   * by this buffer to determine how much of the buffer should be drawn.
+   * Draws the given {@code GlyphBuffer} onto this surface, using the bounds
+   * defined by this buffer to determine how much of the buffer should be
+   * drawn.
    *
    * @param buffer The buffer to draw onto this surface.
    */
@@ -40,7 +41,8 @@ public interface DrawableSurface {
    * @param buffer The buffer to draw to this surface.
    * @param x The position in the buffer for the first Glyph which should be
    *   drawn.
-   * @param y The line in the buffer for the first Glyph which should be drawn.
+   * @param y The line in the buffer for the first Glyph which should be
+   *   drawn.
    * @param width The width of the area to draw to this surface.
    * @param height The height of the area to draw to this surface.
    */

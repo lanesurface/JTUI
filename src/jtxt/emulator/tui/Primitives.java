@@ -17,6 +17,8 @@
 
 package jtxt.emulator.tui;
 
+import jtxt.emulator.Glyph;
+
 import static java.lang.Math.abs;
 
 /**
@@ -24,6 +26,12 @@ import static java.lang.Math.abs;
  * characters for strokes) to the given {@code Frame}.
  */
 public final class Primitives {
+  private static final Glyph dg = new Glyph(
+    '.',
+    255,
+    255,
+    255);
+
   public static void rect(
     Frame frame,
     int x,
@@ -73,14 +81,14 @@ public final class Primitives {
     int x,
     int y)
   {
-    frame.set(null, xc+x, yc+y);
-    frame.set(null, xc-x, yc+y);
-    frame.set(null, xc+x, yc-y);
-    frame.set(null, xc-x, yc-y);
-    frame.set(null, xc+y, yc+x);
-    frame.set(null, xc-y, yc+x);
-    frame.set(null, xc+y, yc-x);
-    frame.set(null, xc-y, yc-x);
+    frame.set(dg, xc+x, yc+y);
+    frame.set(dg, xc-x, yc+y);
+    frame.set(dg, xc+x, yc-y);
+    frame.set(dg, xc-x, yc-y);
+    frame.set(dg, xc+y, yc+x);
+    frame.set(dg, xc-y, yc+x);
+    frame.set(dg, xc+y, yc-x);
+    frame.set(dg, xc-y, yc-x);
   }
 
   public static void line(
@@ -111,7 +119,7 @@ public final class Primitives {
       x += xi;
       y += yi;
       frame.set(
-        null,
+        dg,
         (int)x,
         (int)y);
     }

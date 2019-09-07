@@ -96,4 +96,14 @@ public interface Element {
     setWidth(width);
     setHeight(height);
   }
+  static Element createScrollableElement(
+    int width,
+    int height,
+    Element e)
+  {
+    return new ScrollableContainer(
+      width,
+      height,
+      e);
+  }
 }

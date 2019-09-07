@@ -17,6 +17,8 @@
 
 package jtxt.emulator.tui;
 
+import jtxt.Message;
+
 public abstract class AbstractElement implements Element {
   private int width, height;
   private Frame frame;
@@ -29,6 +31,23 @@ public abstract class AbstractElement implements Element {
       width,
       height);
     frame = null; // FIXME: Replace with an implementation.
+  }
+
+  @Override
+  public void update(
+    Message message,
+    double delta)
+  {
+    switch (message) {
+    case CLICKED:
+    case FOCUSED:
+    case RESIZED:
+      draw();
+      break;
+    default:
+      throw new IllegalStateException("This element cannot respond to the "
+                                      + "given message: " + message);
+    }
   }
 
   @Override

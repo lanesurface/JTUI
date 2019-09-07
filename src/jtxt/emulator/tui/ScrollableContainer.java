@@ -30,13 +30,13 @@ import static jtxt.emulator.tui.Primitives.*;
  * overflows the bounds of this composite, the scroll bar will allow a client
  * to adjust the visible portion thereof.
  */
-public class ScrollableContainer extends AbstractElement {
+class ScrollableContainer extends AbstractElement {
   private int pos,
     cw,
     ch;
   private Element child;
 
-  public ScrollableContainer(
+  ScrollableContainer(
     int width,
     int height,
     Element child)
@@ -55,7 +55,19 @@ public class ScrollableContainer extends AbstractElement {
     Message message,
     double delta)
   {
+    /*
+     * Note: We cannot call the super method, as it will attempt to redraw
+     * this component before the child itself. This could be resolved by
+     * implementing an `AbstractDecorator` class in the future.
+     */
+    child.update(
+      message,
+      delta);
+
     switch (message) {
+    case RESIZED:
+      cw = child.getWidth();
+      ch = child.getHeight();
     case CLICKED:
     case FOCUSED:
     case REDRAW:

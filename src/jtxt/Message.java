@@ -20,5 +20,6 @@ package jtxt;
 public enum Message {
   CLICKED,
   REDRAW,
-  FOCUSED
+  FOCUSED,
+  RESIZED
 }

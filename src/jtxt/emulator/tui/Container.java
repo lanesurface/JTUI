@@ -41,7 +41,6 @@ public class Container<T extends Component>
   implements Iterable<Component>
 {
   protected List<T> children;
-  private Map<? extends T,Object> params;
 
   /**
    * The layout that determines how the children of this container will be placed

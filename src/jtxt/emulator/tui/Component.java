@@ -64,6 +64,8 @@ public abstract class Component {
     observers = new ArrayList<>();
   }
 
+  public abstract void draw(GlyphBuffer buffer);
+
   /**
    * Gets the bounds that this component has been allocated within its parent
    * container.

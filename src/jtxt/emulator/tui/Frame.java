@@ -36,7 +36,7 @@ public interface Frame {
     int y,
     int w,
     int h);
-  Frame blit(
+  void blit(
     Frame other,
     int x,
     int y);

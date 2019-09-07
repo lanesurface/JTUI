@@ -17,6 +17,8 @@
 
 package jtxt.emulator.tui;
 
+import jtxt.Message;
+
 public interface Element {
   /**
    * This method is called whenever an event is received by the terminal from
@@ -29,7 +31,7 @@ public interface Element {
    *  was received.
    */
   void update(
-    Object message,
+    Message message,
     double delta);
 
   /**

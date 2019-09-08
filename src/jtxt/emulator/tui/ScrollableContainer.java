@@ -21,17 +21,17 @@ import jtxt.Message;
 import jtxt.emulator.Glyph;
 
 import java.awt.Color;
-import java.util.List;
 
 import static jtxt.emulator.tui.Primitives.*;
 
 /**
  * A decorator to which an {@code Element} may be added. If the element
- * overflows the bounds of this composite, the scroll bar will allow a client
+ * overflows the bounds of this container, the scroll bar will allow a client
  * to adjust the visible portion thereof.
  */
 class ScrollableContainer extends AbstractElement {
-  private int pos,
+  private int xpos,
+    ypos,
     cw,
     ch;
   private Element child;
@@ -48,6 +48,10 @@ class ScrollableContainer extends AbstractElement {
     this.child = child;
     cw = child.getWidth();
     ch = child.getHeight();
+  }
+
+  public Element getChild() {
+    return child;
   }
 
   @Override
@@ -91,22 +95,22 @@ class ScrollableContainer extends AbstractElement {
     w = getWidth();
     h = getHeight();
     f = getFrame();
-    line(
+    rect(
       f,
-      w,
+      0,
       0,
       w,
       h);
     f.set(
       g,
       w,
-      pos);
+      xpos);
 
     cf = child.getFrame().clip(
       0,
       0,
-      w-1,
-      h);
+      w-2,
+      h-2);
     f.blit(
       cf,
       0,
